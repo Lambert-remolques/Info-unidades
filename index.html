@@ -1,0 +1,3720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unidades | Lambert</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde: #159947;
+            --verde-oscuro: #078334;
+            --rojo: #da251d;
+            --negro: #262626;
+            --grafito: #333333;
+            --gris: #e6e6e6;
+            --gris-texto: #555555;
+            --blanco: #ffffff;
+            --sombra-card: 0 4px 14px rgba(38, 38, 38, 0.15);
+            --sombra-panel: 0 10px 28px rgba(38, 38, 38, 0.10);
+            --fuente: "Montserrat", Arial, sans-serif;
+            --radio: 3px;
+        }
+#55555
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--negro);
+            font-family: var(--fuente);
+            background:
+                linear-gradient(90deg, rgba(38, 38, 38, 0.045) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(38, 38, 38, 0.035) 1px, transparent 1px),
+                #f8f8f8;
+            background-size: 64px 64px;
+        }
+
+        button,
+        a {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+        }
+
+        .button-reset {
+            width: 100%;
+            color: inherit;
+            text-align: left;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .top-nav {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .site-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 7px;
+        }
+
+        .menu-button {
+            min-height: 34px;
+            padding: 0 15px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: var(--radio);
+            color: rgba(255, 255, 255, 0.78);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 0.72rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+        }
+
+        .menu-button.active {
+            color: var(--blanco);
+            border-color: var(--verde);
+            background: rgba(21, 153, 71, 0.32);
+        }
+
+        @media (hover: hover) {
+            .menu-button:hover {
+                color: var(--blanco);
+                border-color: var(--verde);
+                background: rgba(21, 153, 71, 0.32);
+            }
+        }
+
+        .hero {
+            position: relative;
+            min-height: 300px;
+            overflow: hidden;
+            color: var(--blanco);
+            background:
+                radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 24%),
+                linear-gradient(135deg, #101213 0%, #191c1d 44%, #242728 100%);
+            box-shadow: inset 0 -1px rgba(255, 255, 255, 0.08);
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: -70px;
+            bottom: -90px;
+            width: 190px;
+            background: rgba(255, 255, 255, 0.045);
+            transform: skewX(-24deg);
+            pointer-events: none;
+        }
+
+        .hero::before {
+            right: 210px;
+        }
+
+        .hero::after {
+            right: 84px;
+            opacity: 0.55;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            width: min(1280px, calc(100% - 80px));
+            margin: 0 auto;
+            padding: 28px 0 42px;
+        }
+
+        .logo {
+            display: block;
+            width: 190px;
+            height: auto;
+            margin: 0;
+            filter: drop-shadow(0 4px 9px rgba(0, 0, 0, 0.45));
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 960px;
+            padding-left: 26px;
+        }
+
+        .hero-content::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 0;
+            width: 3px;
+            background: var(--verde);
+        }
+
+        .hero-kicker {
+            margin: 0 0 12px;
+            color: var(--verde);
+            font-size: clamp(0.9rem, 1.2vw, 1.08rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.05;
+        }
+
+        .hero-title {
+            margin: 0;
+            color: var(--blanco);
+            font-size: clamp(2.15rem, 6vw, 4.9rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 0.94;
+            letter-spacing: 0;
+            text-shadow: 0 7px 14px rgba(0, 0, 0, 0.32);
+            white-space: nowrap;
+        }
+
+        .red-rule {
+            width: 64px;
+            height: 4px;
+            margin: 19px 0 14px;
+            background: var(--rojo);
+        }
+
+        .hero-description {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+            font-weight: 500;
+            line-height: 1.55;
+        }
+
+        .category-panel {
+            position: sticky;
+            top: 56px;
+            z-index: 20;
+            width: min(1280px, calc(100% - 112px));
+            margin: -1px auto 0;
+            padding: 22px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: var(--sombra-panel);
+        }
+
+        .category-panel[hidden] {
+            display: none;
+        }
+
+        .category-list {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .category-button {
+            position: relative;
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: var(--radio);
+            color: var(--blanco);
+            background: linear-gradient(180deg, var(--verde), var(--verde-oscuro));
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.14);
+            cursor: pointer;
+            transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+        }
+
+        .category-button::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -11px;
+            width: 0;
+            height: 0;
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-top: 11px solid var(--negro);
+            opacity: 0;
+            transform: translateX(-50%) translateY(-4px);
+            transition: opacity 160ms ease, transform 160ms ease;
+        }
+
+        .category-button:hover,
+        .category-button.active {
+            transform: translateY(-2px);
+            filter: brightness(1.04);
+            box-shadow: 0 9px 18px rgba(21, 153, 71, 0.24);
+        }
+
+        .category-button.active {
+            background: linear-gradient(180deg, var(--negro), #151515);
+            box-shadow: 0 10px 22px rgba(38, 38, 38, 0.22);
+        }
+
+        .category-button.active::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .category-name {
+            display: block;
+            font-size: clamp(0.82rem, 1.25vw, 1.02rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        main {
+            width: min(1280px, calc(100% - 112px));
+            margin: 0 auto;
+            padding: 36px 0 56px;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 260ms ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-head {
+            margin-bottom: 20px;
+        }
+
+        .section-title-wrap {
+            display: inline-grid;
+            grid-template-columns: 5px auto;
+            align-items: end;
+            column-gap: 18px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid rgba(21, 153, 71, 0.82);
+            min-width: min(435px, 100%);
+        }
+
+        .section-title-wrap::before {
+            content: "";
+            width: 5px;
+            height: 36px;
+            background: var(--verde);
+        }
+
+        .section-title {
+            margin: 0;
+            color: var(--verde);
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 0.9;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px 26px;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 26px;
+        }
+
+        .home-card {
+            min-height: 230px;
+        }
+
+        .product-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 168px;
+            padding: 23px 24px 18px 28px;
+            border-radius: var(--radio);
+            border-left: 5px solid var(--verde);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: var(--sombra-card);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .product-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 28px rgba(38, 38, 38, 0.20);
+            }
+        }
+
+        .product-card-button {
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .product-card-button > * {
+            pointer-events: none;
+        }
+
+        .product-card-button:focus-visible,
+        .sheet-link:focus-visible,
+        .back-button:focus-visible,
+        .category-button:focus-visible {
+            outline: 3px solid rgba(21, 153, 71, 0.38);
+            outline-offset: 3px;
+        }
+
+        .product-name {
+            margin: 0 0 11px;
+            color: var(--negro);
+            font-size: clamp(1rem, 1.55vw, 1.28rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.08;
+        }
+
+        .product-description {
+            margin: 0 0 16px;
+            color: var(--gris-texto);
+            font-size: 0.88rem;
+            font-weight: 500;
+            line-height: 1.45;
+        }
+
+        .divider {
+            border: 0;
+            height: 1px;
+            margin: auto 0 14px;
+            background-image: linear-gradient(90deg, rgba(38, 38, 38, 0.20) 45%, transparent 45%);
+            background-size: 5px 1px;
+        }
+
+        .card-action {
+            margin-top: auto;
+            color: var(--verde);
+            font-size: 0.75rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            margin-bottom: 18px;
+            padding: 0 18px;
+            border: 1px solid rgba(21, 153, 71, 0.48);
+            border-radius: var(--radio);
+            color: var(--verde);
+            background: var(--blanco);
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+        }
+
+        .back-button:hover {
+            color: var(--blanco);
+            background: var(--verde);
+            transform: translateX(-2px);
+        }
+
+        .sheet-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            width: 100%;
+            border-radius: var(--radio);
+            color: var(--blanco);
+            background: linear-gradient(180deg, var(--verde), var(--verde-oscuro));
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: filter 160ms ease, transform 160ms ease;
+        }
+
+        .sheet-link:hover {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+        }
+
+        .construction-copy {
+            max-width: 760px;
+            margin: 0 0 24px;
+            color: var(--gris-texto);
+            font-size: 0.98rem;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+
+        .empty-state {
+            padding: 28px;
+            border-left: 5px solid var(--verde);
+            background: var(--blanco);
+            box-shadow: var(--sombra-card);
+            color: var(--gris-texto);
+            font-weight: 500;
+        }
+
+        .search-bar {
+            display: none;
+        }
+
+        @media (min-width: 721px) {
+            .search-bar {
+                display: block;
+            }
+
+            .top-nav {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 50;
+                align-items: center;
+                gap: 24px;
+                margin-bottom: 0;
+                padding: 12px 48px;
+                background: linear-gradient(135deg, #101213 0%, #1a1d1e 100%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+            }
+
+            .top-nav .logo {
+                order: 1;
+                height: 38px;
+                width: auto;
+                margin: 0;
+                filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+            }
+
+            .top-nav .site-menu {
+                order: 2;
+                flex: 1;
+                justify-content: center;
+                gap: 8px;
+                padding: 0;
+            }
+
+            .top-nav .user-bar {
+                order: 3;
+                display: flex;
+                align-items: center;
+                margin: 0;
+                padding: 0;
+                border: 0;
+                gap: 12px;
+            }
+
+            .top-nav .menu-button {
+                min-height: 38px;
+                padding: 0 18px;
+                font-size: 0.78rem;
+                letter-spacing: 0.04em;
+            }
+
+            .top-nav .menu-button.active {
+                color: var(--blanco);
+                border-color: var(--verde-oscuro);
+                background: linear-gradient(180deg, var(--verde), var(--verde-oscuro));
+                box-shadow: 0 2px 10px rgba(21, 153, 71, 0.45), inset 0 1px rgba(255, 255, 255, 0.18);
+            }
+
+            .hero-inner {
+                padding-top: 165px;
+                padding-bottom: 56px;
+            }
+
+            .hero-content {
+                padding-top: 8px;
+            }
+
+            .scroll-bar {
+                display: none;
+            }
+
+            .category-panel {
+                top: 124px;
+            }
+
+            .search-bar {
+                position: fixed;
+                top: 64px;
+                left: 0;
+                right: 0;
+                z-index: 45;
+                padding: 10px 48px;
+                background: rgba(15, 17, 18, 0.96);
+                backdrop-filter: blur(8px);
+                border-bottom: 2px solid var(--verde);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+            }
+
+            .search-box {
+                position: relative;
+                width: min(380px, 100%);
+                margin-left: auto;
+                margin-right: 0;
+            }
+
+            #searchInput {
+                width: 100%;
+                height: 40px;
+                padding: 0 16px 0 44px;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 6px;
+                color: var(--blanco);
+                background-color: rgba(255, 255, 255, 0.06);
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>");
+                background-position: 14px center;
+                background-repeat: no-repeat;
+                background-size: 18px;
+                font-family: var(--fuente);
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+            }
+
+            #searchInput::placeholder {
+                color: rgba(255, 255, 255, 0.45);
+            }
+
+            #searchInput:focus {
+                outline: none;
+                border-color: var(--verde);
+                background-color: rgba(255, 255, 255, 0.12);
+                box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.28);
+            }
+
+            .search-results {
+                position: absolute;
+                top: calc(100% + 8px);
+                left: 0;
+                right: 0;
+                max-height: 60vh;
+                overflow-y: auto;
+                background: var(--blanco);
+                border-radius: 6px;
+                box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+            }
+
+            .search-results[hidden] {
+                display: none;
+            }
+
+            .search-result-item {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                width: 100%;
+                padding: 12px 18px;
+                background: transparent;
+                border: 0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+                text-align: left;
+                cursor: pointer;
+                font-family: var(--fuente);
+                transition: background 120ms ease;
+            }
+
+            .search-result-item:last-child {
+                border-bottom: 0;
+            }
+
+            .search-result-item:hover,
+            .search-result-item:focus-visible {
+                background: #f5f7f6;
+                outline: 0;
+            }
+
+            .search-result-path {
+                color: var(--verde);
+                font-size: 0.68rem;
+                font-weight: 900;
+                font-style: italic;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+            }
+
+            .search-result-name {
+                color: var(--negro);
+                font-size: 0.92rem;
+                font-weight: 700;
+            }
+
+            .search-empty {
+                padding: 16px;
+                color: var(--gris-texto);
+                font-size: 0.86rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .category-panel,
+            main {
+                width: min(100% - 48px, 1280px);
+            }
+
+            .category-list {
+                gap: 16px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .home-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hero-search-toggle {
+            display: none;
+        }
+
+        .scroll-bar-search-toggle {
+            display: none;
+        }
+
+        .search-modal {
+            display: none;
+        }
+
+        @media (max-width: 720px) {
+            .hero {
+                min-height: auto;
+            }
+
+            .hero-inner {
+                width: min(100% - 32px, 1280px);
+                padding: 22px 0 50px;
+            }
+
+            .logo {
+                width: 158px;
+            }
+
+            .top-nav {
+                align-items: center;
+                justify-content: flex-start;
+                gap: 12px;
+                margin-bottom: 28px;
+            }
+
+            .top-nav .logo {
+                margin-left: auto;
+            }
+
+            .hero-search-toggle {
+                display: grid;
+                place-items: center;
+                width: 30px;
+                height: 30px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                color: var(--blanco);
+                cursor: pointer;
+            }
+
+            .hero-search-toggle svg {
+                width: 22px;
+                height: 22px;
+                stroke: currentColor;
+                stroke-width: 2.2;
+                fill: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .scroll-bar-search-toggle {
+                display: grid;
+                place-items: center;
+                width: 26px;
+                height: 26px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                color: var(--blanco);
+                cursor: pointer;
+            }
+
+            .scroll-bar-search-toggle svg {
+                width: 20px;
+                height: 20px;
+                stroke: currentColor;
+                stroke-width: 2.2;
+                fill: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .search-modal {
+                position: fixed;
+                inset: 0;
+                z-index: 60;
+                display: flex;
+                flex-direction: column;
+                background: #0e1011;
+                transform: translateY(-100%);
+                transition: transform 240ms ease;
+            }
+
+            .search-modal[hidden] {
+                display: none;
+            }
+
+            .search-modal.open {
+                transform: translateY(0);
+            }
+
+            .search-modal-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 14px 16px;
+                border-bottom: 2px solid var(--verde);
+            }
+
+            .search-modal-close {
+                display: grid;
+                place-items: center;
+                width: 36px;
+                height: 36px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                color: rgba(255, 255, 255, 0.85);
+                font-size: 1.7rem;
+                line-height: 1;
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+
+            #searchInputModal {
+                flex: 1;
+                height: 42px;
+                padding: 0 14px 0 40px;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 6px;
+                color: var(--blanco);
+                background-color: rgba(255, 255, 255, 0.06);
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>");
+                background-position: 12px center;
+                background-repeat: no-repeat;
+                background-size: 18px;
+                font-family: var(--fuente);
+                font-size: 0.92rem;
+            }
+
+            #searchInputModal::placeholder {
+                color: rgba(255, 255, 255, 0.45);
+            }
+
+            #searchInputModal:focus {
+                outline: none;
+                border-color: var(--verde);
+                background-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.25);
+            }
+
+            .search-modal-results {
+                flex: 1;
+                overflow-y: auto;
+                padding: 8px 0;
+            }
+
+            .search-modal-results .search-result-item {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                width: 100%;
+                padding: 14px 20px;
+                background: transparent;
+                border: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                text-align: left;
+                cursor: pointer;
+                font-family: var(--fuente);
+                color: var(--blanco);
+            }
+
+            .search-modal-results .search-result-item:active {
+                background: rgba(21, 153, 71, 0.18);
+            }
+
+            .search-modal-results .search-result-path {
+                color: var(--verde);
+                font-size: 0.7rem;
+                font-weight: 900;
+                font-style: italic;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+            }
+
+            .search-modal-results .search-result-name {
+                color: var(--blanco);
+                font-size: 0.95rem;
+                font-weight: 700;
+            }
+
+            .search-modal-results .search-empty {
+                padding: 24px 20px;
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 0.88rem;
+                text-align: center;
+            }
+
+            body.search-open {
+                overflow: hidden;
+            }
+
+            .site-menu {
+                gap: 7px;
+            }
+
+            .menu-button {
+                min-height: 30px;
+                padding: 0 9px;
+                font-size: 0.62rem;
+            }
+
+            .hero-content {
+                padding-left: 20px;
+            }
+
+            .hero-title {
+                font-size: clamp(1.8rem, 10vw, 3.05rem);
+                white-space: normal;
+            }
+
+            .category-panel {
+                width: min(100% - 24px, 1280px);
+                padding: 14px;
+            }
+
+            .category-list {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .category-button {
+                min-height: 44px;
+            }
+
+            .category-name {
+                font-size: 0.75rem;
+            }
+
+            main {
+                width: min(100% - 24px, 1280px);
+                padding-top: 32px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-card {
+                min-height: auto;
+            }
+        }
+
+        .variantes-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 200ms ease;
+        }
+
+        .variantes-modal[hidden] {
+            display: none;
+        }
+
+        .variantes-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .variantes-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .variantes-modal-content {
+            position: relative;
+            width: min(540px, 100%);
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 36px 32px 30px;
+            border-left: 5px solid var(--verde);
+            border-radius: var(--radio);
+            background: var(--blanco);
+            box-shadow: var(--sombra-panel);
+            transform: scale(0.96);
+            transition: transform 200ms ease;
+        }
+
+        .variantes-modal.open .variantes-modal-content {
+            transform: scale(1);
+        }
+
+        .variantes-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--gris-texto);
+            font-size: 1.7rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 160ms ease;
+        }
+
+        .variantes-modal-close:hover {
+            color: var(--negro);
+        }
+
+        .variantes-modal-kicker {
+            margin: 0 0 4px;
+            color: var(--verde);
+            font-size: 0.72rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .variantes-modal-title {
+            margin: 0;
+            color: var(--negro);
+            font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .variantes-modal-content .red-rule {
+            margin: 14px 0 22px;
+        }
+
+        .variantes-modal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .variante-card {
+            display: flex;
+            flex-direction: column;
+            padding: 18px 22px;
+            border-left: 4px solid var(--verde);
+            border-radius: var(--radio);
+            background: #fafafa;
+        }
+
+        .variante-name {
+            margin: 0 0 6px;
+            color: var(--negro);
+            font-size: 1.05rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .variante-description {
+            margin: 0 0 14px;
+            color: var(--gris-texto);
+            font-size: 0.88rem;
+            font-weight: 500;
+            line-height: 1.45;
+        }
+
+        .variante-card .sheet-link {
+            margin-top: auto;
+        }
+
+        body.variantes-open {
+            overflow: hidden;
+        }
+
+        .adicional-search {
+            position: relative;
+            max-width: 440px;
+            margin: 0 0 18px;
+        }
+
+        .adicional-search svg {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            stroke: rgba(38, 38, 38, 0.45);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
+
+        #adicionalSearchInput {
+            width: 100%;
+            height: 42px;
+            padding: 0 14px 0 42px;
+            border: 1px solid rgba(38, 38, 38, 0.18);
+            border-radius: var(--radio);
+            color: var(--negro);
+            background: var(--blanco);
+            font-family: var(--fuente);
+            font-size: 0.92rem;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        #adicionalSearchInput:focus {
+            outline: none;
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.18);
+        }
+
+        .adicional-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .adicional-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 32px;
+            padding: 0 14px;
+            border: 1px solid rgba(38, 38, 38, 0.18);
+            border-radius: 999px;
+            color: var(--gris-texto);
+            background: var(--blanco);
+            font-family: var(--fuente);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+        }
+
+        .adicional-chip:hover {
+            border-color: var(--verde);
+            color: var(--negro);
+        }
+
+        .adicional-chip.active {
+            background: var(--verde);
+            border-color: var(--verde-oscuro);
+            color: var(--blanco);
+        }
+
+        .chip-count {
+            display: inline-grid;
+            place-items: center;
+            min-width: 22px;
+            height: 18px;
+            padding: 0 6px;
+            border-radius: 9px;
+            background: rgba(0, 0, 0, 0.08);
+            color: inherit;
+            font-size: 0.66rem;
+            font-weight: 900;
+        }
+
+        .adicional-chip.active .chip-count {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .adicional-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .adicional-card {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            border: 0;
+            border-radius: var(--radio);
+            background: var(--blanco);
+            box-shadow: var(--sombra-card);
+            overflow: hidden;
+            cursor: pointer;
+            text-align: left;
+            font-family: var(--fuente);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .adicional-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 26px rgba(38, 38, 38, 0.18);
+        }
+
+        .adicional-foto {
+            position: relative;
+            aspect-ratio: 4 / 3;
+            background: #ededed;
+            overflow: hidden;
+            border-bottom: 3px solid var(--verde);
+        }
+
+        .adicional-foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .adicional-foto-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background:
+                repeating-linear-gradient(135deg, transparent 0 14px, rgba(38, 38, 38, 0.03) 14px 15px),
+                #f3f3f3;
+            color: rgba(38, 38, 38, 0.45);
+        }
+
+        .adicional-foto-placeholder svg {
+            width: 38px;
+            height: 38px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .adicional-foto-placeholder span {
+            font-size: 0.72rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .adicional-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 14px 18px 16px;
+        }
+
+        .adicional-nombre {
+            margin: 0;
+            color: var(--negro);
+            font-size: 0.95rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .adicional-ubicacion {
+            margin: 0;
+            color: var(--gris-texto);
+            font-size: 0.78rem;
+            font-weight: 500;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .ubicacion-icon {
+            flex-shrink: 0;
+        }
+
+        .adicional-detalle-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 200ms ease;
+        }
+
+        .adicional-detalle-modal[hidden] {
+            display: none;
+        }
+
+        .adicional-detalle-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .adicional-detalle-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .adicional-detalle-content {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: min(820px, 100%);
+            max-height: 85vh;
+            overflow: hidden;
+            border-radius: var(--radio);
+            background: var(--blanco);
+            box-shadow: var(--sombra-panel);
+            transform: scale(0.96);
+            transition: transform 200ms ease;
+        }
+
+        .adicional-detalle-modal.open .adicional-detalle-content {
+            transform: scale(1);
+        }
+
+        .adicional-detalle-close {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--gris-texto);
+            font-size: 1.7rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 1;
+            transition: color 160ms ease;
+        }
+
+        .adicional-detalle-close:hover {
+            color: var(--negro);
+        }
+
+        .adicional-detalle-foto {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 280px;
+            background:
+                repeating-linear-gradient(135deg, transparent 0 16px, rgba(38, 38, 38, 0.03) 16px 17px),
+                #f3f3f3;
+            color: rgba(38, 38, 38, 0.45);
+        }
+
+        .adicional-detalle-foto svg {
+            width: 56px;
+            height: 56px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .adicional-detalle-foto span {
+            font-size: 0.78rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .adicional-detalle-body {
+            display: flex;
+            flex-direction: column;
+            padding: 32px 28px 28px;
+            border-left: 5px solid var(--verde);
+            overflow-y: auto;
+        }
+
+        .adicional-detalle-categoria {
+            margin: 0 0 4px;
+            color: var(--verde);
+            font-size: 0.7rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .adicional-detalle-nombre {
+            margin: 0;
+            color: var(--negro);
+            font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.05;
+        }
+
+        .adicional-detalle-content .red-rule {
+            margin: 14px 0 18px;
+        }
+
+        .adicional-detalle-descripcion {
+            margin: 0 0 22px;
+            color: var(--negro);
+            font-size: 0.92rem;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+
+        .adicional-detalle-ubicacion-wrap {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px dashed rgba(38, 38, 38, 0.18);
+        }
+
+        .adicional-detalle-label {
+            margin: 0 0 4px;
+            color: var(--verde);
+            font-size: 0.68rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .adicional-detalle-ubicacion {
+            margin: 0;
+            color: var(--negro);
+            font-size: 0.92rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 720px) {
+            .adicional-detalle-content {
+                grid-template-columns: 1fr;
+                max-height: 90vh;
+            }
+
+            .adicional-detalle-foto {
+                min-height: 200px;
+            }
+
+            .adicional-detalle-body {
+                border-left: 0;
+                border-top: 5px solid var(--verde);
+                padding: 22px 20px 20px;
+            }
+        }
+
+        .galeria {
+            display: grid;
+            grid-template-columns: 1fr 130px;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .galeria-loading {
+            padding: 40px;
+            color: var(--gris-texto);
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .galeria-main {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 0;
+            border: 0;
+            border-radius: var(--radio);
+            overflow: hidden;
+            background: #f0f0f0;
+            box-shadow: var(--sombra-card);
+            cursor: zoom-in;
+            aspect-ratio: 4 / 3;
+            transition: box-shadow 200ms ease;
+        }
+
+        .galeria-main:hover {
+            box-shadow: 0 12px 32px rgba(38, 38, 38, 0.22);
+        }
+
+        .galeria-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .galeria-main-zoom {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.55);
+            color: var(--blanco);
+            opacity: 0;
+            transition: opacity 200ms ease;
+            pointer-events: none;
+        }
+
+        .galeria-main:hover .galeria-main-zoom {
+            opacity: 1;
+        }
+
+        .galeria-thumbs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 580px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .galeria-thumb {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 0;
+            border: 2px solid transparent;
+            border-radius: var(--radio);
+            background: transparent;
+            cursor: pointer;
+            overflow: hidden;
+            aspect-ratio: 1;
+            transition: border-color 160ms ease, transform 160ms ease;
+        }
+
+        .galeria-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .galeria-thumb:hover {
+            transform: scale(0.97);
+        }
+
+        .galeria-thumb.active {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 2px rgba(21, 153, 71, 0.3);
+        }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 240ms ease;
+        }
+
+        .lightbox[hidden] {
+            display: none;
+        }
+
+        .lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(8, 9, 10, 0.94);
+        }
+
+        .lightbox-topbar {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            color: var(--blanco);
+        }
+
+        .lightbox-counter {
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .lightbox-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lightbox-action {
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: var(--radio);
+            color: var(--blanco);
+            background: rgba(255, 255, 255, 0.06);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 160ms ease, border-color 160ms ease;
+        }
+
+        .lightbox-action:hover {
+            background: rgba(21, 153, 71, 0.25);
+            border-color: var(--verde);
+        }
+
+        .lightbox-close {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .lightbox-stage {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 70px 30px;
+            min-height: 0;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            user-select: none;
+            touch-action: pinch-zoom;
+        }
+
+        .lightbox-prev,
+        .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 52px;
+            height: 52px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 50%;
+            color: var(--blanco);
+            background: rgba(0, 0, 0, 0.55);
+            font-size: 2rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 160ms ease, border-color 160ms ease;
+        }
+
+        .lightbox-prev:hover,
+        .lightbox-next:hover {
+            background: rgba(21, 153, 71, 0.6);
+            border-color: var(--verde);
+        }
+
+        .lightbox-prev {
+            left: 14px;
+        }
+
+        .lightbox-next {
+            right: 14px;
+        }
+
+        body.lightbox-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 720px) {
+            .galeria {
+                grid-template-columns: 1fr;
+            }
+
+            .galeria-thumbs {
+                flex-direction: row;
+                max-height: none;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 4px 0;
+            }
+
+            .galeria-thumb {
+                flex: 0 0 88px;
+                width: 88px;
+            }
+
+            .lightbox-stage {
+                padding: 0 14px 16px;
+            }
+
+            .lightbox-prev,
+            .lightbox-next {
+                width: 42px;
+                height: 42px;
+                font-size: 1.6rem;
+            }
+
+            .lightbox-prev { left: 8px; }
+            .lightbox-next { right: 8px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+
+        .user-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-email {
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.78rem;
+            font-weight: 500;
+            max-width: 60vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .logout-button {
+            min-height: 30px;
+            padding: 0 12px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: var(--radio);
+            color: rgba(255, 255, 255, 0.78);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 0.7rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+        }
+
+        .logout-button:hover {
+            color: var(--blanco);
+            border-color: var(--rojo);
+            background: rgba(218, 37, 29, 0.22);
+        }
+
+        .logout-button:focus-visible {
+            outline: 3px solid rgba(218, 37, 29, 0.38);
+            outline-offset: 3px;
+        }
+
+        .scroll-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            height: 56px;
+            padding: 0 24px;
+            color: var(--blanco);
+            background: linear-gradient(135deg, #101213 0%, #191c1d 60%, #242728 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            transform: translateY(-100%);
+            transition: transform 240ms ease;
+        }
+
+        .scroll-bar.visible {
+            transform: translateY(0);
+        }
+
+        .scroll-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .scroll-bar-logo {
+            height: 26px;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        .scroll-bar-crumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            font-size: 0.82rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .scroll-bar-section {
+            color: var(--blanco);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scroll-bar-divider {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .scroll-bar-divider[hidden] {
+            display: none;
+        }
+
+        .scroll-bar-category {
+            color: var(--verde);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scroll-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .scroll-bar-user {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.74rem;
+            font-weight: 500;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .scroll-bar-logout {
+            min-height: 28px;
+            padding: 0 10px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: var(--radio);
+            color: rgba(255, 255, 255, 0.78);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 0.66rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+        }
+
+        .scroll-bar-logout:hover {
+            color: var(--blanco);
+            border-color: var(--rojo);
+            background: rgba(218, 37, 29, 0.22);
+        }
+
+        .scroll-bar-logout:focus-visible {
+            outline: 3px solid rgba(218, 37, 29, 0.38);
+            outline-offset: 3px;
+        }
+
+        .scroll-bar-menu-toggle {
+            display: none;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 25;
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            border: 0;
+            border-radius: 50%;
+            color: var(--blanco);
+            background: linear-gradient(180deg, var(--verde), var(--verde-oscuro));
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+            transition: opacity 200ms ease, transform 200ms ease, filter 160ms ease, box-shadow 160ms ease;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            filter: brightness(1.05);
+            box-shadow: 0 10px 22px rgba(21, 153, 71, 0.32);
+        }
+
+        .back-to-top:focus-visible {
+            outline: 3px solid rgba(21, 153, 71, 0.45);
+            outline-offset: 3px;
+        }
+
+        .back-to-top svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        .menu-overlay {
+            display: none;
+        }
+
+        .drawer-close {
+            display: none;
+        }
+
+        .drawer-label {
+            display: none;
+        }
+
+        .drawer-footer {
+            display: none;
+        }
+
+        @media (max-width: 720px) {
+            .user-bar {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: stretch;
+                width: 30px;
+                height: 22px;
+                padding: 0;
+                margin: 0;
+                border: 0;
+                background: transparent;
+                cursor: pointer;
+            }
+
+            .menu-toggle span {
+                display: block;
+                height: 2px;
+                background: var(--blanco);
+                border-radius: 2px;
+                transform-origin: center;
+                transition: transform 220ms ease, opacity 200ms ease;
+            }
+
+            .menu-toggle[aria-expanded="true"] span:nth-child(1) {
+                transform: translateY(10px) rotate(45deg);
+            }
+
+            .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle[aria-expanded="true"] span:nth-child(3) {
+                transform: translateY(-10px) rotate(-45deg);
+            }
+
+            .menu-overlay {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 35;
+                background: rgba(0, 0, 0, 0.45);
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 240ms ease;
+            }
+
+            .menu-overlay.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .site-menu {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 40;
+                flex-direction: column;
+                flex-wrap: nowrap;
+                align-items: stretch;
+                gap: 10px;
+                width: 100%;
+                max-width: none;
+                padding: 64px 20px 24px;
+                background: #0e1011;
+                transform: translateX(100%);
+                transition: transform 260ms ease;
+                overflow-y: auto;
+            }
+
+            .site-menu.open {
+                transform: translateX(0);
+            }
+
+            .drawer-label {
+                display: block;
+                margin: 0 0 4px;
+                color: var(--verde);
+                font-size: 0.72rem;
+                font-weight: 900;
+                font-style: italic;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+            }
+
+            .site-menu .menu-button {
+                display: block;
+                width: 100%;
+                min-height: 60px;
+                padding: 18px 20px;
+                text-align: center;
+                font-size: 0.95rem;
+                color: var(--negro);
+                border: 0;
+                background: var(--blanco);
+                touch-action: manipulation;
+                transition: background 160ms ease, color 160ms ease;
+            }
+
+            @media (hover: hover) {
+                .site-menu .menu-button:hover {
+                    background: #f0f0f0;
+                }
+            }
+
+            .site-menu .menu-button:active {
+                background: var(--verde);
+                color: var(--blanco);
+            }
+
+            .site-menu .menu-button.active {
+                color: var(--blanco);
+                background: var(--verde);
+                box-shadow: 0 4px 18px rgba(21, 153, 71, 0.55);
+            }
+
+            .drawer-close {
+                display: grid;
+                place-items: center;
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                width: 36px;
+                height: 36px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 1.6rem;
+                line-height: 1;
+                cursor: pointer;
+                transition: color 160ms ease;
+            }
+
+            .drawer-close:hover {
+                color: var(--blanco);
+            }
+
+            .drawer-footer {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: auto;
+                padding-top: 22px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .drawer-user-email {
+                margin: 0;
+                color: rgba(255, 255, 255, 0.72);
+                font-size: 0.74rem;
+                font-weight: 500;
+                word-break: break-all;
+            }
+
+            .drawer-logout {
+                min-height: 38px;
+                padding: 0 14px;
+                border: 1px solid rgba(255, 255, 255, 0.28);
+                border-radius: var(--radio);
+                color: rgba(255, 255, 255, 0.78);
+                background: rgba(255, 255, 255, 0.04);
+                font-size: 0.72rem;
+                font-weight: 900;
+                font-style: italic;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                cursor: pointer;
+                transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+            }
+
+            .drawer-logout:hover {
+                color: var(--blanco);
+                border-color: var(--rojo);
+                background: rgba(218, 37, 29, 0.22);
+            }
+
+            body.menu-open {
+                overflow: hidden;
+            }
+
+            .hero-inner {
+                padding: 18px 0 32px;
+            }
+
+            .hero-title {
+                font-size: clamp(1.5rem, 8.5vw, 2.6rem);
+            }
+
+            .hero-kicker {
+                font-size: 0.78rem;
+            }
+
+            .hero-description {
+                font-size: 0.85rem;
+            }
+
+            .section-title {
+                font-size: clamp(1.5rem, 6vw, 2.2rem);
+            }
+
+            .construction-copy {
+                font-size: 0.88rem;
+            }
+
+            .product-name {
+                font-size: 1rem;
+            }
+
+            .product-description {
+                font-size: 0.82rem;
+            }
+
+            .category-panel {
+                position: static;
+                top: auto;
+                width: min(100% - 24px, 1280px);
+            }
+
+            .scroll-bar {
+                height: 50px;
+                padding: 0 14px;
+                gap: 10px;
+            }
+
+            .scroll-bar-logo {
+                height: 22px;
+            }
+
+            .scroll-bar-crumb {
+                font-size: 0.7rem;
+                gap: 6px;
+            }
+
+            .scroll-bar-user {
+                display: none;
+            }
+
+            .scroll-bar-logout {
+                display: none;
+            }
+
+            .scroll-bar-menu-toggle {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                width: 26px;
+                height: 20px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                cursor: pointer;
+            }
+
+            .scroll-bar-menu-toggle span {
+                display: block;
+                height: 2px;
+                background: var(--blanco);
+                border-radius: 2px;
+                transition: transform 220ms ease, opacity 200ms ease;
+            }
+
+            .scroll-bar-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+                transform: translateY(9px) rotate(45deg);
+            }
+
+            .scroll-bar-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .scroll-bar-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+                transform: translateY(-9px) rotate(-45deg);
+            }
+
+            .back-to-top {
+                bottom: 18px;
+                right: 18px;
+                width: 42px;
+                height: 42px;
+            }
+
+            .back-to-top svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="contenido" style="display:none;">
+    <div class="scroll-bar" id="scrollBar" aria-hidden="true">
+        <div class="scroll-bar-left">
+            <img class="scroll-bar-logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
+            <div class="scroll-bar-crumb">
+                <span class="scroll-bar-section" id="scrollBarSection">Inicio</span>
+                <span class="scroll-bar-divider" id="scrollBarDivider" hidden>›</span>
+                <span class="scroll-bar-category" id="scrollBarCategory"></span>
+            </div>
+        </div>
+        <div class="scroll-bar-right">
+            <span class="scroll-bar-user" id="scrollBarUser"></span>
+            <button class="scroll-bar-logout" type="button" id="scrollBarLogout">Cerrar sesión</button>
+            <button class="scroll-bar-search-toggle" type="button" id="scrollBarSearchToggle" aria-label="Buscar unidad">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="m20 20-3.5-3.5"></path>
+                </svg>
+            </button>
+            <button class="scroll-bar-menu-toggle" type="button" id="scrollBarMenuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="siteMenu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="search-bar" id="searchBar">
+        <div class="search-box">
+            <input type="search" id="searchInput" placeholder="Buscar unidad..." autocomplete="off" aria-label="Buscar unidad">
+            <div class="search-results" id="searchResults" hidden role="listbox" aria-label="Resultados de búsqueda"></div>
+        </div>
+    </div>
+
+    <header class="hero">
+        <div class="hero-inner">
+            <div class="top-nav">
+                <nav class="site-menu" id="siteMenu" aria-label="Secciones principales">
+                    <button class="drawer-close" type="button" id="drawerClose" aria-label="Cerrar menú">×</button>
+                    <p class="drawer-label">Menú</p>
+                    <button class="menu-button active" type="button" data-section="inicio">Inicio</button>
+                    <button class="menu-button" type="button" data-section="fichas">Fichas técnicas</button>
+                    <button class="menu-button" type="button" data-section="fotos">Fotos</button>
+                    <button class="menu-button" type="button" data-section="adicionales">Adicionales</button>
+                    <div class="drawer-footer">
+                        <p class="drawer-user-email" id="drawerUserEmail" aria-live="polite"></p>
+                        <button class="drawer-logout" type="button" id="drawerLogout">Cerrar sesión</button>
+                    </div>
+                </nav>
+                <button class="hero-search-toggle" id="heroSearchToggle" type="button" aria-label="Buscar unidad">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                </button>
+                <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="siteMenu">
+                    <span></span><span></span><span></span>
+                </button>
+                <img class="logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
+                <div class="user-bar">
+                    <span class="user-email" id="userEmail" aria-live="polite"></span>
+                    <button class="logout-button" type="button" id="logoutButton">Cerrar sesión</button>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <p class="hero-kicker">Catálogo técnico</p>
+                <h1 class="hero-title" id="heroTitle">Unidades</h1>
+                <div class="red-rule" aria-hidden="true"></div>
+                <p class="hero-description" id="heroDescription">Acceso rápido a la información de cada unidad</p>
+            </div>
+        </div>
+    </header>
+
+    <nav class="category-panel" aria-label="Categorías de unidades" hidden>
+        <div class="category-list" id="categoryList"></div>
+    </nav>
+
+    <main>
+        <section class="view active" id="catalogView" aria-live="polite"></section>
+    </main>
+
+    <button class="back-to-top" type="button" id="backToTop" aria-label="Volver arriba">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="6 14 12 8 18 14"></polyline>
+        </svg>
+    </button>
+
+    <div class="menu-overlay" id="menuOverlay" aria-hidden="true"></div>
+
+    <div class="search-modal" id="searchModal" hidden aria-label="Buscar unidad">
+        <div class="search-modal-header">
+            <button class="search-modal-close" id="searchModalClose" type="button" aria-label="Cerrar búsqueda">×</button>
+            <input type="search" id="searchInputModal" placeholder="Buscar unidad..." autocomplete="off" aria-label="Buscar unidad">
+        </div>
+        <div class="search-modal-results" id="searchResultsModal" role="listbox"></div>
+    </div>
+
+    <div class="variantes-modal" id="variantesModal" hidden aria-label="Variantes disponibles">
+        <div class="variantes-modal-overlay" id="variantesModalOverlay"></div>
+        <div class="variantes-modal-content">
+            <button class="variantes-modal-close" id="variantesModalClose" type="button" aria-label="Cerrar">×</button>
+            <p class="variantes-modal-kicker" id="variantesModalKicker"></p>
+            <h3 class="variantes-modal-title" id="variantesModalTitle"></h3>
+            <div class="red-rule" aria-hidden="true"></div>
+            <div class="variantes-modal-list" id="variantesModalList"></div>
+        </div>
+    </div>
+
+    <div class="adicional-detalle-modal" id="adicionalDetalleModal" hidden aria-label="Detalle del adicional">
+        <div class="adicional-detalle-overlay" id="adicionalDetalleOverlay"></div>
+        <div class="adicional-detalle-content">
+            <button class="adicional-detalle-close" id="adicionalDetalleClose" type="button" aria-label="Cerrar">×</button>
+            <div class="adicional-detalle-foto" id="adicionalDetalleFoto"></div>
+            <div class="adicional-detalle-body">
+                <p class="adicional-detalle-categoria" id="adicionalDetalleCategoria"></p>
+                <h3 class="adicional-detalle-nombre" id="adicionalDetalleNombre"></h3>
+                <div class="red-rule" aria-hidden="true"></div>
+                <p class="adicional-detalle-descripcion" id="adicionalDetalleDescripcion"></p>
+                <div class="adicional-detalle-ubicacion-wrap">
+                    <p class="adicional-detalle-label">Ubicación en la unidad</p>
+                    <p class="adicional-detalle-ubicacion" id="adicionalDetalleUbicacion"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox" hidden aria-label="Visor de fotos">
+        <div class="lightbox-overlay" id="lightboxOverlay"></div>
+        <div class="lightbox-stage">
+            <img class="lightbox-image" id="lightboxImage" alt="">
+            <button class="lightbox-prev" id="lightboxPrev" type="button" aria-label="Anterior">‹</button>
+            <button class="lightbox-next" id="lightboxNext" type="button" aria-label="Siguiente">›</button>
+        </div>
+        <div class="lightbox-topbar">
+            <span class="lightbox-counter" id="lightboxCounter"></span>
+            <div class="lightbox-actions">
+                <a class="lightbox-action" id="lightboxDownload" download="" target="_blank" rel="noopener" aria-label="Descargar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </a>
+                <button class="lightbox-action" id="lightboxShare" type="button" aria-label="Compartir">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                </button>
+                <button class="lightbox-action lightbox-close" id="lightboxClose" type="button" aria-label="Cerrar">×</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PDF_BASE = "https://lambert-remolques.github.io/Unidades/fichas";
+        const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
+        const FOTO_PLACEHOLDER = "https://example.com/fotos";
+        const CLOUDINARY_CLOUD = "lambert-remolques";
+        const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
+        const FOTO_MAX_POR_GALERIA = 30;
+
+        function pdfFichaUrl(categoria, productoNombre, ejeSlug) {
+            const productoSlug = crearSlug(productoNombre);
+            const sufijo = ejeSlug ? `-${ejeSlug}` : "";
+            return `${PDF_BASE}/${categoria}/${productoSlug}${sufijo}.pdf`;
+        }
+
+        function cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, numero, transform = "") {
+            const productoSlug = crearSlug(productoNombre);
+            const ejePath = ejeSlug ? `/${ejeSlug}` : "";
+            const tx = transform ? `${transform}/` : "";
+            return `${CLOUDINARY_BASE}/${tx}unidades/${categoria}/${productoSlug}${ejePath}/foto-${numero}.jpg`;
+        }
+
+        function cargarImagen(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+
+        async function detectarFotos(categoria, productoNombre, ejeSlug) {
+            const numeros = [];
+            for (let i = 1; i <= FOTO_MAX_POR_GALERIA; i++) {
+                const url = cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, i);
+                const existe = await cargarImagen(url);
+                if (existe) {
+                    numeros.push(i);
+                } else {
+                    break;
+                }
+            }
+            return numeros;
+        }
+
+        function opcionesEjes(productoNombre) {
+            return [
+                { nombre: "2 ejes", descripcion: "Ficha técnica para disposición de dos ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "2-ejes") },
+                { nombre: "3 ejes", descripcion: "Ficha técnica para disposición de tres ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "3-ejes") },
+                { nombre: "4 ejes", descripcion: "Ficha técnica para disposición de cuatro ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "4-ejes") }
+            ];
+        }
+
+        function opcionesSemirremolque(productoNombre) {
+            return [
+                { nombre: "1 eje", descripcion: "Ficha técnica para configuración de un eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-eje") },
+                { nombre: "2 ejes", descripcion: "Ficha técnica para configuración de dos ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "2-ejes") },
+                { nombre: "3 ejes", descripcion: "Ficha técnica para configuración de tres ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "3-ejes") },
+                { nombre: "1+1 eje", descripcion: "Ficha técnica para configuración 1+1 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-eje") },
+                { nombre: "1+2 eje", descripcion: "Ficha técnica para configuración 1+2 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-2-eje") },
+                { nombre: "1+3 eje", descripcion: "Ficha técnica para configuración 1+3 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-3-eje") },
+                { nombre: "1+1+1 eje", descripcion: "Ficha técnica para configuración 1+1+1 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-1-eje") }
+            ];
+        }
+
+        const adicionalesCategorias = [
+            {
+                id: "acople-conexion",
+                nombre: "Acople y Conexión",
+                items: [
+                    { nombre: "Acople Frenos", descripcion: "Dispositivo que actúa como punto de conexión entre el vehículo tractor y el sistema de frenado del remolque. Transforma la acción de frenado del coche en una acción de frenado proporcional en el remolque.", ubicacion: "En la parte delantera del remolque." },
+                    { nombre: "Acople Luces", descripcion: "Componente encargado de transmitir la energía eléctrica y las señales luminosas desde el vehículo tractor hacia el remolque.", ubicacion: "En la parte trasera del vehículo y en el remolque." },
+                    { nombre: "Enganche instalado", descripcion: "Dispositivo mecánico para acoplar un segundo remolque.", ubicacion: "Parte central del paragolpe trasero." },
+                    { nombre: "Brida adicional", descripcion: "La brida es el conjunto de piezas que sujeta el perno al chasis del semirremolque.", ubicacion: "En la parte inferior delantera del semirremolque (plato de enganche), donde acopla la rueda del camión." },
+                    { nombre: "Instalación hidráulica para conectar acoplado", descripcion: "Mangueras y acoples para pasar la presión hidráulica hacia atrás.", ubicacion: "Recorre el chasis hasta la cola de la unidad." }
+                ]
+            },
+            {
+                id: "rodado-frenos-suspension",
+                nombre: "Rodado, Frenos y Suspensión",
+                items: [
+                    { nombre: "Ejes con freno a disco", descripcion: "Sustitución de los frenos de tambor por discos para mayor potencia de frenado.", ubicacion: "En el extremo de cada eje de la unidad." },
+                    { nombre: "Frenos disco marca GEC", descripcion: "Sistema de frenos a disco provisto por la marca GEC, que ofrece mayor eficiencia de frenado y menor mantenimiento.", ubicacion: "En los ejes de la unidad." },
+                    { nombre: "Levanta eje neumático", descripcion: "Pulmón de aire que levanta un eje para evitar el desgaste de cubiertas en vacío.", ubicacion: "En el chasis, sobre el eje que se desea levantar." },
+                    { nombre: "Cambio de suspensión convencional a neumática por eje", descripcion: "Sustitución del sistema de suspensión mecánica por uno neumático independiente por eje, mejorando confort, estabilidad y cuidado de la carga.", ubicacion: "En cada eje de la unidad." },
+                    { nombre: "Tren delantero completo con llantas", descripcion: "Conjunto estructural que incluye eje delantero, suspensión, mazas y llantas, listo para montaje.", ubicacion: "Parte delantera del acoplado o unidad." },
+                    { nombre: "Tren retráctil en el 1° tramo del bitren", descripcion: "Sistema de ejes que puede retraerse en el primer módulo del bitren para optimizar maniobrabilidad y reducir desgaste en vacío.", ubicacion: "Primer tramo del bitren." },
+                    { nombre: "Tercer eje común en camión", descripcion: "Incorporación de un eje adicional común para aumentar la capacidad de carga y distribuir mejor el peso.", ubicacion: "En camión." },
+                    { nombre: "Tercer eje curvo en camión", descripcion: "Instalación de un eje adicional con diseño curvo que mejora la maniobrabilidad en giros y reduce el desgaste de neumáticos.", ubicacion: "En camión." },
+                    { nombre: "Equipo EBS y control de peso (telemetría)", descripcion: "Sistema electrónico de frenos (EBS) combinado con monitoreo de carga y telemetría, que permite controlar peso, rendimiento y comportamiento de la suspensión neumática.", ubicacion: "Integrado al sistema de frenos y suspensión de la unidad." }
+                ]
+            },
+            {
+                id: "estructura-chasis",
+                nombre: "Estructura y Chasis",
+                items: [
+                    { nombre: "Carrozado en chapa Domex y piso", descripcion: "Fabricación de la carrocería utilizando acero de alta resistencia Domex, incluyendo también el piso para mayor durabilidad estructural.", ubicacion: "Estructura general de la carrocería." },
+                    { nombre: "Unidad completa en Domex", descripcion: "Construcción integral de la unidad (chasis y carrocería) en acero Domex, logrando menor peso y mayor resistencia.", ubicacion: "Toda la unidad." },
+                    { nombre: "Cuello deprimido", descripcion: "Diseño del chasis con una sección rebajada en la zona delantera para disminuir la altura de carga y mejorar estabilidad.", ubicacion: "Parte delantera del semirremolque." },
+                    { nombre: "Paragolpe para carrocería", descripcion: "Estructura de protección trasera contra impactos.", ubicacion: "Parte posterior inferior del chasis." },
+                    { nombre: "Protección lateral", descripcion: "Barras de seguridad para evitar que vehículos menores se metan debajo del remolque.", ubicacion: "Entre los ejes y las patas de apoyo." },
+                    { nombre: "Patines para balsa", descripcion: "Dispositivo que actúa como elemento de protección ante desniveles del terreno.", ubicacion: "Colocado antes del paragolpe." },
+                    { nombre: "Zócalo de refuerzo en el pecho del sider", descripcion: "Refuerzo estructural inferior en el panel frontal del sider para resistir impactos de carga.", ubicacion: "Pecho del sider." },
+                    { nombre: "Diferencia por lanza extensible", descripcion: "Mecanismo que permite alargar o acortar la lanza de tiro según la carga.", ubicacion: "Parte frontal de acoplados." }
+                ]
+            },
+            {
+                id: "caja-carga",
+                nombre: "Caja de Carga y Configuración",
+                items: [
+                    { nombre: "Frente Completo", descripcion: "Panel frontal (pecho) de diferentes alturas según necesidad del cliente.", ubicacion: "Parte delantera de la carrocería." },
+                    { nombre: "Sobre baranda para batea", descripcion: "Dispositivos extra para aumentar la altura de la caja volcadora.", ubicacion: "Sobre las paredes laterales de la batea." },
+                    { nombre: "Sobrebaranda chipera", descripcion: "Dispositivos extra para aumentar la altura de la caja chipera.", ubicacion: "Sobre los laterales del equipo." },
+                    { nombre: "Tapas laterales para convertir BV en mixto", descripcion: "Paneles laterales desmontables que permiten transformar un BV en una configuración mixta apta para distintos tipos de carga.", ubicacion: "Laterales de la unidad." },
+                    { nombre: "Puerta trasera con camello para caballo", descripcion: "Puerta trasera con una elevación superior para permitir el paso de la cabeza del animal.", ubicacion: "Trasera del transporte de ganado." },
+                    { nombre: "Soporte de estacas (pecho con frente)", descripcion: "Apoyos para estacas integrados en el panel delantero.", ubicacion: "Pecho de la unidad." },
+                    { nombre: "Soporte de estacas (playo sin frente)", descripcion: "Soportes para estacas en unidades totalmente planas.", ubicacion: "Distribuidos en el perímetro del piso." },
+                    { nombre: "Pasamanos y alfajías", descripcion: "Marco superior de contención (cumbrera o marco superior) y maderas de separación.", ubicacion: "Perímetro superior y laterales de la caja de carga." },
+                    { nombre: "Tinteros", descripcion: "Orificios o receptáculos para insertar estacas o postes.", ubicacion: "Embutidos en el piso de la unidad." },
+                    { nombre: "Alargue de arco sobre baranda", descripcion: "Extensión de los arcos que sostienen la lona para ganar altura de carga.", ubicacion: "En la parte superior de la caja de carga." },
+                    { nombre: "Tapa fácil", descripcion: "Sistema de cobertura superior de apertura y cierre rápido mediante lona corrediza o enrollable, que facilita la carga y descarga sin necesidad de desatar manualmente. Para 9,30 m.", ubicacion: "Parte superior de la caja de carga." }
+                ]
+            },
+            {
+                id: "piso-superficie",
+                nombre: "Piso y Superficie de Carga",
+                items: [
+                    { nombre: "Piso chapa 1/8\" semillado", descripcion: "Configuración estándar de piso con relieve antideslizante de espesor 3,2 mm.", ubicacion: "Toda la superficie de carga." },
+                    { nombre: "Piso de aluminio para furgones", descripcion: "Superficie de carga liviana y apta para alimentos, usualmente acanalada.", ubicacion: "Interior de furgones." },
+                    { nombre: "Diferencia de piso 1/8 a 4 mm", descripcion: "Cambio del espesor de la chapa del piso para mayor resistencia a impactos o carga pesada.", ubicacion: "Piso de la unidad." },
+                    { nombre: "Diferencia de piso liso a semillado", descripcion: "Cambio de textura de la chapa por una con relieve antideslizante.", ubicacion: "Piso de la unidad." },
+                    { nombre: "Rejas para piso", descripcion: "Rejillas metálicas para drenaje o agarre adicional.", ubicacion: "Sobre el piso de carga." },
+                    { nombre: "Protección de carga para piso de aluminio acanalado", descripcion: "Revestimiento o sistema protector adicional que evita daños en el piso de aluminio durante la carga y descarga.", ubicacion: "Sobre el piso del furgón." }
+                ]
+            },
+            {
+                id: "sistemas-hidraulicos",
+                nombre: "Sistemas Hidráulicos",
+                items: [
+                    { nombre: "Equipo hidráulico para batea (en camión)", descripcion: "Kit de bomba, toma de fuerza y mandos para poder elevar el volcador.", ubicacion: "Se instala en el chasis del camión tractor." },
+                    { nombre: "Equipo hidráulico para volcadora", descripcion: "Cilindro y conexiones necesarias para el vuelco de la caja.", ubicacion: "Bajo la caja de carga o en el frente de la misma." },
+                    { nombre: "Depósito de aceite en batea", descripcion: "Tanque destinado al almacenamiento de aceite hidráulico necesario para el sistema de vuelco.", ubicacion: "Sobre o debajo de la batea, integrado al sistema hidráulico." },
+                    { nombre: "Bocas de descarga", descripcion: "Aberturas con cierre deslizante para descargar cereales por gravedad.", ubicacion: "En la parte inferior del remolque, en el chasis." },
+                    { nombre: "Inclinómetro", descripcion: "Dispositivo que mide el ángulo de inclinación de la unidad para prevenir vuelcos durante operaciones de descarga o circulación en terrenos irregulares.", ubicacion: "Cabina o chasis, visible para el operador." }
+                ]
+            },
+            {
+                id: "furgones-termicos",
+                nombre: "Equipamiento de Furgones y Térmicos",
+                items: [
+                    { nombre: "Divisorio desplazable para furgón térmico", descripcion: "Panel móvil que permite crear dos cámaras de temperatura distintas.", ubicacion: "Interior del furgón térmico." },
+                    { nombre: "Gancheras para furgón carnicero", descripcion: "Rieles con ganchos para el transporte de carne colgada.", ubicacion: "Sujetas al techo interno del furgón." },
+                    { nombre: "Protección interior de equipo de frío", descripcion: "Reja metálica para evitar que la carga golpee el motor de refrigeración.", ubicacion: "Pecho interno del furgón." },
+                    { nombre: "Puerta guillotina interior", descripcion: "Puerta de apertura vertical para acceso rápido o compartimentado.", ubicacion: "Interior del furgón." },
+                    { nombre: "Puerta lateral adicional térmica", descripcion: "Puerta extra para carga lateral manteniendo la aislación.", ubicacion: "Uno de los costados del furgón térmico." },
+                    { nombre: "Puerta simbra interior", descripcion: "Puerta batiente de rejilla para ventilación o separación interna.", ubicacion: "Interior de la unidad de carga." },
+                    { nombre: "Tronera para furgón térmico", descripcion: "Abertura controlada que permite la circulación de aire entre compartimentos o mejora la ventilación interna sin perder eficiencia térmica.", ubicacion: "Paneles internos del furgón térmico." },
+                    { nombre: "Ventiletes", descripcion: "Dispositivos de ventilación regulables que permiten el ingreso y egreso de aire para evitar condensación o acumulación de humedad.", ubicacion: "Laterales o parte trasera de la unidad." },
+                    { nombre: "Cambio de paneles a 75 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 75 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." },
+                    { nombre: "Cambio de paneles a 100 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 100 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." }
+                ]
+            },
+            {
+                id: "accesorios-operatividad",
+                nombre: "Accesorios y Operatividad",
+                items: [
+                    { nombre: "Amarre embutido tipo Masisa", descripcion: "Amarres embutidos en el piso fabricados por Lambert (no homologados). Diseñados para fajas de pallets, evitando amarrar al bandón.", ubicacion: "Distribuidos en el piso o laterales internos." },
+                    { nombre: "Anilla para amarre tipo ACINDAR", descripcion: "Amarre homologado, resistente, especialmente utilizado para cargas pesadas como bobinas de acero, hierro, chapa, entre otros.", ubicacion: "Distribuidos en el piso o laterales internos." },
+                    { nombre: "Caballete para siders", descripcion: "Estructura de soporte interna diseñada para transportar cargas específicas.", ubicacion: "En el interior de la unidad, sobre el piso." },
+                    { nombre: "Cajón cocina", descripcion: "Gabinete diseñado para guardar anafe, alimentos y utensilios. Medidas: 1170 × 500 × 540 mm. Modelo 2026.", ubicacion: "En el chasis de la unidad." },
+                    { nombre: "Cajón de herramientas chico", descripcion: "Compartimento metálico o plástico para herramientas menores. Medidas: 650 × 460 × 540 mm. Para carrocerías.", ubicacion: "En el chasis de la unidad." },
+                    { nombre: "Cajón de herramientas grande", descripcion: "Compartimento metálico o plástico de mayor capacidad que el cajón chico. Medidas: 1170 × 500 × 540 mm. Para semirremolques.", ubicacion: "En el chasis de la unidad." },
+                    { nombre: "Cajón para alfajías", descripcion: "Estructura alargada para almacenar las alfajías.", ubicacion: "En el chasis de la unidad." },
+                    { nombre: "Cajón porta estacas", descripcion: "Compartimento específico para guardar los postes verticales de contención.", ubicacion: "En el chasis de la unidad." },
+                    { nombre: "Malacates", descripcion: "Tensores mecánicos para ajustar las sogas de la lona o sujetar carga.", ubicacion: "Laterales del chasis o barandas." },
+                    { nombre: "Plataforma trasera rebatible tipo Baloni", descripcion: "Elevador hidráulico trasero para carga y descarga de mercadería pesada. Pensado para paquetero.", ubicacion: "Paragolpe trasero." },
+                    { nombre: "Portauxilio malacate", descripcion: "Accesorio de servicio y mantenimiento. Soporte estructural que incluye un mecanismo de izaje (cable de acero y engranaje).", ubicacion: "Debajo del chasis." },
+                    { nombre: "Trabas porta contenedor", descripcion: "Dispositivos mecánicos de fijación para asegurar contenedores al chasis.", ubicacion: "Distribuidos en el chasis." }
+                ]
+            }
+        ];
+
+        const adicionalesPlanos = adicionalesCategorias.flatMap((cat) =>
+            cat.items.map((it) => ({ ...it, categoriaId: cat.id, categoriaNombre: cat.nombre, slug: crearSlug(it.nombre) }))
+        );
+
+        const categorias = [
+            {
+                id: "acoplados",
+                nombre: "Acoplados",
+                productos: [
+                    { nombre: "Baranda volcable", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opciones: opcionesEjes("Baranda volcable") },
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opciones: opcionesEjes("Curtain sider") },
+                    { nombre: "Playo", descripcion: "Unidad de piso plano sin estructura lateral cerrada, ideal para cargas voluminosas o piezas pesadas.", opciones: opcionesEjes("Playo") },
+                    { nombre: "Paquetero", descripcion: "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.", opciones: opcionesEjes("Paquetero") },
+                    { nombre: "Forestal", descripcion: "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opciones: opcionesEjes("Forestal") },
+                    { nombre: "Volcador bilateral", descripcion: "Unidad que puede volcar carga hacia ambos lados del equipo.", opciones: opcionesEjes("Volcador bilateral") },
+                    { nombre: "Todo puertas", descripcion: "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.", opciones: opcionesEjes("Todo puertas") },
+                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opciones: opcionesEjes("Isotérmico") },
+                    { nombre: "Tolva descarga ventral", descripcion: "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opciones: opcionesEjes("Tolva descarga ventral") },
+                    { nombre: "Jaula simple", descripcion: "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opciones: opcionesEjes("Jaula simple") },
+                    { nombre: "Jaula doble piso", descripcion: "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opciones: opcionesEjes("Jaula doble piso") }
+                ]
+            },
+            {
+                id: "semirremolques",
+                nombre: "Semirremolques",
+                productos: [
+                    { nombre: "Playo con frente", descripcion: "El playo con frente es una plataforma abierta que incorpora un frente estructural fijo, que actúa como elemento de contención y protección.", opciones: opcionesSemirremolque("Playo con frente") },
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opciones: opcionesSemirremolque("Curtain sider") },
+                    { nombre: "Baranda volcable", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opciones: opcionesSemirremolque("Baranda volcable") },
+                    { nombre: "Forestal", descripcion: "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opciones: opcionesSemirremolque("Forestal") },
+                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opciones: opcionesSemirremolque("Isotérmico") },
+                    { nombre: "Tolva descarga ventral", descripcion: "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opciones: opcionesSemirremolque("Tolva descarga ventral") },
+                    { nombre: "Portacontenedor extensible", descripcion: "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.", opciones: opcionesSemirremolque("Portacontenedor extensible") },
+                    { nombre: "Jaula simple", descripcion: "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opciones: opcionesSemirremolque("Jaula simple") },
+                    { nombre: "Jaula doble piso", descripcion: "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opciones: opcionesSemirremolque("Jaula doble piso") },
+                    { nombre: "Batea", descripcion: "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.", opciones: [
+                        { nombre: "1 eje", descripcion: "Ficha técnica para configuración de un eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-eje") },
+                        { nombre: "2 ejes", descripcion: "Ficha técnica para configuración de dos ejes.", pdf: pdfFichaUrl("semirremolques", "Batea", "2-ejes") },
+                        { nombre: "3 ejes", descripcion: "Ficha técnica para configuración de tres ejes.", pdf: pdfFichaUrl("semirremolques", "Batea", "3-ejes") },
+                        { nombre: "1+1 eje", descripcion: "Ficha técnica para configuración 1+1 eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-1-eje") },
+                        { nombre: "1+2 eje", descripcion: "Disponible en dos capacidades. Elegí la que necesitás.", variantes: [
+                            { nombre: "25 m³", descripcion: "Modelo estándar.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-2-eje-25-m3") },
+                            { nombre: "27 m³", descripcion: "Modelo de mayor capacidad.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-2-eje-27-m3") }
+                        ] },
+                        { nombre: "1+3 eje", descripcion: "Ficha técnica para configuración 1+3 eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-3-eje") },
+                        { nombre: "1+1+1 eje", descripcion: "Ficha técnica para configuración 1+1+1 eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-1-1-eje") }
+                    ] },
+                    { nombre: "Bivuelco bicaja", descripcion: "Unidad diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados, compuesta por dos cajas independientes montadas sobre una misma estructura.", opciones: opcionesSemirremolque("Bivuelco bicaja") }
+                ]
+            },
+            {
+                id: "carrocerias",
+                nombre: "Carrocerías",
+                productos: [
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Curtain sider") },
+                    { nombre: "Todo puertas", descripcion: "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Todo puertas") },
+                    { nombre: "Volcadora", descripcion: "Unidad diseñada para la descarga de materiales sueltos mediante un sistema de vuelco, generalmente hacia atrás.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Volcadora") },
+                    { nombre: "Isotérmica", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Isotérmica") },
+                    { nombre: "Bivuelco", descripcion: "Diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados del vehículo. Este tipo de carrocería permite descargar la carga a izquierda o derecha.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Bivuelco") },
+                    { nombre: "Paquetera", descripcion: "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Paquetera") },
+                    { nombre: "Curtain sider barandas volcables", descripcion: "Unidad que combina barandas metálicas volcables en la parte inferior con laterales superiores de lona corrediza tipo curtain sider.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Curtain sider barandas volcables") },
+                    { nombre: "Pollera", descripcion: "Diseñada específicamente para el transporte de aves vivas, principalmente pollos, en condiciones que aseguren ventilación, contención y bienestar animal durante el traslado.", fichaDirecta: true, pdf: pdfFichaUrl("carrocerias", "Pollera") }
+                ]
+            },
+            {
+                id: "bitrenes",
+                nombre: "Bitrenes",
+                productos: [
+                    { nombre: "Barandas volcables", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", fichaDirecta: true, pdf: pdfFichaUrl("bitrenes", "Barandas volcables") },
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", fichaDirecta: true, pdf: pdfFichaUrl("bitrenes", "Curtain sider") },
+                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", fichaDirecta: true, pdf: pdfFichaUrl("bitrenes", "Isotérmico") }
+                ]
+            }
+        ];
+
+        const menuButtons = document.querySelectorAll("[data-section]");
+        const categoryPanel = document.querySelector(".category-panel");
+        const categoryList = document.querySelector("#categoryList");
+        const catalogView = document.querySelector("#catalogView");
+        const heroTitle = document.querySelector("#heroTitle");
+        const heroDescription = document.querySelector("#heroDescription");
+        const scrollBar = document.querySelector("#scrollBar");
+        const scrollBarSection = document.querySelector("#scrollBarSection");
+        const scrollBarDivider = document.querySelector("#scrollBarDivider");
+        const scrollBarCategory = document.querySelector("#scrollBarCategory");
+        const backToTop = document.querySelector("#backToTop");
+        const menuToggle = document.querySelector("#menuToggle");
+        const scrollBarMenuToggle = document.querySelector("#scrollBarMenuToggle");
+        const siteMenu = document.querySelector("#siteMenu");
+        const menuOverlay = document.querySelector("#menuOverlay");
+        const drawerClose = document.querySelector("#drawerClose");
+
+        if (window.matchMedia("(max-width: 720px)").matches) {
+            document.body.appendChild(menuOverlay);
+            document.body.appendChild(siteMenu);
+        }
+        const SCROLL_BAR_THRESHOLD = 100;
+        const BACK_TO_TOP_THRESHOLD = 300;
+        let seccionActual = "inicio";
+        let productoEnVista = null;
+
+        function toggleDrawer(forceOpen) {
+            const abrir = typeof forceOpen === "boolean" ? forceOpen : !siteMenu.classList.contains("open");
+            siteMenu.classList.toggle("open", abrir);
+            menuOverlay.classList.toggle("open", abrir);
+            menuToggle.setAttribute("aria-expanded", String(abrir));
+            scrollBarMenuToggle.setAttribute("aria-expanded", String(abrir));
+            document.body.classList.toggle("menu-open", abrir);
+        }
+
+        menuToggle.addEventListener("click", () => toggleDrawer());
+        scrollBarMenuToggle.addEventListener("click", () => toggleDrawer());
+        menuOverlay.addEventListener("click", () => toggleDrawer(false));
+        drawerClose.addEventListener("click", () => toggleDrawer(false));
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && siteMenu.classList.contains("open")) {
+                toggleDrawer(false);
+            }
+        });
+
+        const HERO_CONTENT = {
+            inicio: { titulo: "Unidades", descripcion: "Acceso rápido a la información de cada unidad" },
+            fichas: { titulo: "Fichas técnicas", descripcion: "Acceso rápido a las fichas técnicas de unidades" },
+            fotos: { titulo: "Fotos", descripcion: "Acceso rápido a las fotos de cada unidad" },
+            adicionales: { titulo: "Adicionales", descripcion: "Acceso rápido a los adicionales" }
+        };
+
+        function crearSlug(texto) {
+            return texto
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+        }
+
+        function actualizarMenu(seccion) {
+            menuButtons.forEach((button) => {
+                button.classList.toggle("active", button.dataset.section === seccion);
+            });
+        }
+
+        function actualizarHero(seccion) {
+            const contenido = HERO_CONTENT[seccion] || HERO_CONTENT.inicio;
+            heroTitle.textContent = contenido.titulo;
+            heroDescription.textContent = contenido.descripcion;
+        }
+
+        function actualizarBreadcrumb(seccion, idCategoria) {
+            const seccionLabel = HERO_CONTENT[seccion]?.titulo || "";
+            scrollBarSection.textContent = seccionLabel;
+
+            let categoriaLabel = "";
+            if ((seccion === "fichas" || seccion === "fotos") && idCategoria) {
+                const cat = categorias.find((item) => item.id === idCategoria);
+                if (cat) categoriaLabel = cat.nombre;
+            }
+
+            scrollBarCategory.textContent = categoriaLabel;
+            scrollBarDivider.hidden = !categoriaLabel;
+        }
+
+        function actualizarBarraEstado() {
+            const y = window.scrollY;
+            scrollBar.classList.toggle("visible", y > SCROLL_BAR_THRESHOLD);
+            backToTop.classList.toggle("visible", y > BACK_TO_TOP_THRESHOLD);
+        }
+
+        window.addEventListener("scroll", actualizarBarraEstado, { passive: true });
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        function crearBotonesCategoria() {
+            categoryList.innerHTML = categorias.map((categoria) => `
+                <button class="category-button" type="button" data-category="${categoria.id}" aria-pressed="false">
+                    <span class="category-name">${categoria.nombre}</span>
+                </button>
+            `).join("");
+        }
+
+        function actualizarBotones(categoriaActiva) {
+            document.querySelectorAll(".category-button").forEach((button) => {
+                const activo = button.dataset.category === categoriaActiva;
+                button.classList.toggle("active", activo);
+                button.setAttribute("aria-pressed", String(activo));
+            });
+        }
+
+        function mostrarSeccion(seccion, categoriaId = "acoplados", productoSlug = "") {
+            seccionActual = seccion;
+            actualizarMenu(seccion);
+            actualizarHero(seccion);
+            actualizarBreadcrumb(seccion, null);
+            categoryPanel.hidden = !(seccion === "fichas" || seccion === "fotos");
+
+            if (seccion === "inicio") {
+                mostrarInicio();
+                return;
+            }
+
+            if (seccion === "adicionales") {
+                const adicionalCatValida = adicionalesCategorias.some((c) => c.id === categoriaId);
+                mostrarAdicionales(adicionalCatValida ? categoriaId : null);
+                return;
+            }
+
+            if (productoSlug) {
+                mostrarProducto(categoriaId, productoSlug, seccion);
+                return;
+            }
+
+            mostrarCategoria(categoriaId, seccion);
+        }
+
+        function mostrarInicio() {
+            catalogView.innerHTML = `
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">Inicio</h2>
+                    </div>
+                </div>
+                <p class="construction-copy">Catálogo interno con fichas técnicas, fotos y adicionales de cada unidad. Elegí una sección para empezar.</p>
+                <div class="home-grid">
+                    ${crearTarjetaInicio("Fichas técnicas", "Consulta de fichas PDF por categoría, unidad y configuración.", "fichas")}
+                    ${crearTarjetaInicio("Fotos", "Galería de fotos de cada unidad por categoría y configuración.", "fotos")}
+                    ${crearTarjetaInicio("Adicionales", "Sección en construcción para próximos recursos complementarios.", "adicionales")}
+                </div>
+            `;
+            history.replaceState(null, "", "#inicio");
+        }
+
+        function crearTarjetaInicio(nombre, descripcion, seccion) {
+            return `
+                <button class="product-card product-card-button button-reset home-card" type="button" data-go-section="${seccion}">
+                    <h3 class="product-name">${nombre}</h3>
+                    <p class="product-description">${descripcion}</p>
+                    <hr class="divider">
+                    <span class="card-action">Ingresar</span>
+                </button>
+            `;
+        }
+
+        let adicionalFiltroCategoria = "todos";
+        let adicionalBusqueda = "";
+
+        function mostrarAdicionales(categoriaInicial) {
+            adicionalFiltroCategoria = categoriaInicial || "todos";
+            adicionalBusqueda = "";
+
+            const chipsHtml = ['<button class="adicional-chip" type="button" data-adicional-chip="todos">Todos <span class="chip-count">' + adicionalesPlanos.length + '</span></button>']
+                .concat(adicionalesCategorias.map((cat) => `<button class="adicional-chip" type="button" data-adicional-chip="${cat.id}">${cat.nombre} <span class="chip-count">${cat.items.length}</span></button>`))
+                .join("");
+
+            catalogView.innerHTML = `
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">Adicionales</h2>
+                    </div>
+                </div>
+                <p class="construction-copy">Listado completo de adicionales disponibles. Buscá por nombre o filtrá por categoría.</p>
+
+                <div class="adicional-search">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                    <input type="search" id="adicionalSearchInput" placeholder="Buscar adicional..." autocomplete="off" aria-label="Buscar adicional">
+                </div>
+
+                <div class="adicional-chips" id="adicionalChips">${chipsHtml}</div>
+
+                <div class="adicional-grid" id="adicionalGrid"></div>
+            `;
+
+            renderAdicionalesGrid();
+            actualizarChips();
+
+            const input = document.getElementById("adicionalSearchInput");
+            input.addEventListener("input", (e) => {
+                adicionalBusqueda = e.target.value;
+                renderAdicionalesGrid();
+            });
+
+            const hash = adicionalFiltroCategoria === "todos" ? "#adicionales" : `#adicionales/${adicionalFiltroCategoria}`;
+            history.replaceState(null, "", hash);
+        }
+
+        function actualizarChips() {
+            document.querySelectorAll("[data-adicional-chip]").forEach((chip) => {
+                chip.classList.toggle("active", chip.dataset.adicionalChip === adicionalFiltroCategoria);
+            });
+        }
+
+        function renderAdicionalesGrid() {
+            const grid = document.getElementById("adicionalGrid");
+            if (!grid) return;
+            const q = normalizar(adicionalBusqueda);
+
+            const filtrados = adicionalesPlanos.filter((it) => {
+                if (adicionalFiltroCategoria !== "todos" && it.categoriaId !== adicionalFiltroCategoria) return false;
+                if (!q) return true;
+                const haystack = normalizar(`${it.nombre} ${it.descripcion} ${it.ubicacion} ${it.categoriaNombre}`);
+                return haystack.includes(q);
+            });
+
+            if (filtrados.length === 0) {
+                grid.innerHTML = `<div class="empty-state">Sin resultados para "${adicionalBusqueda}".</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtrados.map((it) => `
+                <button class="adicional-card" type="button" data-adicional-slug="${it.slug}">
+                    <div class="adicional-foto adicional-foto-placeholder">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="14" rx="2"/>
+                            <circle cx="12" cy="12" r="3.5"/>
+                            <path d="M8 5l1.5-2h5L16 5"/>
+                        </svg>
+                        <span>Foto pendiente</span>
+                    </div>
+                    <div class="adicional-info">
+                        <h3 class="adicional-nombre">${it.nombre}</h3>
+                        <p class="adicional-ubicacion"><span class="ubicacion-icon" aria-hidden="true">📍</span>${it.ubicacion}</p>
+                    </div>
+                </button>
+            `).join("");
+        }
+
+        function abrirAdicionalDetalle(slug) {
+            const item = adicionalesPlanos.find((it) => it.slug === slug);
+            if (!item) return;
+            adicionalDetalleNombre.textContent = item.nombre;
+            adicionalDetalleCategoria.textContent = item.categoriaNombre;
+            adicionalDetalleDescripcion.textContent = item.descripcion;
+            adicionalDetalleUbicacion.textContent = item.ubicacion;
+            adicionalDetalleFoto.innerHTML = `
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="14" rx="2"/>
+                    <circle cx="12" cy="12" r="3.5"/>
+                    <path d="M8 5l1.5-2h5L16 5"/>
+                </svg>
+                <span>Foto pendiente</span>
+            `;
+            adicionalDetalleModal.hidden = false;
+            requestAnimationFrame(() => adicionalDetalleModal.classList.add("open"));
+            document.body.classList.add("variantes-open");
+        }
+
+        function cerrarAdicionalDetalle() {
+            adicionalDetalleModal.classList.remove("open");
+            document.body.classList.remove("variantes-open");
+            setTimeout(() => {
+                adicionalDetalleModal.hidden = true;
+            }, 220);
+        }
+
+        function mostrarCategoria(idCategoria, seccion = "fichas") {
+            seccionActual = seccion;
+            actualizarMenu(seccion);
+            actualizarHero(seccion);
+            categoryPanel.hidden = !(seccion === "fichas" || seccion === "fotos");
+            const categoria = categorias.find((item) => item.id === idCategoria) || categorias[0];
+            actualizarBotones(categoria.id);
+            actualizarBreadcrumb(seccion, categoria.id);
+
+            const productosHtml = categoria.productos.length
+                ? categoria.productos.map((producto) => crearTarjetaProducto(producto, seccion)).join("")
+                : `<div class="empty-state">Todavía no hay unidades cargadas en esta categoría.</div>`;
+
+            const notaFotos = "";
+
+            catalogView.innerHTML = `
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">${categoria.nombre}</h2>
+                    </div>
+                </div>
+                ${notaFotos}
+                <div class="products-grid">${productosHtml}</div>
+            `;
+
+            history.replaceState(null, "", `#${seccion}/${categoria.id}`);
+        }
+
+        function crearTarjetaProducto(producto, seccion = "fichas") {
+            if (seccion === "fotos") {
+                if (producto.opciones?.length) {
+                    return crearTarjetaSeleccion(producto, "Seleccionar unidad", "");
+                }
+
+                return `
+                    <button class="product-card product-card-button button-reset" type="button" data-galeria-directa="${crearSlug(producto.nombre)}">
+                        <h3 class="product-name">${producto.nombre}</h3>
+                        <p class="product-description">${producto.descripcion || ""}</p>
+                        <hr class="divider">
+                        <span class="card-action">Ver fotos</span>
+                    </button>
+                `;
+            }
+
+            if (producto.fichaDirecta) {
+                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", producto.pdf || PDF_PLACEHOLDER);
+            }
+
+            return crearTarjetaSeleccion(producto, "Seleccionar unidad", producto.descripcion);
+        }
+
+        function crearTarjetaSeleccion(producto, accion, descripcion) {
+            return `
+                <button class="product-card product-card-button button-reset" type="button" data-product="${crearSlug(producto.nombre)}">
+                    <h3 class="product-name">${producto.nombre}</h3>
+                    <p class="product-description">${descripcion}</p>
+                    <hr class="divider">
+                    <span class="card-action">${accion}</span>
+                </button>
+            `;
+        }
+
+        function crearTarjetaAccion(nombre, descripcion, textoBoton, url) {
+            return `
+                <article class="product-card">
+                    <h3 class="product-name">${nombre}</h3>
+                    <p class="product-description">${descripcion}</p>
+                    <hr class="divider">
+                    <a class="sheet-link" href="${url}" target="_blank" rel="noopener noreferrer">
+                        ${textoBoton}
+                    </a>
+                </article>
+            `;
+        }
+
+        function mostrarProducto(idCategoria, slugProducto, seccion = "fichas") {
+            const categoria = categorias.find((item) => item.id === idCategoria) || categorias[0];
+            const producto = categoria.productos.find((item) => crearSlug(item.nombre) === slugProducto);
+
+            if (!producto) {
+                mostrarCategoria(categoria.id, seccion);
+                return;
+            }
+
+            seccionActual = seccion;
+            actualizarMenu(seccion);
+            actualizarHero(seccion);
+            actualizarBreadcrumb(seccion, categoria.id);
+            categoryPanel.hidden = false;
+            actualizarBotones(categoria.id);
+            productoEnVista = { categoria, producto, seccion };
+
+            const opcionesHtml = producto.opciones?.length
+                ? producto.opciones.map((opcion) => crearTarjetaOpcion(opcion, seccion)).join("")
+                : `<div class="empty-state">Las opciones para esta unidad se cargarán más adelante.</div>`;
+
+            catalogView.innerHTML = `
+                <button class="back-button" type="button" data-back-category="${categoria.id}">Volver a ${categoria.nombre}</button>
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">${producto.nombre}</h2>
+                    </div>
+                </div>
+                <div class="products-grid">${opcionesHtml}</div>
+            `;
+
+            history.replaceState(null, "", `#${seccion}/${categoria.id}/${slugProducto}`);
+        }
+
+        function ejeDisplayName(ejeSlug) {
+            if (!ejeSlug) return "";
+            const partes = ejeSlug.split("-");
+            const ultimo = partes.pop();
+            return partes.join("+") + " " + ultimo;
+        }
+
+        let galeriaActual = null;
+
+        async function mostrarGaleria(idCategoria, productoNombre, ejeSlug) {
+            const categoria = categorias.find((item) => item.id === idCategoria);
+            const producto = categoria?.productos.find((item) => item.nombre === productoNombre);
+            if (!producto) return;
+
+            const seccion = "fotos";
+            seccionActual = seccion;
+            actualizarMenu(seccion);
+            actualizarHero(seccion);
+            categoryPanel.hidden = false;
+            actualizarBotones(idCategoria);
+            actualizarBreadcrumb(seccion, idCategoria);
+            productoEnVista = { categoria, producto, seccion };
+
+            const tituloUnidad = ejeSlug
+                ? `${producto.nombre} · ${ejeDisplayName(ejeSlug)}`
+                : producto.nombre;
+
+            catalogView.innerHTML = `
+                <button class="back-button" type="button" data-galeria-back="${crearSlug(producto.nombre)}">Volver</button>
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">${tituloUnidad}</h2>
+                    </div>
+                </div>
+                <div class="galeria-loading">Cargando fotos…</div>
+            `;
+
+            const numeros = await detectarFotos(idCategoria, productoNombre, ejeSlug);
+
+            if (numeros.length === 0) {
+                catalogView.innerHTML = `
+                    <button class="back-button" type="button" data-galeria-back="${crearSlug(producto.nombre)}">Volver</button>
+                    <div class="section-head">
+                        <div class="section-title-wrap">
+                            <h2 class="section-title">${tituloUnidad}</h2>
+                        </div>
+                    </div>
+                    <div class="empty-state">Próximamente cargaremos las fotos de esta unidad.</div>
+                `;
+                const hashParts = ["fotos", idCategoria, crearSlug(producto.nombre)];
+                if (ejeSlug) hashParts.push(ejeSlug);
+                history.replaceState(null, "", "#" + hashParts.join("/"));
+                return;
+            }
+
+            const fotos = numeros.map((n) => ({
+                numero: n,
+                thumb: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n, "c_fill,w_400,h_400,q_auto,f_auto"),
+                main: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n, "c_fit,w_1400,q_auto,f_auto"),
+                full: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n, "c_fit,w_1920,q_auto,f_auto"),
+                original: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n)
+            }));
+
+            galeriaActual = { fotos, productoNombre, ejeSlug, indice: 0 };
+
+            catalogView.innerHTML = `
+                <button class="back-button" type="button" data-galeria-back="${crearSlug(producto.nombre)}">Volver</button>
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">${tituloUnidad}</h2>
+                    </div>
+                </div>
+                <div class="galeria">
+                    <button class="galeria-main" type="button" data-galeria-abrir="0" aria-label="Ampliar foto">
+                        <img class="galeria-main-img" id="galeriaMainImg" src="${fotos[0].main}" alt="${producto.nombre} foto 1">
+                        <span class="galeria-main-zoom" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M11 8v6"/><path d="M8 11h6"/>
+                            </svg>
+                        </span>
+                    </button>
+                    <div class="galeria-thumbs">
+                        ${fotos.map((foto, i) => `
+                            <button class="galeria-thumb${i === 0 ? " active" : ""}" type="button" data-galeria-thumb="${i}" aria-label="Foto ${i + 1}">
+                                <img src="${foto.thumb}" alt="Thumbnail ${i + 1}" loading="lazy">
+                            </button>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+
+            const hashParts = ["fotos", idCategoria, crearSlug(producto.nombre)];
+            if (ejeSlug) hashParts.push(ejeSlug);
+            history.replaceState(null, "", "#" + hashParts.join("/"));
+        }
+
+        function cambiarFotoPrincipal(indice) {
+            if (!galeriaActual) return;
+            const foto = galeriaActual.fotos[indice];
+            if (!foto) return;
+            galeriaActual.indice = indice;
+            const mainImg = document.getElementById("galeriaMainImg");
+            if (mainImg) mainImg.src = foto.main;
+            document.querySelectorAll(".galeria-thumb").forEach((btn, i) => {
+                btn.classList.toggle("active", i === indice);
+            });
+            const abrir = document.querySelector("[data-galeria-abrir]");
+            if (abrir) abrir.dataset.galeriaAbrir = String(indice);
+        }
+
+        function crearTarjetaOpcion(opcion, seccion = "fichas") {
+            if (opcion.variantes?.length && seccion === "fichas") {
+                return `
+                    <button class="product-card product-card-button button-reset" type="button" data-variantes-opcion="${crearSlug(opcion.nombre)}">
+                        <h3 class="product-name">${opcion.nombre}</h3>
+                        <p class="product-description">${opcion.descripcion || ""}</p>
+                        <hr class="divider">
+                        <span class="card-action">Ver opciones</span>
+                    </button>
+                `;
+            }
+
+            if (seccion === "fotos") {
+                return `
+                    <button class="product-card product-card-button button-reset" type="button" data-galeria-eje="${crearSlug(opcion.nombre)}">
+                        <h3 class="product-name">${opcion.nombre}</h3>
+                        <hr class="divider">
+                        <span class="card-action">Ver fotos</span>
+                    </button>
+                `;
+            }
+
+            const descripcion = opcion.descripcion;
+            const textoBoton = "Ver ficha técnica";
+            const url = opcion.pdf || PDF_PLACEHOLDER;
+
+            return crearTarjetaAccion(opcion.nombre, descripcion, textoBoton, url);
+        }
+
+        menuButtons.forEach((btn) => {
+            btn.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                toggleDrawer(false);
+                mostrarSeccion(btn.dataset.section);
+                window.scrollTo({ top: 0, behavior: "auto" });
+            });
+        });
+
+        const searchInput = document.querySelector("#searchInput");
+        const searchResults = document.querySelector("#searchResults");
+        const searchInputModal = document.querySelector("#searchInputModal");
+        const searchResultsModal = document.querySelector("#searchResultsModal");
+        const searchModal = document.querySelector("#searchModal");
+        const searchModalClose = document.querySelector("#searchModalClose");
+        const heroSearchToggle = document.querySelector("#heroSearchToggle");
+        const scrollBarSearchToggle = document.querySelector("#scrollBarSearchToggle");
+
+        function normalizar(texto) {
+            return texto
+                .normalize("NFD")
+                .replace(/[̀-ͯ]/g, "")
+                .toLowerCase()
+                .trim();
+        }
+
+        const itemsBusqueda = [];
+        categorias.forEach((cat) => {
+            cat.productos.forEach((prod) => {
+                ["fichas", "fotos"].forEach((seccion) => {
+                    itemsBusqueda.push({
+                        seccion,
+                        seccionLabel: HERO_CONTENT[seccion].titulo,
+                        categoriaId: cat.id,
+                        categoriaNombre: cat.nombre,
+                        productoNombre: prod.nombre,
+                        productoSlug: crearSlug(prod.nombre),
+                        descripcion: prod.descripcion || "",
+                        tieneOpciones: !!prod.opciones?.length,
+                        searchHaystack: normalizar(`${prod.nombre} ${prod.descripcion || ""} ${cat.nombre} ${HERO_CONTENT[seccion].titulo}`)
+                    });
+                });
+            });
+        });
+
+        function renderResultados(query, container) {
+            const q = normalizar(query);
+            if (!q) {
+                container.innerHTML = "";
+                if (container === searchResults) container.hidden = true;
+                return;
+            }
+            const matches = itemsBusqueda.filter((item) => item.searchHaystack.includes(q));
+            if (matches.length === 0) {
+                container.innerHTML = `<div class="search-empty">Sin resultados para "${query}"</div>`;
+            } else {
+                container.innerHTML = matches.slice(0, 30).map((item) => `
+                    <button class="search-result-item" type="button" role="option"
+                            data-search-seccion="${item.seccion}"
+                            data-search-categoria="${item.categoriaId}"
+                            data-search-producto="${item.productoSlug}"
+                            data-search-tieneopciones="${item.tieneOpciones}">
+                        <span class="search-result-path">${item.seccionLabel} › ${item.categoriaNombre}</span>
+                        <span class="search-result-name">${item.productoNombre}</span>
+                    </button>
+                `).join("");
+            }
+            if (container === searchResults) container.hidden = false;
+        }
+
+        function cerrarBusqueda() {
+            searchResults.hidden = true;
+            searchInput.value = "";
+        }
+
+        function abrirModalBusqueda() {
+            searchModal.hidden = false;
+            // small delay so display:flex applies before transform animates
+            requestAnimationFrame(() => {
+                searchModal.classList.add("open");
+            });
+            document.body.classList.add("search-open");
+            searchInputModal.value = "";
+            searchResultsModal.innerHTML = "";
+            setTimeout(() => searchInputModal.focus(), 100);
+        }
+
+        function cerrarModalBusqueda() {
+            searchModal.classList.remove("open");
+            document.body.classList.remove("search-open");
+            setTimeout(() => {
+                searchModal.hidden = true;
+                searchInputModal.value = "";
+                searchResultsModal.innerHTML = "";
+            }, 240);
+        }
+
+        searchInput.addEventListener("input", (e) => renderResultados(e.target.value, searchResults));
+        searchInput.addEventListener("focus", () => {
+            if (searchInput.value.trim()) renderResultados(searchInput.value, searchResults);
+        });
+
+        searchInputModal.addEventListener("input", (e) => renderResultados(e.target.value, searchResultsModal));
+
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest("#searchBar")) {
+                searchResults.hidden = true;
+            }
+        });
+
+        function navegarDesdeResultado(item) {
+            const seccion = item.dataset.searchSeccion;
+            const categoriaId = item.dataset.searchCategoria;
+            const productoSlug = item.dataset.searchProducto;
+            const tieneOpciones = item.dataset.searchTieneopciones === "true";
+
+            if (tieneOpciones) {
+                mostrarProducto(categoriaId, productoSlug, seccion);
+            } else {
+                mostrarCategoria(categoriaId, seccion);
+            }
+            window.scrollTo({ top: 0, behavior: "auto" });
+        }
+
+        searchResults.addEventListener("click", (event) => {
+            const item = event.target.closest("[data-search-seccion]");
+            if (!item) return;
+            navegarDesdeResultado(item);
+            cerrarBusqueda();
+        });
+
+        searchResultsModal.addEventListener("click", (event) => {
+            const item = event.target.closest("[data-search-seccion]");
+            if (!item) return;
+            navegarDesdeResultado(item);
+            cerrarModalBusqueda();
+        });
+
+        heroSearchToggle.addEventListener("click", abrirModalBusqueda);
+        scrollBarSearchToggle.addEventListener("click", abrirModalBusqueda);
+        searchModalClose.addEventListener("click", cerrarModalBusqueda);
+
+        searchInput.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                cerrarBusqueda();
+                searchInput.blur();
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && searchModal.classList.contains("open")) {
+                cerrarModalBusqueda();
+            }
+        });
+
+        const variantesModal = document.querySelector("#variantesModal");
+        const variantesModalContent = variantesModal.querySelector(".variantes-modal-content");
+        const variantesModalKicker = document.querySelector("#variantesModalKicker");
+        const variantesModalTitle = document.querySelector("#variantesModalTitle");
+        const variantesModalList = document.querySelector("#variantesModalList");
+        const variantesModalClose = document.querySelector("#variantesModalClose");
+        const variantesModalOverlay = document.querySelector("#variantesModalOverlay");
+
+        function abrirModalVariantes(producto, opcion) {
+            variantesModalKicker.textContent = producto.nombre;
+            variantesModalTitle.textContent = opcion.nombre;
+            variantesModalList.innerHTML = opcion.variantes.map((v) => `
+                <article class="variante-card">
+                    <h4 class="variante-name">${v.nombre}</h4>
+                    <p class="variante-description">${v.descripcion || ""}</p>
+                    <a class="sheet-link" href="${v.pdf}" target="_blank" rel="noopener noreferrer">Ver ficha técnica</a>
+                </article>
+            `).join("");
+            variantesModal.hidden = false;
+            requestAnimationFrame(() => variantesModal.classList.add("open"));
+            document.body.classList.add("variantes-open");
+            variantesModalContent.scrollTop = 0;
+        }
+
+        function cerrarModalVariantes() {
+            variantesModal.classList.remove("open");
+            document.body.classList.remove("variantes-open");
+            setTimeout(() => {
+                variantesModal.hidden = true;
+                variantesModalList.innerHTML = "";
+            }, 220);
+        }
+
+        variantesModalClose.addEventListener("click", cerrarModalVariantes);
+        variantesModalOverlay.addEventListener("click", cerrarModalVariantes);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && variantesModal.classList.contains("open")) {
+                cerrarModalVariantes();
+            }
+        });
+
+        const adicionalDetalleModal = document.querySelector("#adicionalDetalleModal");
+        const adicionalDetalleOverlay = document.querySelector("#adicionalDetalleOverlay");
+        const adicionalDetalleClose = document.querySelector("#adicionalDetalleClose");
+        const adicionalDetalleNombre = document.querySelector("#adicionalDetalleNombre");
+        const adicionalDetalleCategoria = document.querySelector("#adicionalDetalleCategoria");
+        const adicionalDetalleDescripcion = document.querySelector("#adicionalDetalleDescripcion");
+        const adicionalDetalleUbicacion = document.querySelector("#adicionalDetalleUbicacion");
+        const adicionalDetalleFoto = document.querySelector("#adicionalDetalleFoto");
+
+        adicionalDetalleClose.addEventListener("click", cerrarAdicionalDetalle);
+        adicionalDetalleOverlay.addEventListener("click", cerrarAdicionalDetalle);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && adicionalDetalleModal.classList.contains("open")) {
+                cerrarAdicionalDetalle();
+            }
+        });
+
+        const lightbox = document.querySelector("#lightbox");
+        const lightboxOverlay = document.querySelector("#lightboxOverlay");
+        const lightboxImage = document.querySelector("#lightboxImage");
+        const lightboxPrev = document.querySelector("#lightboxPrev");
+        const lightboxNext = document.querySelector("#lightboxNext");
+        const lightboxClose = document.querySelector("#lightboxClose");
+        const lightboxCounter = document.querySelector("#lightboxCounter");
+        const lightboxDownload = document.querySelector("#lightboxDownload");
+        const lightboxShare = document.querySelector("#lightboxShare");
+
+        let lightboxIndice = 0;
+
+        function abrirLightbox(indice) {
+            if (!galeriaActual?.fotos?.length) return;
+            lightboxIndice = indice;
+            actualizarLightbox();
+            lightbox.hidden = false;
+            requestAnimationFrame(() => lightbox.classList.add("open"));
+            document.body.classList.add("lightbox-open");
+        }
+
+        function cerrarLightbox() {
+            lightbox.classList.remove("open");
+            document.body.classList.remove("lightbox-open");
+            setTimeout(() => {
+                lightbox.hidden = true;
+                lightboxImage.src = "";
+            }, 240);
+        }
+
+        function actualizarLightbox() {
+            const total = galeriaActual.fotos.length;
+            if (lightboxIndice < 0) lightboxIndice = total - 1;
+            if (lightboxIndice >= total) lightboxIndice = 0;
+            const foto = galeriaActual.fotos[lightboxIndice];
+            lightboxImage.src = foto.full;
+            lightboxImage.alt = `${galeriaActual.productoNombre} foto ${lightboxIndice + 1}`;
+            lightboxCounter.textContent = `${lightboxIndice + 1} / ${total}`;
+            lightboxDownload.href = foto.original;
+            lightboxDownload.download = `${crearSlug(galeriaActual.productoNombre)}-${galeriaActual.ejeSlug || "foto"}-${foto.numero}.jpg`;
+            lightboxPrev.style.visibility = total > 1 ? "visible" : "hidden";
+            lightboxNext.style.visibility = total > 1 ? "visible" : "hidden";
+        }
+
+        lightboxPrev.addEventListener("click", () => { lightboxIndice--; actualizarLightbox(); });
+        lightboxNext.addEventListener("click", () => { lightboxIndice++; actualizarLightbox(); });
+        lightboxClose.addEventListener("click", cerrarLightbox);
+        lightboxOverlay.addEventListener("click", cerrarLightbox);
+
+        lightboxShare.addEventListener("click", async () => {
+            if (!galeriaActual) return;
+            const foto = galeriaActual.fotos[lightboxIndice];
+            const shareData = {
+                title: galeriaActual.productoNombre,
+                text: `${galeriaActual.productoNombre} - Lambert Remolques`,
+                url: foto.original
+            };
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (e) {
+                    // user cancelled
+                }
+            } else {
+                try {
+                    await navigator.clipboard.writeText(foto.original);
+                    alert("Link de la foto copiado al portapapeles");
+                } catch (e) {
+                    prompt("Copiá este link de la foto:", foto.original);
+                }
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (!lightbox.classList.contains("open")) return;
+            if (event.key === "Escape") cerrarLightbox();
+            else if (event.key === "ArrowLeft") { lightboxIndice--; actualizarLightbox(); }
+            else if (event.key === "ArrowRight") { lightboxIndice++; actualizarLightbox(); }
+        });
+
+        let lightboxTouchStartX = null;
+        lightbox.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 1) lightboxTouchStartX = e.touches[0].clientX;
+        }, { passive: true });
+        lightbox.addEventListener("touchend", (e) => {
+            if (lightboxTouchStartX === null || e.changedTouches.length !== 1) return;
+            const dx = e.changedTouches[0].clientX - lightboxTouchStartX;
+            if (Math.abs(dx) > 50) {
+                if (dx < 0) lightboxIndice++;
+                else lightboxIndice--;
+                actualizarLightbox();
+            }
+            lightboxTouchStartX = null;
+        });
+
+        categoryList.addEventListener("click", (event) => {
+            const button = event.target.closest("[data-category]");
+            if (!button) return;
+            mostrarCategoria(button.dataset.category, seccionActual);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        catalogView.addEventListener("click", (event) => {
+            const irASeccion = event.target.closest("[data-go-section]");
+            if (irASeccion) {
+                mostrarSeccion(irASeccion.dataset.goSection);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            const volver = event.target.closest("[data-back-category]");
+            if (volver) {
+                mostrarCategoria(volver.dataset.backCategory, seccionActual);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            const variantesBtn = event.target.closest("[data-variantes-opcion]");
+            if (variantesBtn && productoEnVista) {
+                const slug = variantesBtn.dataset.variantesOpcion;
+                const opcion = (productoEnVista.producto.opciones || []).find((o) => crearSlug(o.nombre) === slug);
+                if (opcion?.variantes?.length) {
+                    abrirModalVariantes(productoEnVista.producto, opcion);
+                }
+                return;
+            }
+
+            const galeriaEjeBtn = event.target.closest("[data-galeria-eje]");
+            if (galeriaEjeBtn && productoEnVista) {
+                mostrarGaleria(productoEnVista.categoria.id, productoEnVista.producto.nombre, galeriaEjeBtn.dataset.galeriaEje);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            const galeriaDirectaBtn = event.target.closest("[data-galeria-directa]");
+            if (galeriaDirectaBtn) {
+                const categoriaId = document.querySelector(".category-button.active")?.dataset.category || "carrocerias";
+                const productoSlug = galeriaDirectaBtn.dataset.galeriaDirecta;
+                const cat = categorias.find((c) => c.id === categoriaId);
+                const prod = cat?.productos.find((p) => crearSlug(p.nombre) === productoSlug);
+                if (prod) {
+                    mostrarGaleria(categoriaId, prod.nombre, null);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+                return;
+            }
+
+            const galeriaBack = event.target.closest("[data-galeria-back]");
+            if (galeriaBack && productoEnVista) {
+                if (productoEnVista.producto.opciones?.length) {
+                    mostrarProducto(productoEnVista.categoria.id, crearSlug(productoEnVista.producto.nombre), "fotos");
+                } else {
+                    mostrarCategoria(productoEnVista.categoria.id, "fotos");
+                }
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            const galeriaThumb = event.target.closest("[data-galeria-thumb]");
+            if (galeriaThumb) {
+                cambiarFotoPrincipal(parseInt(galeriaThumb.dataset.galeriaThumb, 10));
+                return;
+            }
+
+            const adicionalChip = event.target.closest("[data-adicional-chip]");
+            if (adicionalChip) {
+                adicionalFiltroCategoria = adicionalChip.dataset.adicionalChip;
+                renderAdicionalesGrid();
+                actualizarChips();
+                const hash = adicionalFiltroCategoria === "todos" ? "#adicionales" : `#adicionales/${adicionalFiltroCategoria}`;
+                history.replaceState(null, "", hash);
+                return;
+            }
+
+            const adicionalCard = event.target.closest("[data-adicional-slug]");
+            if (adicionalCard) {
+                abrirAdicionalDetalle(adicionalCard.dataset.adicionalSlug);
+                return;
+            }
+
+            const galeriaAbrir = event.target.closest("[data-galeria-abrir]");
+            if (galeriaAbrir && galeriaActual) {
+                abrirLightbox(parseInt(galeriaAbrir.dataset.galeriaAbrir, 10));
+                return;
+            }
+
+            const producto = event.target.closest("[data-product]");
+            if (!producto) return;
+
+            const categoriaActiva = document.querySelector(".category-button.active")?.dataset.category || "acoplados";
+            mostrarProducto(categoriaActiva, producto.dataset.product, seccionActual);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        document.addEventListener("keydown", (event) => {
+            const numero = Number(event.key);
+            if (numero >= 1 && numero <= categorias.length) {
+                const seccionCategorias = seccionActual === "fotos" ? "fotos" : "fichas";
+                mostrarCategoria(categorias[numero - 1].id, seccionCategorias);
+            }
+        });
+
+        function iniciar() {
+            crearBotonesCategoria();
+            const partes = window.location.hash.replace("#", "").split("/").filter(Boolean);
+
+            if (!partes.length) {
+                mostrarSeccion("inicio");
+                return;
+            }
+
+            if (categorias.some((categoria) => categoria.id === partes[0])) {
+                mostrarSeccion("fichas", partes[0], partes[1] || "");
+                return;
+            }
+
+            if (partes[0] === "fotos" && partes[1] && partes[2]) {
+                const cat = categorias.find((c) => c.id === partes[1]);
+                const prod = cat?.productos.find((p) => crearSlug(p.nombre) === partes[2]);
+                if (prod) {
+                    const ejeSlug = partes[3] || null;
+                    if (prod.opciones?.length && !ejeSlug) {
+                        mostrarSeccion("fotos", partes[1], partes[2]);
+                    } else {
+                        mostrarGaleria(partes[1], prod.nombre, ejeSlug);
+                    }
+                    return;
+                }
+            }
+
+            mostrarSeccion(partes[0], partes[1] || "acoplados", partes[2] || "");
+        }
+
+        iniciar();
+    </script>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBbqb2v1L_o5rLh38eOrBYcHNFrRYIxQLU",
+    authDomain: "banco-de-unidades.firebaseapp.com",
+    projectId: "banco-de-unidades",
+    appId: "1:768534143671:web:723425177c89bd23532332"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
+  const ACTIVITY_KEY = "lambert:lastActivity";
+  const ACTIVITY_EVENTS = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
+  let monitorIniciado = false;
+  let intervaloChequeo = null;
+
+  function registrarActividad() {
+    localStorage.setItem(ACTIVITY_KEY, Date.now().toString());
+  }
+
+  function chequearInactividad() {
+    const ultima = parseInt(localStorage.getItem(ACTIVITY_KEY) || "0", 10);
+    if (ultima && Date.now() - ultima > INACTIVITY_LIMIT_MS) {
+      auth.signOut();
+    }
+  }
+
+  function iniciarMonitorInactividad() {
+    if (monitorIniciado) return;
+    monitorIniciado = true;
+    registrarActividad();
+    ACTIVITY_EVENTS.forEach((evento) => {
+      document.addEventListener(evento, registrarActividad, { passive: true });
+    });
+    window.addEventListener("focus", chequearInactividad);
+    intervaloChequeo = setInterval(chequearInactividad, 60 * 1000);
+  }
+
+  function logout() {
+    auth.signOut();
+  }
+
+  document.getElementById("logoutButton").addEventListener("click", logout);
+  document.getElementById("scrollBarLogout").addEventListener("click", logout);
+  document.getElementById("drawerLogout").addEventListener("click", logout);
+
+  auth.onAuthStateChanged((user) => {
+    if (!user) {
+      localStorage.removeItem(ACTIVITY_KEY);
+      window.location.replace("login.html");
+      return;
+    }
+
+    const email = user.email || "";
+    document.getElementById("userEmail").textContent = email;
+    document.getElementById("scrollBarUser").textContent = email;
+    document.getElementById("drawerUserEmail").textContent = email;
+    document.getElementById("contenido").style.display = "block";
+    iniciarMonitorInactividad();
+  });
+</script>
+</body>
+</html>

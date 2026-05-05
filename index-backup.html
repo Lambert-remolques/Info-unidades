@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco de Unidades | Lambert</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde: #159947;
+            --verde-oscuro: #078334;
+            --rojo: #da251d;
+            --negro: #262626;
+            --grafito: #333333;
+            --gris: #e6e6e6;
+            --gris-texto: #555555;
+            --blanco: #ffffff;
+            --sombra-card: 0 4px 14px rgba(38, 38, 38, 0.15);
+            --sombra-panel: 0 10px 28px rgba(38, 38, 38, 0.10);
+            --fuente: "Montserrat", Arial, sans-serif;
+            --radio: 3px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--negro);
+            font-family: var(--fuente);
+            background:
+                linear-gradient(90deg, rgba(38, 38, 38, 0.045) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(38, 38, 38, 0.035) 1px, transparent 1px),
+                #f8f8f8;
+            background-size: 64px 64px;
+        }
+
+        button,
+        a {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+        }
+
+        .button-reset {
+            width: 100%;
+            color: inherit;
+            text-align: left;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .top-nav {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .site-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 7px;
+        }
+
+        .menu-button {
+            min-height: 34px;
+            padding: 0 15px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: var(--radio);
+            color: rgba(255, 255, 255, 0.78);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 0.72rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+        }
+
+        .menu-button:hover,
+        .menu-button.active {
+            color: var(--blanco);
+            border-color: var(--verde);
+            background: rgba(21, 153, 71, 0.32);
+        }
+
+        .hero {
+            position: relative;
+            min-height: 300px;
+            overflow: hidden;
+            color: var(--blanco);
+            background:
+                radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 24%),
+                linear-gradient(135deg, #101213 0%, #191c1d 44%, #242728 100%);
+            box-shadow: inset 0 -1px rgba(255, 255, 255, 0.08);
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: -70px;
+            bottom: -90px;
+            width: 190px;
+            background: rgba(255, 255, 255, 0.045);
+            transform: skewX(-24deg);
+            pointer-events: none;
+        }
+
+        .hero::before {
+            right: 210px;
+        }
+
+        .hero::after {
+            right: 84px;
+            opacity: 0.55;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            width: min(1280px, calc(100% - 80px));
+            margin: 0 auto;
+            padding: 28px 0 42px;
+        }
+
+        .logo {
+            display: block;
+            width: 190px;
+            height: auto;
+            margin: 0;
+            filter: drop-shadow(0 4px 9px rgba(0, 0, 0, 0.45));
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 960px;
+            padding-left: 26px;
+        }
+
+        .hero-content::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 0;
+            width: 3px;
+            background: var(--verde);
+        }
+
+        .hero-kicker {
+            margin: 0 0 12px;
+            color: var(--verde);
+            font-size: clamp(0.9rem, 1.2vw, 1.08rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.05;
+        }
+
+        .hero-title {
+            margin: 0;
+            color: var(--blanco);
+            font-size: clamp(2.15rem, 6vw, 4.9rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 0.94;
+            letter-spacing: 0;
+            text-shadow: 0 7px 14px rgba(0, 0, 0, 0.32);
+            white-space: nowrap;
+        }
+
+        .red-rule {
+            width: 64px;
+            height: 4px;
+            margin: 19px 0 14px;
+            background: var(--rojo);
+        }
+
+        .hero-description {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+            font-weight: 500;
+            line-height: 1.55;
+        }
+
+        .category-panel {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            width: min(1280px, calc(100% - 112px));
+            margin: -1px auto 0;
+            padding: 22px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: var(--sombra-panel);
+        }
+
+        .category-panel[hidden] {
+            display: none;
+        }
+
+        .category-list {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .category-button {
+            position: relative;
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: var(--radio);
+            color: var(--blanco);
+            background: linear-gradient(180deg, var(--verde), var(--verde-oscuro));
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.14);
+            cursor: pointer;
+            transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+        }
+
+        .category-button::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -11px;
+            width: 0;
+            height: 0;
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-top: 11px solid var(--negro);
+            opacity: 0;
+            transform: translateX(-50%) translateY(-4px);
+            transition: opacity 160ms ease, transform 160ms ease;
+        }
+
+        .category-button:hover,
+        .category-button.active {
+            transform: translateY(-2px);
+            filter: brightness(1.04);
+            box-shadow: 0 9px 18px rgba(21, 153, 71, 0.24);
+        }
+
+        .category-button.active {
+            background: linear-gradient(180deg, var(--negro), #151515);
+            box-shadow: 0 10px 22px rgba(38, 38, 38, 0.22);
+        }
+
+        .category-button.active::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .category-name {
+            display: block;
+            font-size: clamp(0.82rem, 1.25vw, 1.02rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        main {
+            width: min(1280px, calc(100% - 112px));
+            margin: 0 auto;
+            padding: 36px 0 56px;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 260ms ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-head {
+            margin-bottom: 20px;
+        }
+
+        .section-title-wrap {
+            display: inline-grid;
+            grid-template-columns: 5px auto;
+            align-items: end;
+            column-gap: 18px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid rgba(21, 153, 71, 0.82);
+            min-width: min(435px, 100%);
+        }
+
+        .section-title-wrap::before {
+            content: "";
+            width: 5px;
+            height: 36px;
+            background: var(--verde);
+        }
+
+        .section-title {
+            margin: 0;
+            color: var(--verde);
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 0.9;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px 26px;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 26px;
+        }
+
+        .home-card {
+            min-height: 230px;
+        }
+
+        .product-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 168px;
+            padding: 23px 24px 18px 28px;
+            border-radius: var(--radio);
+            border-left: 5px solid var(--verde);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: var(--sombra-card);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(38, 38, 38, 0.20);
+        }
+
+        .product-card-button {
+            cursor: pointer;
+        }
+
+        .product-card-button:focus-visible,
+        .sheet-link:focus-visible,
+        .back-button:focus-visible,
+        .category-button:focus-visible {
+            outline: 3px solid rgba(21, 153, 71, 0.38);
+            outline-offset: 3px;
+        }
+
+        .product-name {
+            margin: 0 0 11px;
+            color: var(--negro);
+            font-size: clamp(1rem, 1.55vw, 1.28rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.08;
+        }
+
+        .product-description {
+            margin: 0 0 16px;
+            color: var(--gris-texto);
+            font-size: 0.88rem;
+            font-weight: 500;
+            line-height: 1.45;
+        }
+
+        .divider {
+            border: 0;
+            height: 1px;
+            margin: auto 0 14px;
+            background-image: linear-gradient(90deg, rgba(38, 38, 38, 0.20) 45%, transparent 45%);
+            background-size: 5px 1px;
+        }
+
+        .card-action {
+            margin-top: auto;
+            color: var(--verde);
+            font-size: 0.75rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            margin-bottom: 18px;
+            padding: 0 18px;
+            border: 1px solid rgba(21, 153, 71, 0.48);
+            border-radius: var(--radio);
+            color: var(--verde);
+            background: var(--blanco);
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+        }
+
+        .back-button:hover {
+            color: var(--blanco);
+            background: var(--verde);
+            transform: translateX(-2px);
+        }
+
+        .sheet-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            width: 100%;
+            border-radius: var(--radio);
+            color: var(--blanco);
+            background: linear-gradient(180deg, var(--verde), var(--verde-oscuro));
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: filter 160ms ease, transform 160ms ease;
+        }
+
+        .sheet-link:hover {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+        }
+
+        .construction-copy {
+            max-width: 760px;
+            margin: 0 0 24px;
+            color: var(--gris-texto);
+            font-size: 0.98rem;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+
+        .empty-state {
+            padding: 28px;
+            border-left: 5px solid var(--verde);
+            background: var(--blanco);
+            box-shadow: var(--sombra-card);
+            color: var(--gris-texto);
+            font-weight: 500;
+        }
+
+        @media (max-width: 1100px) {
+            .category-panel,
+            main {
+                width: min(100% - 48px, 1280px);
+            }
+
+            .category-list {
+                gap: 16px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .home-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .hero {
+                min-height: auto;
+            }
+
+            .hero-inner {
+                width: min(100% - 32px, 1280px);
+                padding: 22px 0 50px;
+            }
+
+            .logo {
+                width: 158px;
+            }
+
+            .top-nav {
+                align-items: flex-end;
+                margin-bottom: 28px;
+            }
+
+            .site-menu {
+                gap: 7px;
+            }
+
+            .menu-button {
+                min-height: 30px;
+                padding: 0 9px;
+                font-size: 0.62rem;
+            }
+
+            .hero-content {
+                padding-left: 20px;
+            }
+
+            .hero-title {
+                font-size: clamp(1.8rem, 10vw, 3.05rem);
+                white-space: normal;
+            }
+
+            .category-panel {
+                width: min(100% - 24px, 1280px);
+                padding: 14px;
+            }
+
+            .category-list {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .category-button {
+                min-height: 44px;
+            }
+
+            .category-name {
+                font-size: 0.75rem;
+            }
+
+            main {
+                width: min(100% - 24px, 1280px);
+                padding-top: 32px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-card {
+                min-height: auto;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-inner">
+            <div class="top-nav">
+                <nav class="site-menu" aria-label="Secciones principales">
+                    <button class="menu-button active" type="button" data-section="inicio">Inicio</button>
+                    <button class="menu-button" type="button" data-section="fichas">Fichas técnicas</button>
+                    <button class="menu-button" type="button" data-section="fotos">Banco de fotos</button>
+                    <button class="menu-button" type="button" data-section="adicionales">Adicionales</button>
+                </nav>
+                <img class="logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
+            </div>
+
+            <div class="hero-content">
+                <p class="hero-kicker">Catálogo técnico</p>
+                <h1 class="hero-title" id="heroTitle">Banco de unidades</h1>
+                <div class="red-rule" aria-hidden="true"></div>
+                <p class="hero-description" id="heroDescription">Acceso rápido a la información de cada unidad</p>
+            </div>
+        </div>
+    </header>
+
+    <nav class="category-panel" aria-label="Categorías de unidades" hidden>
+        <div class="category-list" id="categoryList"></div>
+    </nav>
+
+    <main>
+        <section class="view active" id="catalogView" aria-live="polite"></section>
+    </main>
+
+    <script>
+        const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
+        const FOTO_PLACEHOLDER = "https://example.com/fotos";
+
+        function opcionesEjes() {
+            return [
+                { nombre: "2 ejes", descripcion: "Ficha técnica para disposición de dos ejes.", pdf: PDF_PLACEHOLDER },
+                { nombre: "3 ejes", descripcion: "Ficha técnica para disposición de tres ejes.", pdf: PDF_PLACEHOLDER },
+                { nombre: "4 ejes", descripcion: "Ficha técnica para disposición de cuatro ejes.", pdf: PDF_PLACEHOLDER }
+            ];
+        }
+
+        function opcionesSemirremolque() {
+            return [
+                { nombre: "1 eje", descripcion: "Ficha técnica para configuración de un eje.", pdf: PDF_PLACEHOLDER },
+                { nombre: "2 ejes", descripcion: "Ficha técnica para configuración de dos ejes.", pdf: PDF_PLACEHOLDER },
+                { nombre: "3 ejes", descripcion: "Ficha técnica para configuración de tres ejes.", pdf: PDF_PLACEHOLDER },
+                { nombre: "1+1 eje", descripcion: "Ficha técnica para configuración 1+1 eje.", pdf: PDF_PLACEHOLDER },
+                { nombre: "1+2 eje", descripcion: "Ficha técnica para configuración 1+2 eje.", pdf: PDF_PLACEHOLDER },
+                { nombre: "1+3 eje", descripcion: "Ficha técnica para configuración 1+3 eje.", pdf: PDF_PLACEHOLDER },
+                { nombre: "1+1+1 eje", descripcion: "Ficha técnica para configuración 1+1+1 eje.", pdf: PDF_PLACEHOLDER }
+            ];
+        }
+
+        const categorias = [
+            {
+                id: "acoplados",
+                nombre: "Acoplados",
+                productos: [
+                    { nombre: "Baranda volcable", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opciones: opcionesEjes() },
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opciones: opcionesEjes() },
+                    { nombre: "Playo", descripcion: "Unidad de piso plano sin estructura lateral cerrada, ideal para cargas voluminosas o piezas pesadas.", opciones: opcionesEjes() },
+                    { nombre: "Paquetero", descripcion: "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.", opciones: opcionesEjes() },
+                    { nombre: "Forestal", descripcion: "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opciones: opcionesEjes() },
+                    { nombre: "Volcador bilateral", descripcion: "Unidad que puede volcar carga hacia ambos lados del equipo.", opciones: opcionesEjes() },
+                    { nombre: "Todo puertas", descripcion: "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.", opciones: opcionesEjes() },
+                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opciones: opcionesEjes() },
+                    { nombre: "Tolva descarga ventral", descripcion: "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opciones: opcionesEjes() }
+                ]
+            },
+            {
+                id: "semirremolques",
+                nombre: "Semirremolques",
+                productos: [
+                    { nombre: "Playo con frente", descripcion: "El playo con frente es una plataforma abierta que incorpora un frente estructural fijo, que actúa como elemento de contención y protección.", opciones: opcionesSemirremolque() },
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opciones: opcionesSemirremolque() },
+                    { nombre: "Baranda volcable", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opciones: opcionesSemirremolque() },
+                    { nombre: "Forestal", descripcion: "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opciones: opcionesSemirremolque() },
+                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opciones: opcionesSemirremolque() },
+                    { nombre: "Tolva descarga ventral", descripcion: "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opciones: opcionesSemirremolque() },
+                    { nombre: "Portacontenedor extensible", descripcion: "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.", opciones: opcionesSemirremolque() },
+                    { nombre: "Jaula simple", descripcion: "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opciones: opcionesSemirremolque() },
+                    { nombre: "Jaula doble piso", descripcion: "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opciones: opcionesSemirremolque() },
+                    { nombre: "Batea", descripcion: "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.", opciones: opcionesSemirremolque() },
+                    { nombre: "Bivuelco bicaja", descripcion: "Unidad diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados, compuesta por dos cajas independientes montadas sobre una misma estructura.", opciones: opcionesSemirremolque() }
+                ]
+            },
+            {
+                id: "carrocerias",
+                nombre: "Carrocerías",
+                productos: [
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", fichaDirecta: true },
+                    { nombre: "Todo puertas", descripcion: "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.", fichaDirecta: true },
+                    { nombre: "Volcadora", descripcion: "Unidad diseñada para la descarga de materiales sueltos mediante un sistema de vuelco, generalmente hacia atrás.", fichaDirecta: true },
+                    { nombre: "Isotérmica", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", fichaDirecta: true },
+                    { nombre: "Bivuelco", descripcion: "Diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados del vehículo. Este tipo de carrocería permite descargar la carga a izquierda o derecha.", fichaDirecta: true },
+                    { nombre: "Paquetera", descripcion: "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.", fichaDirecta: true },
+                    { nombre: "Curtain sider barandas volcables", descripcion: "Unidad que combina barandas metálicas volcables en la parte inferior con laterales superiores de lona corrediza tipo curtain sider.", fichaDirecta: true },
+                    { nombre: "Pollera", descripcion: "Diseñada específicamente para el transporte de aves vivas, principalmente pollos, en condiciones que aseguren ventilación, contención y bienestar animal durante el traslado.", fichaDirecta: true }
+                ]
+            },
+            {
+                id: "bitrenes",
+                nombre: "Bitrenes",
+                productos: [
+                    { nombre: "Barandas volcables", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", fichaDirecta: true },
+                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", fichaDirecta: true },
+                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", fichaDirecta: true }
+                ]
+            }
+        ];
+
+        const menuButtons = document.querySelectorAll("[data-section]");
+        const categoryPanel = document.querySelector(".category-panel");
+        const categoryList = document.querySelector("#categoryList");
+        const catalogView = document.querySelector("#catalogView");
+        const heroTitle = document.querySelector("#heroTitle");
+        const heroDescription = document.querySelector("#heroDescription");
+        let seccionActual = "inicio";
+
+        const HERO_CONTENT = {
+            inicio: { titulo: "Banco de unidades", descripcion: "Acceso rápido a la información de cada unidad" },
+            fichas: { titulo: "Fichas técnicas", descripcion: "Acceso rápido a las fichas técnicas de unidades" },
+            fotos: { titulo: "Banco de fotos", descripcion: "Acceso rápido a las fotos de cada unidad" },
+            adicionales: { titulo: "Adicionales", descripcion: "Acceso rápido a los adicionales" }
+        };
+
+        function crearSlug(texto) {
+            return texto
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+        }
+
+        function actualizarMenu(seccion) {
+            menuButtons.forEach((button) => {
+                button.classList.toggle("active", button.dataset.section === seccion);
+            });
+        }
+
+        function actualizarHero(seccion) {
+            const contenido = HERO_CONTENT[seccion] || HERO_CONTENT.inicio;
+            heroTitle.textContent = contenido.titulo;
+            heroDescription.textContent = contenido.descripcion;
+        }
+
+        function crearBotonesCategoria() {
+            categoryList.innerHTML = categorias.map((categoria) => `
+                <button class="category-button" type="button" data-category="${categoria.id}" aria-pressed="false">
+                    <span class="category-name">${categoria.nombre}</span>
+                </button>
+            `).join("");
+        }
+
+        function actualizarBotones(categoriaActiva) {
+            document.querySelectorAll(".category-button").forEach((button) => {
+                const activo = button.dataset.category === categoriaActiva;
+                button.classList.toggle("active", activo);
+                button.setAttribute("aria-pressed", String(activo));
+            });
+        }
+
+        function mostrarSeccion(seccion, categoriaId = "acoplados", productoSlug = "") {
+            seccionActual = seccion;
+            actualizarMenu(seccion);
+            actualizarHero(seccion);
+            categoryPanel.hidden = !(seccion === "fichas" || seccion === "fotos");
+
+            if (seccion === "inicio") {
+                mostrarInicio();
+                return;
+            }
+
+            if (seccion === "adicionales") {
+                mostrarAdicionales();
+                return;
+            }
+
+            if (productoSlug) {
+                mostrarProducto(categoriaId, productoSlug, seccion);
+                return;
+            }
+
+            mostrarCategoria(categoriaId, seccion);
+        }
+
+        function mostrarInicio() {
+            catalogView.innerHTML = `
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">Inicio</h2>
+                    </div>
+                </div>
+                <p class="construction-copy">Banco interno para ordenar material técnico y visual de unidades. Elegí una sección para consultar fichas, revisar fotos o acceder a los adicionales de cada unidad.</p>
+                <div class="home-grid">
+                    ${crearTarjetaInicio("Fichas técnicas", "Consulta de fichas PDF por categoría, unidad y configuración.", "fichas")}
+                    ${crearTarjetaInicio("Banco de fotos", "Apartado en construcción para organizar fotos de unidades por categoría.", "fotos")}
+                    ${crearTarjetaInicio("Adicionales", "Sección en construcción para próximos recursos complementarios.", "adicionales")}
+                </div>
+            `;
+            history.replaceState(null, "", "#inicio");
+        }
+
+        function crearTarjetaInicio(nombre, descripcion, seccion) {
+            return `
+                <button class="product-card product-card-button button-reset home-card" type="button" data-go-section="${seccion}">
+                    <h3 class="product-name">${nombre}</h3>
+                    <p class="product-description">${descripcion}</p>
+                    <hr class="divider">
+                    <span class="card-action">Ingresar</span>
+                </button>
+            `;
+        }
+
+        function mostrarAdicionales() {
+            catalogView.innerHTML = `
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">Adicionales</h2>
+                    </div>
+                </div>
+                <div class="empty-state">Estamos construyendo este apartado. Más adelante se cargarán los adicionales disponibles.</div>
+            `;
+            history.replaceState(null, "", "#adicionales");
+        }
+
+        function mostrarCategoria(idCategoria, seccion = "fichas") {
+            seccionActual = seccion;
+            actualizarMenu(seccion);
+            actualizarHero(seccion);
+            categoryPanel.hidden = !(seccion === "fichas" || seccion === "fotos");
+            const categoria = categorias.find((item) => item.id === idCategoria) || categorias[0];
+            actualizarBotones(categoria.id);
+
+            const productosHtml = categoria.productos.length
+                ? categoria.productos.map((producto) => crearTarjetaProducto(producto, seccion)).join("")
+                : `<div class="empty-state">Todavía no hay unidades cargadas en esta categoría.</div>`;
+
+            const notaFotos = seccion === "fotos"
+                ? `<p class="construction-copy">Estamos diseñando el apartado de fotos de unidades. Por ahora, cada unidad queda preparada con el botón "Ver fotos".</p>`
+                : "";
+
+            catalogView.innerHTML = `
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">${categoria.nombre}</h2>
+                    </div>
+                </div>
+                ${notaFotos}
+                <div class="products-grid">${productosHtml}</div>
+            `;
+
+            history.replaceState(null, "", `#${seccion}/${categoria.id}`);
+        }
+
+        function crearTarjetaProducto(producto, seccion = "fichas") {
+            if (seccion === "fotos") {
+                if (producto.opciones?.length) {
+                    return crearTarjetaSeleccion(producto, "Seleccionar unidad", "");
+                }
+
+                return crearTarjetaAccion(producto.nombre, "", "Ver fotos", FOTO_PLACEHOLDER);
+            }
+
+            if (producto.fichaDirecta) {
+                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", producto.pdf || PDF_PLACEHOLDER);
+            }
+
+            return crearTarjetaSeleccion(producto, "Seleccionar unidad", producto.descripcion);
+        }
+
+        function crearTarjetaSeleccion(producto, accion, descripcion) {
+            return `
+                <button class="product-card product-card-button button-reset" type="button" data-product="${crearSlug(producto.nombre)}">
+                    <h3 class="product-name">${producto.nombre}</h3>
+                    <p class="product-description">${descripcion}</p>
+                    <hr class="divider">
+                    <span class="card-action">${accion}</span>
+                </button>
+            `;
+        }
+
+        function crearTarjetaAccion(nombre, descripcion, textoBoton, url) {
+            return `
+                <article class="product-card">
+                    <h3 class="product-name">${nombre}</h3>
+                    <p class="product-description">${descripcion}</p>
+                    <hr class="divider">
+                    <a class="sheet-link" href="${url}" target="_blank" rel="noopener noreferrer">
+                        ${textoBoton}
+                    </a>
+                </article>
+            `;
+        }
+
+        function mostrarProducto(idCategoria, slugProducto, seccion = "fichas") {
+            const categoria = categorias.find((item) => item.id === idCategoria) || categorias[0];
+            const producto = categoria.productos.find((item) => crearSlug(item.nombre) === slugProducto);
+
+            if (!producto) {
+                mostrarCategoria(categoria.id, seccion);
+                return;
+            }
+
+            seccionActual = seccion;
+            actualizarMenu(seccion);
+            categoryPanel.hidden = false;
+            actualizarBotones(categoria.id);
+
+            const opcionesHtml = producto.opciones?.length
+                ? producto.opciones.map((opcion) => crearTarjetaOpcion(opcion, seccion)).join("")
+                : `<div class="empty-state">Las opciones para esta unidad se cargarán más adelante.</div>`;
+
+            catalogView.innerHTML = `
+                <button class="back-button" type="button" data-back-category="${categoria.id}">Volver a ${categoria.nombre}</button>
+                <div class="section-head">
+                    <div class="section-title-wrap">
+                        <h2 class="section-title">${producto.nombre}</h2>
+                    </div>
+                </div>
+                <div class="products-grid">${opcionesHtml}</div>
+            `;
+
+            history.replaceState(null, "", `#${seccion}/${categoria.id}/${slugProducto}`);
+        }
+
+        function crearTarjetaOpcion(opcion, seccion = "fichas") {
+            const descripcion = seccion === "fotos" ? "" : opcion.descripcion;
+            const textoBoton = seccion === "fotos" ? "Ver fotos" : "Ver ficha técnica";
+            const url = seccion === "fotos" ? FOTO_PLACEHOLDER : opcion.pdf || PDF_PLACEHOLDER;
+
+            return crearTarjetaAccion(opcion.nombre, descripcion, textoBoton, url);
+        }
+
+        menuButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                mostrarSeccion(button.dataset.section);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        });
+
+        categoryList.addEventListener("click", (event) => {
+            const button = event.target.closest("[data-category]");
+            if (!button) return;
+            mostrarCategoria(button.dataset.category, seccionActual);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        catalogView.addEventListener("click", (event) => {
+            const irASeccion = event.target.closest("[data-go-section]");
+            if (irASeccion) {
+                mostrarSeccion(irASeccion.dataset.goSection);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            const volver = event.target.closest("[data-back-category]");
+            if (volver) {
+                mostrarCategoria(volver.dataset.backCategory, seccionActual);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            const producto = event.target.closest("[data-product]");
+            if (!producto) return;
+
+            const categoriaActiva = document.querySelector(".category-button.active")?.dataset.category || "acoplados";
+            mostrarProducto(categoriaActiva, producto.dataset.product, seccionActual);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        document.addEventListener("keydown", (event) => {
+            const numero = Number(event.key);
+            if (numero >= 1 && numero <= categorias.length) {
+                const seccionCategorias = seccionActual === "fotos" ? "fotos" : "fichas";
+                mostrarCategoria(categorias[numero - 1].id, seccionCategorias);
+            }
+        });
+
+        function iniciar() {
+            crearBotonesCategoria();
+            const partes = window.location.hash.replace("#", "").split("/").filter(Boolean);
+
+            if (!partes.length) {
+                mostrarSeccion("inicio");
+                return;
+            }
+
+            if (categorias.some((categoria) => categoria.id === partes[0])) {
+                mostrarSeccion("fichas", partes[0], partes[1] || "");
+                return;
+            }
+
+            mostrarSeccion(partes[0], partes[1] || "acoplados", partes[2] || "");
+        }
+
+        iniciar();
+    </script>
+</body>
+</html>
