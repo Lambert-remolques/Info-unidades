@@ -2416,17 +2416,16 @@
     </div>
 
     <script>
-        const PDF_BASE = "https://lambert-remolques.github.io/Unidades/fichas";
+        const PDF_BASE = "fichas";
         const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
         const FOTO_PLACEHOLDER = "https://example.com/fotos";
         const CLOUDINARY_CLOUD = "lambert-remolques";
         const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
         const FOTO_MAX_POR_GALERIA = 30;
 
-        function pdfFichaUrl(categoria, productoNombre, ejeSlug) {
+        function pdfFichaUrl(categoria, productoNombre) {
             const productoSlug = crearSlug(productoNombre);
-            const sufijo = ejeSlug ? `-${ejeSlug}` : "";
-            return `${PDF_BASE}/${categoria}/${productoSlug}${sufijo}.pdf`;
+            return `${PDF_BASE}/${categoria}/${productoSlug}.pdf`;
         }
 
         function cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, numero, transform = "") {
@@ -2477,6 +2476,36 @@
                 { nombre: "1+3 eje", descripcion: "Ficha técnica para configuración 1+3 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-3-eje") },
                 { nombre: "1+1+1 eje", descripcion: "Ficha técnica para configuración 1+1+1 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-1-eje") }
             ];
+        }
+
+        function fichaTecnicaUnificada(categoria, productoNombre) {
+            return [
+                {
+                    nombre: "Ficha técnica",
+                    descripcion: "Documento unificado para este carrozado.",
+                    pdf: pdfFichaUrl(categoria, productoNombre)
+                }
+            ];
+        }
+
+        function productoConFicha(categoria, nombre, descripcion, fotosOpciones = null) {
+            const producto = {
+                nombre,
+                descripcion,
+                opciones: fichaTecnicaUnificada(categoria, nombre)
+            };
+
+            if (fotosOpciones?.length) {
+                producto.fotosOpciones = fotosOpciones;
+            }
+
+            return producto;
+        }
+
+        function opcionesPorSeccion(producto, seccion = "fichas") {
+            return seccion === "fotos"
+                ? (producto.fotosOpciones || producto.opciones || [])
+                : (producto.opciones || []);
         }
 
         const adicionalesCategorias = [
@@ -2605,45 +2634,34 @@
                 id: "acoplados",
                 nombre: "Acoplados",
                 productos: [
-                    { nombre: "Baranda volcable", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opciones: opcionesEjes("Baranda volcable") },
-                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opciones: opcionesEjes("Curtain sider") },
-                    { nombre: "Playo", descripcion: "Unidad de piso plano sin estructura lateral cerrada, ideal para cargas voluminosas o piezas pesadas.", opciones: opcionesEjes("Playo") },
-                    { nombre: "Paquetero", descripcion: "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.", opciones: opcionesEjes("Paquetero") },
-                    { nombre: "Forestal", descripcion: "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opciones: opcionesEjes("Forestal") },
-                    { nombre: "Volcador bilateral", descripcion: "Unidad que puede volcar carga hacia ambos lados del equipo.", opciones: opcionesEjes("Volcador bilateral") },
-                    { nombre: "Todo puertas", descripcion: "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.", opciones: opcionesEjes("Todo puertas") },
-                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opciones: opcionesEjes("Isotérmico") },
-                    { nombre: "Tolva descarga ventral", descripcion: "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opciones: opcionesEjes("Tolva descarga ventral") },
-                    { nombre: "Jaula simple", descripcion: "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opciones: opcionesEjes("Jaula simple") },
-                    { nombre: "Jaula doble piso", descripcion: "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opciones: opcionesEjes("Jaula doble piso") }
+                    productoConFicha("acoplados", "Baranda volcable", "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opcionesEjes("Baranda volcable")),
+                    productoConFicha("acoplados", "Curtain sider", "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opcionesEjes("Curtain sider")),
+                    productoConFicha("acoplados", "Playo", "Unidad de piso plano sin estructura lateral cerrada, ideal para cargas voluminosas o piezas pesadas.", opcionesEjes("Playo")),
+                    productoConFicha("acoplados", "Paquetero", "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.", opcionesEjes("Paquetero")),
+                    productoConFicha("acoplados", "Forestal", "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opcionesEjes("Forestal")),
+                    productoConFicha("acoplados", "Volcador bilateral", "Unidad que puede volcar carga hacia ambos lados del equipo.", opcionesEjes("Volcador bilateral")),
+                    productoConFicha("acoplados", "Todo puertas", "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.", opcionesEjes("Todo puertas")),
+                    productoConFicha("acoplados", "Isotérmico", "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opcionesEjes("Isotérmico")),
+                    productoConFicha("acoplados", "Tolva descarga ventral", "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opcionesEjes("Tolva descarga ventral")),
+                    productoConFicha("acoplados", "Jaula simple", "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opcionesEjes("Jaula simple")),
+                    productoConFicha("acoplados", "Jaula doble piso", "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opcionesEjes("Jaula doble piso"))
                 ]
             },
             {
                 id: "semirremolques",
                 nombre: "Semirremolques",
                 productos: [
-                    { nombre: "Playo con frente", descripcion: "El playo con frente es una plataforma abierta que incorpora un frente estructural fijo, que actúa como elemento de contención y protección.", opciones: opcionesSemirremolque("Playo con frente") },
-                    { nombre: "Curtain sider", descripcion: "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opciones: opcionesSemirremolque("Curtain sider") },
-                    { nombre: "Baranda volcable", descripcion: "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opciones: opcionesSemirremolque("Baranda volcable") },
-                    { nombre: "Forestal", descripcion: "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opciones: opcionesSemirremolque("Forestal") },
-                    { nombre: "Isotérmico", descripcion: "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opciones: opcionesSemirremolque("Isotérmico") },
-                    { nombre: "Tolva descarga ventral", descripcion: "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opciones: opcionesSemirremolque("Tolva descarga ventral") },
-                    { nombre: "Portacontenedor extensible", descripcion: "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.", opciones: opcionesSemirremolque("Portacontenedor extensible") },
-                    { nombre: "Jaula simple", descripcion: "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opciones: opcionesSemirremolque("Jaula simple") },
-                    { nombre: "Jaula doble piso", descripcion: "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opciones: opcionesSemirremolque("Jaula doble piso") },
-                    { nombre: "Batea", descripcion: "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.", opciones: [
-                        { nombre: "1 eje", descripcion: "Ficha técnica para configuración de un eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-eje") },
-                        { nombre: "2 ejes", descripcion: "Ficha técnica para configuración de dos ejes.", pdf: pdfFichaUrl("semirremolques", "Batea", "2-ejes") },
-                        { nombre: "3 ejes", descripcion: "Ficha técnica para configuración de tres ejes.", pdf: pdfFichaUrl("semirremolques", "Batea", "3-ejes") },
-                        { nombre: "1+1 eje", descripcion: "Ficha técnica para configuración 1+1 eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-1-eje") },
-                        { nombre: "1+2 eje", descripcion: "Disponible en dos capacidades. Elegí la que necesitás.", variantes: [
-                            { nombre: "25 m³", descripcion: "Modelo estándar.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-2-eje-25-m3") },
-                            { nombre: "27 m³", descripcion: "Modelo de mayor capacidad.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-2-eje-27-m3") }
-                        ] },
-                        { nombre: "1+3 eje", descripcion: "Ficha técnica para configuración 1+3 eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-3-eje") },
-                        { nombre: "1+1+1 eje", descripcion: "Ficha técnica para configuración 1+1+1 eje.", pdf: pdfFichaUrl("semirremolques", "Batea", "1-1-1-eje") }
-                    ] },
-                    { nombre: "Bivuelco bicaja", descripcion: "Unidad diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados, compuesta por dos cajas independientes montadas sobre una misma estructura.", opciones: opcionesSemirremolque("Bivuelco bicaja") }
+                    productoConFicha("semirremolques", "Playo con frente", "El playo con frente es una plataforma abierta que incorpora un frente estructural fijo, que actúa como elemento de contención y protección.", opcionesSemirremolque("Playo con frente")),
+                    productoConFicha("semirremolques", "Curtain sider", "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.", opcionesSemirremolque("Curtain sider")),
+                    productoConFicha("semirremolques", "Baranda volcable", "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.", opcionesSemirremolque("Baranda volcable")),
+                    productoConFicha("semirremolques", "Forestal", "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opcionesSemirremolque("Forestal")),
+                    productoConFicha("semirremolques", "Isotérmico", "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opcionesSemirremolque("Isotérmico")),
+                    productoConFicha("semirremolques", "Tolva descarga ventral", "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opcionesSemirremolque("Tolva descarga ventral")),
+                    productoConFicha("semirremolques", "Portacontenedor extensible", "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.", opcionesSemirremolque("Portacontenedor extensible")),
+                    productoConFicha("semirremolques", "Jaula simple", "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opcionesSemirremolque("Jaula simple")),
+                    productoConFicha("semirremolques", "Jaula doble piso", "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opcionesSemirremolque("Jaula doble piso")),
+                    productoConFicha("semirremolques", "Batea", "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.", opcionesSemirremolque("Batea")),
+                    productoConFicha("semirremolques", "Bivuelco bicaja", "Unidad diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados, compuesta por dos cajas independientes montadas sobre una misma estructura.", opcionesSemirremolque("Bivuelco bicaja"))
                 ]
             },
             {
@@ -2983,7 +3001,7 @@
 
         function crearTarjetaProducto(producto, seccion = "fichas") {
             if (seccion === "fotos") {
-                if (producto.opciones?.length) {
+                if (opcionesPorSeccion(producto, seccion).length) {
                     return crearTarjetaSeleccion(producto, "Seleccionar unidad", "");
                 }
 
@@ -3045,8 +3063,9 @@
             actualizarBotones(categoria.id);
             productoEnVista = { categoria, producto, seccion };
 
-            const opcionesHtml = producto.opciones?.length
-                ? producto.opciones.map((opcion) => crearTarjetaOpcion(opcion, seccion)).join("")
+            const opcionesProducto = opcionesPorSeccion(producto, seccion);
+            const opcionesHtml = opcionesProducto.length
+                ? opcionesProducto.map((opcion) => crearTarjetaOpcion(opcion, seccion)).join("")
                 : `<div class="empty-state">Las opciones para esta unidad se cargarán más adelante.</div>`;
 
             catalogView.innerHTML = `
@@ -3240,7 +3259,7 @@
                         productoNombre: prod.nombre,
                         productoSlug: crearSlug(prod.nombre),
                         descripcion: prod.descripcion || "",
-                        tieneOpciones: !!prod.opciones?.length,
+                        tieneOpciones: !!opcionesPorSeccion(prod, seccion).length,
                         searchHaystack: normalizar(`${prod.nombre} ${prod.descripcion || ""} ${cat.nombre} ${HERO_CONTENT[seccion].titulo}`)
                     });
                 });
@@ -3535,7 +3554,7 @@
             const variantesBtn = event.target.closest("[data-variantes-opcion]");
             if (variantesBtn && productoEnVista) {
                 const slug = variantesBtn.dataset.variantesOpcion;
-                const opcion = (productoEnVista.producto.opciones || []).find((o) => crearSlug(o.nombre) === slug);
+                const opcion = opcionesPorSeccion(productoEnVista.producto, productoEnVista.seccion).find((o) => crearSlug(o.nombre) === slug);
                 if (opcion?.variantes?.length) {
                     abrirModalVariantes(productoEnVista.producto, opcion);
                 }
@@ -3564,7 +3583,7 @@
 
             const galeriaBack = event.target.closest("[data-galeria-back]");
             if (galeriaBack && productoEnVista) {
-                if (productoEnVista.producto.opciones?.length) {
+                if (opcionesPorSeccion(productoEnVista.producto, "fotos").length) {
                     mostrarProducto(productoEnVista.categoria.id, crearSlug(productoEnVista.producto.nombre), "fotos");
                 } else {
                     mostrarCategoria(productoEnVista.categoria.id, "fotos");
@@ -3636,7 +3655,7 @@
                 const prod = cat?.productos.find((p) => crearSlug(p.nombre) === partes[2]);
                 if (prod) {
                     const ejeSlug = partes[3] || null;
-                    if (prod.opciones?.length && !ejeSlug) {
+                    if (opcionesPorSeccion(prod, "fotos").length && !ejeSlug) {
                         mostrarSeccion("fotos", partes[1], partes[2]);
                     } else {
                         mostrarGaleria(partes[1], prod.nombre, ejeSlug);
