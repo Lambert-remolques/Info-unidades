@@ -2471,10 +2471,10 @@
                 { nombre: "1 eje", descripcion: "Ficha técnica para configuración de un eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-eje") },
                 { nombre: "2 ejes", descripcion: "Ficha técnica para configuración de dos ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "2-ejes") },
                 { nombre: "3 ejes", descripcion: "Ficha técnica para configuración de tres ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "3-ejes") },
-                { nombre: "1+1 eje", descripcion: "Ficha técnica para configuración 1+1 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-eje") },
-                { nombre: "1+2 eje", descripcion: "Ficha técnica para configuración 1+2 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-2-eje") },
-                { nombre: "1+3 eje", descripcion: "Ficha técnica para configuración 1+3 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-3-eje") },
-                { nombre: "1+1+1 eje", descripcion: "Ficha técnica para configuración 1+1+1 eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-1-eje") }
+                { nombre: "1+1 ejes", descripcion: "Ficha técnica para configuración 1+1 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-eje") },
+                { nombre: "1+2 ejes", descripcion: "Ficha técnica para configuración 1+2 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-2-eje") },
+                { nombre: "1+3 ejes", descripcion: "Ficha técnica para configuración 1+3 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-3-eje") },
+                { nombre: "1+1+1 ejes", descripcion: "Ficha técnica para configuración 1+1+1 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-1-eje") }
             ];
         }
 
@@ -3097,7 +3097,9 @@
             if (!ejeSlug) return "";
             const partes = ejeSlug.split("-");
             const ultimo = partes.pop();
-            return partes.join("+") + " " + ultimo;
+            const cantidad = partes.join("+");
+            const etiqueta = cantidad.includes("+") ? "ejes" : ultimo;
+            return cantidad + " " + etiqueta;
         }
 
         let galeriaActual = null;
