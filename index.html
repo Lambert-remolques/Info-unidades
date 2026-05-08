@@ -2691,6 +2691,11 @@
             }
         ];
 
+        const ordenAlfabetico = new Intl.Collator("es", { sensitivity: "base" });
+        categorias.forEach((categoria) => {
+            categoria.productos.sort((a, b) => ordenAlfabetico.compare(a.nombre, b.nombre));
+        });
+
         const menuButtons = document.querySelectorAll("[data-section]");
         const categoryPanel = document.querySelector(".category-panel");
         const categoryList = document.querySelector("#categoryList");
@@ -3021,7 +3026,12 @@
                 return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", producto.pdf || PDF_PLACEHOLDER);
             }
 
-            return crearTarjetaSeleccion(producto, "Seleccionar unidad", producto.descripcion);
+            const opcionesFicha = opcionesPorSeccion(producto, seccion);
+            if (opcionesFicha.length === 1) {
+                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", opcionesFicha[0].pdf || PDF_PLACEHOLDER);
+            }
+
+            return crearTarjetaSeleccion(producto, "Ver ficha técnica", producto.descripcion);
         }
 
         function crearTarjetaSeleccion(producto, accion, descripcion) {
