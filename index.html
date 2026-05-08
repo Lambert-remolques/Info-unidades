@@ -2422,17 +2422,18 @@
         const CLOUDINARY_CLOUD = "lambert-remolques";
         const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
         const FOTO_MAX_POR_GALERIA = 30;
+        const FOTO_FORMATOS = ["jpg", "png", "webp"];
 
         function pdfFichaUrl(categoria, productoNombre) {
             const productoSlug = crearSlug(productoNombre);
             return `${PDF_BASE}/${categoria}/${productoSlug}.pdf`;
         }
 
-        function cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, numero, transform = "") {
+        function cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, numero, transform = "", formato = "jpg") {
             const productoSlug = crearSlug(productoNombre);
             const ejePath = ejeSlug ? `/${ejeSlug}` : "";
             const tx = transform ? `${transform}/` : "";
-            return `${CLOUDINARY_BASE}/${tx}unidades/${categoria}/${productoSlug}${ejePath}/foto-${numero}.jpg`;
+            return `${CLOUDINARY_BASE}/${tx}unidades/${categoria}/${productoSlug}${ejePath}/foto-${numero}.${formato}`;
         }
 
         function cargarImagen(url) {
@@ -2445,36 +2446,37 @@
         }
 
         async function detectarFotos(categoria, productoNombre, ejeSlug) {
-            const numeros = [];
+            const fotos = [];
             for (let i = 1; i <= FOTO_MAX_POR_GALERIA; i++) {
-                const url = cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, i);
-                const existe = await cargarImagen(url);
-                if (existe) {
-                    numeros.push(i);
-                } else {
-                    break;
+                for (const formato of FOTO_FORMATOS) {
+                    const url = cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, i, "", formato);
+                    const existe = await cargarImagen(url);
+                    if (existe) {
+                        fotos.push({ numero: i, formato });
+                        break;
+                    }
                 }
             }
-            return numeros;
+            return fotos;
         }
 
         function opcionesEjes(productoNombre) {
             return [
-                { nombre: "2 ejes", descripcion: "Ficha técnica para disposición de dos ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "2-ejes") },
-                { nombre: "3 ejes", descripcion: "Ficha técnica para disposición de tres ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "3-ejes") },
-                { nombre: "4 ejes", descripcion: "Ficha técnica para disposición de cuatro ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "4-ejes") }
+                { nombre: "2 ejes", ejeSlug: "2-ejes", descripcion: "Ficha técnica para disposición de dos ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "2-ejes") },
+                { nombre: "3 ejes", ejeSlug: "3-ejes", descripcion: "Ficha técnica para disposición de tres ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "3-ejes") },
+                { nombre: "4 ejes", ejeSlug: "4-ejes", descripcion: "Ficha técnica para disposición de cuatro ejes.", pdf: pdfFichaUrl("acoplados", productoNombre, "4-ejes") }
             ];
         }
 
         function opcionesSemirremolque(productoNombre) {
             return [
-                { nombre: "1 eje", descripcion: "Ficha técnica para configuración de un eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-eje") },
-                { nombre: "2 ejes", descripcion: "Ficha técnica para configuración de dos ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "2-ejes") },
-                { nombre: "3 ejes", descripcion: "Ficha técnica para configuración de tres ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "3-ejes") },
-                { nombre: "1+1 ejes", descripcion: "Ficha técnica para configuración 1+1 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-eje") },
-                { nombre: "1+2 ejes", descripcion: "Ficha técnica para configuración 1+2 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-2-eje") },
-                { nombre: "1+3 ejes", descripcion: "Ficha técnica para configuración 1+3 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-3-eje") },
-                { nombre: "1+1+1 ejes", descripcion: "Ficha técnica para configuración 1+1+1 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-1-eje") }
+                { nombre: "1 eje", ejeSlug: "1-eje", descripcion: "Ficha técnica para configuración de un eje.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-eje") },
+                { nombre: "2 ejes", ejeSlug: "2-ejes", descripcion: "Ficha técnica para configuración de dos ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "2-ejes") },
+                { nombre: "3 ejes", ejeSlug: "3-ejes", descripcion: "Ficha técnica para configuración de tres ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "3-ejes") },
+                { nombre: "1+1 ejes", ejeSlug: "1-1-eje", descripcion: "Ficha técnica para configuración 1+1 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-eje") },
+                { nombre: "1+2 ejes", ejeSlug: "1-2-eje", descripcion: "Ficha técnica para configuración 1+2 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-2-eje") },
+                { nombre: "1+3 ejes", ejeSlug: "1-3-eje", descripcion: "Ficha técnica para configuración 1+3 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-3-eje") },
+                { nombre: "1+1+1 ejes", ejeSlug: "1-1-1-eje", descripcion: "Ficha técnica para configuración 1+1+1 ejes.", pdf: pdfFichaUrl("semirremolques", productoNombre, "1-1-1-eje") }
             ];
         }
 
@@ -3150,12 +3152,13 @@
                 return;
             }
 
-            const fotos = numeros.map((n) => ({
-                numero: n,
-                thumb: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n, "c_fill,w_400,h_400,q_auto,f_auto"),
-                main: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n, "c_fit,w_1400,q_auto,f_auto"),
-                full: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n, "c_fit,w_1920,q_auto,f_auto"),
-                original: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, n)
+            const fotos = numeros.map((foto) => ({
+                numero: foto.numero,
+                formato: foto.formato,
+                thumb: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "c_fill,w_400,h_400,q_auto,f_auto", foto.formato),
+                main: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "c_fit,w_1400,q_auto,f_auto", foto.formato),
+                full: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "c_fit,w_1920,q_auto,f_auto", foto.formato),
+                original: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "", foto.formato)
             }));
 
             galeriaActual = { fotos, productoNombre, ejeSlug, indice: 0 };
@@ -3219,7 +3222,7 @@
 
             if (seccion === "fotos") {
                 return `
-                    <button class="product-card product-card-button button-reset" type="button" data-galeria-eje="${crearSlug(opcion.nombre)}">
+                    <button class="product-card product-card-button button-reset" type="button" data-galeria-eje="${opcion.ejeSlug || crearSlug(opcion.nombre)}">
                         <h3 class="product-name">${opcion.nombre}</h3>
                         <hr class="divider">
                         <span class="card-action">Ver fotos</span>
@@ -3487,7 +3490,7 @@
             lightboxImage.alt = `${galeriaActual.productoNombre} foto ${lightboxIndice + 1}`;
             lightboxCounter.textContent = `${lightboxIndice + 1} / ${total}`;
             lightboxDownload.href = foto.original;
-            lightboxDownload.download = `${crearSlug(galeriaActual.productoNombre)}-${galeriaActual.ejeSlug || "foto"}-${foto.numero}.jpg`;
+            lightboxDownload.download = `${crearSlug(galeriaActual.productoNombre)}-${galeriaActual.ejeSlug || "foto"}-${foto.numero}.${foto.formato}`;
             lightboxPrev.style.visibility = total > 1 ? "visible" : "hidden";
             lightboxNext.style.visibility = total > 1 ? "visible" : "hidden";
         }
