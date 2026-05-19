@@ -1105,46 +1105,6 @@
             overflow: hidden;
         }
 
-        .adicional-search {
-            position: relative;
-            max-width: 440px;
-            margin: 0 0 18px;
-        }
-
-        .adicional-search svg {
-            position: absolute;
-            top: 50%;
-            left: 14px;
-            transform: translateY(-50%);
-            width: 18px;
-            height: 18px;
-            stroke: rgba(38, 38, 38, 0.45);
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            pointer-events: none;
-        }
-
-        #adicionalSearchInput {
-            width: 100%;
-            height: 42px;
-            padding: 0 14px 0 42px;
-            border: 1px solid rgba(38, 38, 38, 0.18);
-            border-radius: var(--radio);
-            color: var(--negro);
-            background: var(--blanco);
-            font-family: var(--fuente);
-            font-size: 0.92rem;
-            transition: border-color 160ms ease, box-shadow 160ms ease;
-        }
-
-        #adicionalSearchInput:focus {
-            outline: none;
-            border-color: var(--verde);
-            box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.18);
-        }
-
         .adicional-chips {
             display: flex;
             flex-wrap: wrap;
@@ -2921,11 +2881,9 @@
         }
 
         let adicionalFiltroCategoria = "todos";
-        let adicionalBusqueda = "";
 
         function mostrarAdicionales(categoriaInicial) {
             adicionalFiltroCategoria = categoriaInicial || "todos";
-            adicionalBusqueda = "";
 
             const chipsHtml = ['<button class="adicional-chip" type="button" data-adicional-chip="todos">Todos <span class="chip-count">' + adicionalesPlanos.length + '</span></button>']
                 .concat(adicionalesCategorias.map((cat) => `<button class="adicional-chip" type="button" data-adicional-chip="${cat.id}">${cat.nombre} <span class="chip-count">${cat.items.length}</span></button>`))
@@ -2937,15 +2895,7 @@
                         <h2 class="section-title">Adicionales</h2>
                     </div>
                 </div>
-                <p class="construction-copy">Listado completo de adicionales disponibles. Buscá por nombre o filtrá por categoría.</p>
-
-                <div class="adicional-search">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <path d="m20 20-3.5-3.5"></path>
-                    </svg>
-                    <input type="search" id="adicionalSearchInput" placeholder="Buscar adicional..." autocomplete="off" aria-label="Buscar adicional">
-                </div>
+                <p class="construction-copy">Listado completo de adicionales disponibles. Filtrá por categoría.</p>
 
                 <div class="adicional-chips" id="adicionalChips">${chipsHtml}</div>
 
@@ -2954,12 +2904,6 @@
 
             renderAdicionalesGrid();
             actualizarChips();
-
-            const input = document.getElementById("adicionalSearchInput");
-            input.addEventListener("input", (e) => {
-                adicionalBusqueda = e.target.value;
-                renderAdicionalesGrid();
-            });
 
             const hash = adicionalFiltroCategoria === "todos" ? "#adicionales" : `#adicionales/${adicionalFiltroCategoria}`;
             history.replaceState(null, "", hash);
@@ -2974,17 +2918,13 @@
         function renderAdicionalesGrid() {
             const grid = document.getElementById("adicionalGrid");
             if (!grid) return;
-            const q = normalizar(adicionalBusqueda);
 
-            const filtrados = adicionalesPlanos.filter((it) => {
-                if (adicionalFiltroCategoria !== "todos" && it.categoriaId !== adicionalFiltroCategoria) return false;
-                if (!q) return true;
-                const haystack = normalizar(`${it.nombre} ${it.descripcion} ${it.ubicacion} ${it.categoriaNombre}`);
-                return haystack.includes(q);
-            });
+            const filtrados = adicionalesPlanos
+                .filter((it) => adicionalFiltroCategoria === "todos" || it.categoriaId === adicionalFiltroCategoria)
+                .sort((a, b) => ordenAlfabetico.compare(a.nombre, b.nombre));
 
             if (filtrados.length === 0) {
-                grid.innerHTML = `<div class="empty-state">Sin resultados para "${adicionalBusqueda}".</div>`;
+                grid.innerHTML = `<div class="empty-state">Todavía no hay adicionales cargados en esta categoría.</div>`;
                 return;
             }
 
