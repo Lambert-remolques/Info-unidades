@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -510,7 +510,7 @@
                 right: 0;
                 z-index: 50;
                 align-items: center;
-                gap: 24px;
+                gap: 16px;
                 margin-bottom: 0;
                 padding: 12px 48px;
                 background: linear-gradient(135deg, #101213 0%, #1a1d1e 100%);
@@ -535,13 +535,27 @@
             }
 
             .top-nav .user-bar {
-                order: 3;
+                order: 4;
                 display: flex;
                 align-items: center;
                 margin: 0;
                 padding: 0;
                 border: 0;
                 gap: 12px;
+            }
+
+            .top-nav .user-email {
+                max-width: 290px;
+            }
+
+            @media (max-width: 1320px) {
+                .search-bar {
+                    width: 190px;
+                }
+
+                .top-nav .user-email {
+                    max-width: 210px;
+                }
             }
 
             .top-nav .menu-button {
@@ -559,7 +573,7 @@
             }
 
             .hero-inner {
-                padding-top: 165px;
+                padding-top: 112px;
                 padding-bottom: 56px;
             }
 
@@ -572,43 +586,45 @@
             }
 
             .category-panel {
-                top: 124px;
+                top: 64px;
             }
 
             .search-bar {
-                position: fixed;
-                top: 64px;
-                left: 0;
-                right: 0;
-                z-index: 45;
-                padding: 10px 48px;
-                background: rgba(15, 17, 18, 0.96);
-                backdrop-filter: blur(8px);
-                border-bottom: 2px solid var(--verde);
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+                order: 3;
+                position: relative;
+                z-index: 1;
+                width: clamp(190px, 17vw, 260px);
+                height: auto;
+                padding: 0;
+                margin: 0;
+                background: transparent;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+                backdrop-filter: none;
+                flex-shrink: 0;
             }
 
             .search-box {
                 position: relative;
-                width: min(380px, 100%);
-                margin-left: auto;
-                margin-right: 0;
+                width: 100%;
+                margin: 0;
             }
 
             #searchInput {
                 width: 100%;
-                height: 40px;
-                padding: 0 16px 0 44px;
-                border: 1px solid rgba(255, 255, 255, 0.18);
-                border-radius: 6px;
+                height: 34px;
+                padding: 0 14px 0 39px;
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                border-radius: 999px;
                 color: var(--blanco);
-                background-color: rgba(255, 255, 255, 0.06);
+                background-color: rgba(255, 255, 255, 0.055);
                 background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>");
-                background-position: 14px center;
+                background-position: 12px center;
                 background-repeat: no-repeat;
-                background-size: 18px;
+                background-size: 16px;
                 font-family: var(--fuente);
-                font-size: 0.9rem;
+                font-size: 0.78rem;
                 font-weight: 500;
                 transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
             }
@@ -632,7 +648,7 @@
                 max-height: 60vh;
                 overflow-y: auto;
                 background: var(--blanco);
-                border-radius: 6px;
+                border-radius: 8px;
                 box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
             }
 
@@ -2262,6 +2278,42 @@
                 height: 20px;
             }
         }
+
+        @media (min-width: 721px) {
+            .scroll-bar {
+                display: none !important;
+            }
+
+            .top-nav,
+            .top-nav .logo,
+            .top-nav .menu-button,
+            .search-bar,
+            #searchInput {
+                transition: padding 180ms ease, height 180ms ease, min-height 180ms ease, top 180ms ease, box-shadow 180ms ease;
+            }
+
+            body.nav-compact .top-nav {
+                padding-top: 8px;
+                padding-bottom: 8px;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
+            }
+
+            body.nav-compact .top-nav .logo {
+                height: 32px;
+            }
+
+            body.nav-compact .top-nav .menu-button {
+                min-height: 34px;
+            }
+
+            body.nav-compact #searchInput {
+                height: 32px;
+            }
+
+            body.nav-compact .category-panel {
+                top: 56px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2789,6 +2841,7 @@
         function actualizarBarraEstado() {
             const y = window.scrollY;
             scrollBar.classList.toggle("visible", y > SCROLL_BAR_THRESHOLD);
+            document.body.classList.toggle("nav-compact", y > SCROLL_BAR_THRESHOLD);
             backToTop.classList.toggle("visible", y > BACK_TO_TOP_THRESHOLD);
         }
 
@@ -3256,20 +3309,42 @@
         const searchModalClose = document.querySelector("#searchModalClose");
         const heroSearchToggle = document.querySelector("#heroSearchToggle");
         const scrollBarSearchToggle = document.querySelector("#scrollBarSearchToggle");
+        const searchBar = document.querySelector("#searchBar");
+        const topNav = document.querySelector(".top-nav");
+        const userBar = document.querySelector(".user-bar");
+        if (topNav && userBar && searchBar && searchBar.parentElement !== topNav) {
+            topNav.insertBefore(searchBar, userBar);
+        }
 
         function normalizar(texto) {
             return texto
                 .normalize("NFD")
-                .replace(/[̀-ͯ]/g, "")
+                .replace(/[\u0300-\u036f]/g, "")
                 .toLowerCase()
                 .trim();
         }
 
         const itemsBusqueda = [];
+        Object.entries(HERO_CONTENT).forEach(([seccion, contenido]) => {
+            itemsBusqueda.push({
+                tipo: "seccion",
+                seccion,
+                seccionLabel: "Secci\u00f3n",
+                categoriaId: "",
+                categoriaNombre: "Cat\u00e1logo",
+                productoNombre: contenido.titulo,
+                productoSlug: "",
+                descripcion: contenido.descripcion,
+                tieneOpciones: false,
+                searchHaystack: normalizar(`${contenido.titulo} ${contenido.descripcion} ${seccion}`)
+            });
+        });
+
         categorias.forEach((cat) => {
             cat.productos.forEach((prod) => {
                 ["fichas", "fotos"].forEach((seccion) => {
                     itemsBusqueda.push({
+                        tipo: "unidad",
                         seccion,
                         seccionLabel: HERO_CONTENT[seccion].titulo,
                         categoriaId: cat.id,
@@ -3281,6 +3356,21 @@
                         searchHaystack: normalizar(`${prod.nombre} ${prod.descripcion || ""} ${cat.nombre} ${HERO_CONTENT[seccion].titulo}`)
                     });
                 });
+            });
+        });
+
+        adicionalesPlanos.forEach((adicional) => {
+            itemsBusqueda.push({
+                tipo: "adicional",
+                seccion: "adicionales",
+                seccionLabel: HERO_CONTENT.adicionales.titulo,
+                categoriaId: adicional.categoriaId,
+                categoriaNombre: adicional.categoriaNombre,
+                productoNombre: adicional.nombre,
+                productoSlug: adicional.slug,
+                descripcion: adicional.descripcion,
+                tieneOpciones: false,
+                searchHaystack: normalizar(`${adicional.nombre} ${adicional.descripcion} ${adicional.ubicacion} ${adicional.categoriaNombre} adicionales`)
             });
         });
 
@@ -3297,11 +3387,12 @@
             } else {
                 container.innerHTML = matches.slice(0, 30).map((item) => `
                     <button class="search-result-item" type="button" role="option"
+                            data-search-tipo="${item.tipo}"
                             data-search-seccion="${item.seccion}"
                             data-search-categoria="${item.categoriaId}"
                             data-search-producto="${item.productoSlug}"
                             data-search-tieneopciones="${item.tieneOpciones}">
-                        <span class="search-result-path">${item.seccionLabel} › ${item.categoriaNombre}</span>
+                        <span class="search-result-path">${item.seccionLabel} \u203a ${item.categoriaNombre}</span>
                         <span class="search-result-name">${item.productoNombre}</span>
                     </button>
                 `).join("");
@@ -3350,12 +3441,18 @@
         });
 
         function navegarDesdeResultado(item) {
+            const tipo = item.dataset.searchTipo;
             const seccion = item.dataset.searchSeccion;
             const categoriaId = item.dataset.searchCategoria;
             const productoSlug = item.dataset.searchProducto;
             const tieneOpciones = item.dataset.searchTieneopciones === "true";
 
-            if (tieneOpciones) {
+            if (tipo === "seccion") {
+                mostrarSeccion(seccion);
+            } else if (tipo === "adicional") {
+                mostrarSeccion("adicionales", categoriaId);
+                requestAnimationFrame(() => abrirAdicionalDetalle(productoSlug));
+            } else if (tieneOpciones) {
                 mostrarProducto(categoriaId, productoSlug, seccion);
             } else {
                 mostrarCategoria(categoriaId, seccion);
