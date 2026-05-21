@@ -801,7 +801,9 @@
             gap: 8px;
             width: 100%;
             padding: 10px 14px;
+            border: 0;
             border-radius: var(--radio);
+            font-family: inherit;
             color: var(--verde);
             background: rgba(21, 153, 71, 0.12);
             font-size: 0.74rem;
@@ -2640,6 +2642,195 @@
                 box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
             }
         }
+
+        .products-grid .product-name {
+            min-height: 2.2em;
+        }
+
+        .products-grid .product-description {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            min-height: 4.35em;
+        }
+
+        .sheet-link-pendiente {
+            color: var(--gris-texto);
+            background: rgba(38, 38, 38, 0.07);
+            cursor: default;
+        }
+
+        .pdf-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+        }
+
+        .pdf-modal[hidden] {
+            display: none;
+        }
+
+        .pdf-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 16, 17, 0.78);
+        }
+
+        .pdf-modal-box {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: min(960px, 100%);
+            height: min(88vh, 100%);
+            background: var(--blanco);
+            border-radius: var(--radio);
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .pdf-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #101213 0%, #1a1d1e 100%);
+        }
+
+        .pdf-modal-title {
+            color: var(--blanco);
+            font-size: 0.82rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pdf-modal-acciones {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .pdf-modal-descargar {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: var(--radio);
+            color: var(--blanco);
+            background: var(--verde);
+            font-size: 0.72rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: background 160ms ease;
+        }
+
+        .pdf-modal-descargar:hover {
+            background: var(--verde-oscuro);
+        }
+
+        .pdf-modal-descargar svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .pdf-modal-cerrar {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: var(--radio);
+            color: var(--blanco);
+            background: rgba(255, 255, 255, 0.12);
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 160ms ease;
+        }
+
+        .pdf-modal-cerrar:hover {
+            background: rgba(218, 37, 29, 0.6);
+        }
+
+        .pdf-modal-cuerpo {
+            position: relative;
+            flex: 1;
+            background: #2b2b2b;
+        }
+
+        .pdf-modal-frame {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .pdf-modal-cargando {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: var(--blanco);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .pdf-modal-cargando[hidden] {
+            display: none;
+        }
+
+        .pdf-modal-spinner {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--verde);
+            animation: pdf-spin 720ms linear infinite;
+        }
+
+        @keyframes pdf-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        body.pdf-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 720px) {
+            .pdf-modal {
+                padding: 0;
+            }
+
+            .pdf-modal-box {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+
+            .pdf-modal-descargar span {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2745,6 +2936,29 @@
             <input type="search" id="searchInputModal" placeholder="Buscar..." autocomplete="off" aria-label="Buscar unidad">
         </div>
         <div class="search-modal-results" id="searchResultsModal" role="listbox"></div>
+    </div>
+
+    <div class="pdf-modal" id="pdfModal" hidden>
+        <div class="pdf-modal-overlay" id="pdfModalOverlay"></div>
+        <div class="pdf-modal-box" role="dialog" aria-modal="true" aria-label="Ficha técnica">
+            <div class="pdf-modal-header">
+                <span class="pdf-modal-title" id="pdfModalTitle">Ficha técnica</span>
+                <div class="pdf-modal-acciones">
+                    <a class="pdf-modal-descargar" id="pdfModalDescargar" download>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 20h14"></path></svg>
+                        <span>Descargar</span>
+                    </a>
+                    <button class="pdf-modal-cerrar" id="pdfModalCerrar" type="button" aria-label="Cerrar">×</button>
+                </div>
+            </div>
+            <div class="pdf-modal-cuerpo">
+                <div class="pdf-modal-cargando" id="pdfModalCargando">
+                    <span class="pdf-modal-spinner" aria-hidden="true"></span>
+                    Abriendo ficha…
+                </div>
+                <iframe class="pdf-modal-frame" id="pdfModalFrame" title="Ficha técnica"></iframe>
+            </div>
+        </div>
     </div>
 
     <div class="variantes-modal" id="variantesModal" hidden aria-label="Variantes disponibles">
@@ -3495,6 +3709,7 @@
             catalogView.innerHTML = `
                 <div class="products-grid">${productosHtml}</div>
             `;
+            verificarFichasVisibles(catalogView);
 
             history.replaceState(null, "", `#${seccion}/${categoria.id}`);
         }
@@ -3539,6 +3754,37 @@
         }
 
         const ICONO_FICHA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v5h5"></path><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>`;
+        const ICONO_RELOJ = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg>`;
+
+        const fichasVerificadas = new Map();
+
+        async function verificarFicha(url) {
+            if (fichasVerificadas.has(url)) return fichasVerificadas.get(url);
+            let existe = true;
+            try {
+                const resp = await fetch(url, { method: "HEAD" });
+                existe = resp.ok;
+            } catch (e) {
+                existe = true;
+            }
+            fichasVerificadas.set(url, existe);
+            return existe;
+        }
+
+        const BOTON_FICHA_PENDIENTE = `<span class="sheet-link sheet-link-pendiente">${ICONO_RELOJ}<span>Ficha en preparación</span></span>`;
+
+        function botonFicha(nombre, url) {
+            if (fichasVerificadas.get(url) === false) return BOTON_FICHA_PENDIENTE;
+            return `<button class="sheet-link" type="button" data-pdf="${url}" data-pdf-titulo="${nombre}">${ICONO_FICHA}<span>Ver ficha técnica</span></button>`;
+        }
+
+        function verificarFichasVisibles(contenedor) {
+            (contenedor || document).querySelectorAll("[data-pdf]").forEach((btn) => {
+                verificarFicha(btn.dataset.pdf).then((existe) => {
+                    if (!existe && btn.isConnected) btn.outerHTML = BOTON_FICHA_PENDIENTE;
+                });
+            });
+        }
 
         function crearTarjetaAccion(nombre, descripcion, textoBoton, url) {
             return `
@@ -3546,12 +3792,44 @@
                     <h3 class="product-name">${nombre}</h3>
                     <p class="product-description">${descripcion}</p>
                     <hr class="divider">
-                    <a class="sheet-link" href="${url}" target="_blank" rel="noopener noreferrer">
-                        ${ICONO_FICHA}<span>${textoBoton}</span>
-                    </a>
+                    ${botonFicha(nombre, url)}
                 </article>
             `;
         }
+
+        const pdfModal = document.querySelector("#pdfModal");
+        const pdfModalFrame = document.querySelector("#pdfModalFrame");
+        const pdfModalTitle = document.querySelector("#pdfModalTitle");
+        const pdfModalDescargar = document.querySelector("#pdfModalDescargar");
+        const pdfModalCargando = document.querySelector("#pdfModalCargando");
+
+        function abrirPdf(url, titulo) {
+            pdfModalTitle.textContent = titulo || "Ficha técnica";
+            pdfModalDescargar.href = url;
+            pdfModalCargando.hidden = false;
+            pdfModalFrame.src = url;
+            pdfModal.hidden = false;
+            document.body.classList.add("pdf-open");
+        }
+
+        function cerrarPdf() {
+            pdfModal.hidden = true;
+            pdfModalFrame.src = "about:blank";
+            document.body.classList.remove("pdf-open");
+        }
+
+        pdfModalFrame.addEventListener("load", () => {
+            if (!pdfModal.hidden) pdfModalCargando.hidden = true;
+        });
+        document.querySelector("#pdfModalCerrar").addEventListener("click", cerrarPdf);
+        document.querySelector("#pdfModalOverlay").addEventListener("click", cerrarPdf);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && !pdfModal.hidden) cerrarPdf();
+        });
+        document.addEventListener("click", (event) => {
+            const pdfBtn = event.target.closest("[data-pdf]");
+            if (pdfBtn) abrirPdf(pdfBtn.dataset.pdf, pdfBtn.dataset.pdfTitulo);
+        });
 
         function mostrarProducto(idCategoria, slugProducto, seccion = "fichas") {
             const categoria = categorias.find((item) => item.id === idCategoria) || categorias[0];
@@ -3585,6 +3863,7 @@
                 </div>
                 <div class="products-grid">${opcionesHtml}</div>
             `;
+            verificarFichasVisibles(catalogView);
 
             history.replaceState(null, "", `#${seccion}/${categoria.id}/${slugProducto}`);
         }
@@ -3946,9 +4225,10 @@
                 <article class="variante-card">
                     <h4 class="variante-name">${v.nombre}</h4>
                     <p class="variante-description">${v.descripcion || ""}</p>
-                    <a class="sheet-link" href="${v.pdf}" target="_blank" rel="noopener noreferrer">Ver ficha técnica</a>
+                    ${botonFicha(v.nombre, v.pdf || PDF_PLACEHOLDER)}
                 </article>
             `).join("");
+            verificarFichasVisibles(variantesModalList);
             variantesModal.hidden = false;
             requestAnimationFrame(() => variantesModal.classList.add("open"));
             document.body.classList.add("variantes-open");
