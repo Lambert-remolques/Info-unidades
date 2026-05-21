@@ -3363,38 +3363,47 @@
             });
         }
 
-        async function detectarUnaFoto(categoria, productoNombre, ejeSlug, numero) {
-            const intentos = FOTO_FORMATOS.map(async (formato) => {
-                const url = cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, numero, "", formato);
-                return (await cargarImagen(url)) ? formato : null;
-            });
-            const formato = (await Promise.all(intentos)).find((f) => f);
-            return formato ? { numero, formato } : null;
+        // Catálogo de fotos: se trae UNA vez la lista completa desde Cloudinary
+        // (recursos con el tag "catalogo") y se arma un índice en memoria.
+        const FOTOS_LIST_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/catalogo.json`;
+        let catalogoFotos = {};
+
+        const cargaFotosPromise = (async () => {
+            try {
+                const resp = await fetch(FOTOS_LIST_URL);
+                if (!resp.ok) return;
+                const data = await resp.json();
+                (data.resources || []).forEach((r) => {
+                    const partes = (r.public_id || "").split("/");
+                    if (partes[0] !== "unidades") return;
+                    const m = partes[partes.length - 1].match(/^foto-(\d+)$/);
+                    if (!m) return;
+                    let categoria, slug, eje;
+                    if (partes.length === 5) {
+                        categoria = partes[1]; slug = partes[2]; eje = partes[3];
+                    } else if (partes.length === 4) {
+                        categoria = partes[1]; slug = partes[2]; eje = "";
+                    } else {
+                        return;
+                    }
+                    const clave = `${categoria}/${slug}/${eje}`;
+                    (catalogoFotos[clave] = catalogoFotos[clave] || []).push({
+                        numero: parseInt(m[1], 10),
+                        formato: r.format || "jpg"
+                    });
+                });
+                Object.values(catalogoFotos).forEach((lista) => lista.sort((a, b) => a.numero - b.numero));
+            } catch (e) {}
+        })();
+
+        function fotosDe(categoria, productoNombre, ejeSlug) {
+            const clave = `${categoria}/${crearSlug(productoNombre)}/${ejeSlug || ""}`;
+            return catalogoFotos[clave] || [];
         }
 
         async function detectarFotos(categoria, productoNombre, ejeSlug) {
-            const fotos = [];
-            const LOTE = 8;
-            for (let inicio = 1; inicio <= FOTO_MAX_POR_GALERIA; inicio += LOTE) {
-                const numeros = [];
-                for (let i = inicio; i < inicio + LOTE && i <= FOTO_MAX_POR_GALERIA; i++) {
-                    numeros.push(i);
-                }
-                const resultados = await Promise.all(
-                    numeros.map((n) => detectarUnaFoto(categoria, productoNombre, ejeSlug, n))
-                );
-                let corte = false;
-                for (const resultado of resultados) {
-                    if (resultado) {
-                        fotos.push(resultado);
-                    } else {
-                        corte = true;
-                        break;
-                    }
-                }
-                if (corte) break;
-            }
-            return fotos;
+            await cargaFotosPromise;
+            return fotosDe(categoria, productoNombre, ejeSlug).slice();
         }
 
         function opcionesEjes(productoNombre) {
@@ -4200,32 +4209,30 @@
 
         const FORMATOS_FOTO = ["jpg", "png", "webp"];
 
-        function verificarFotosVisibles(contenedor) {
+        async function verificarFotosVisibles(contenedor) {
+            await cargaFotosPromise;
             (contenedor || document).querySelectorAll(".foto-card-img").forEach((img) => {
                 const card = img.closest(".foto-card");
                 if (!card) return;
                 const cat = card.dataset.coverCat;
                 const slug = card.dataset.coverSlug;
                 const ejes = card.dataset.coverEjes ? card.dataset.coverEjes.split(",") : [""];
-                const candidatos = [];
-                ejes.forEach((eje) => {
-                    FORMATOS_FOTO.forEach((fmt) => {
-                        candidatos.push(cloudinaryFotoUrl(cat, slug, eje || null, 1, COVER_TX, fmt));
-                    });
-                });
-                let i = 0;
-                const probar = () => {
-                    if (i >= candidatos.length) {
-                        card.classList.add("pendiente");
-                        card.disabled = true;
-                        const accion = card.querySelector(".card-action span");
-                        if (accion) accion.textContent = "Fotos en preparación";
-                        return;
+                let cover = null;
+                for (const eje of ejes) {
+                    const lista = catalogoFotos[`${cat}/${slug}/${eje}`];
+                    if (lista && lista.length) {
+                        cover = { eje, foto: lista[0] };
+                        break;
                     }
-                    img.src = candidatos[i++];
-                };
-                img.addEventListener("error", probar);
-                probar();
+                }
+                if (cover) {
+                    img.src = cloudinaryFotoUrl(cat, slug, cover.eje || null, cover.foto.numero, COVER_TX, cover.foto.formato);
+                } else {
+                    card.classList.add("pendiente");
+                    card.disabled = true;
+                    const accion = card.querySelector(".card-action span");
+                    if (accion) accion.textContent = "Fotos en preparación";
+                }
             });
         }
 
@@ -4314,25 +4321,17 @@
             document.body.classList.remove("pdf-open");
         }
 
-        function verificarEjesModal(categoriaId, producto) {
+        async function verificarEjesModal(categoriaId, producto) {
+            await cargaFotosPromise;
             const slug = crearSlug(producto.nombre);
             ejesModalLista.querySelectorAll(".eje-opcion").forEach((btn) => {
-                const candidatos = FORMATOS_FOTO.map((fmt) => cloudinaryFotoUrl(categoriaId, slug, btn.dataset.ejeSlug, 1, "", fmt));
-                let i = 0;
-                const probar = () => {
-                    if (i >= candidatos.length) {
-                        btn.classList.add("eje-opcion-pendiente");
-                        btn.disabled = true;
-                        const extra = btn.querySelector(".eje-opcion-extra");
-                        if (extra) extra.textContent = "Sin fotos";
-                        return;
-                    }
-                    const test = new Image();
-                    test.onload = () => {};
-                    test.onerror = () => { i++; probar(); };
-                    test.src = candidatos[i];
-                };
-                probar();
+                const lista = catalogoFotos[`${categoriaId}/${slug}/${btn.dataset.ejeSlug}`];
+                if (!lista || !lista.length) {
+                    btn.classList.add("eje-opcion-pendiente");
+                    btn.disabled = true;
+                    const extra = btn.querySelector(".eje-opcion-extra");
+                    if (extra) extra.textContent = "Sin fotos";
+                }
             });
         }
 
