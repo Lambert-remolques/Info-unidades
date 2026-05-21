@@ -3368,6 +3368,11 @@
         const FOTOS_LIST_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/catalogo.json`;
         let catalogoFotos = {};
 
+        // Normaliza la configuración de ejes para tolerar "2-eje" vs "2-ejes".
+        function normEje(eje) {
+            return (eje || "").replace(/-ejes$/, "-eje");
+        }
+
         const cargaFotosPromise = (async () => {
             try {
                 const resp = await fetch(FOTOS_LIST_URL);
@@ -3386,10 +3391,11 @@
                     } else {
                         return;
                     }
-                    const clave = `${categoria}/${slug}/${eje}`;
+                    const clave = `${categoria}/${slug}/${normEje(eje)}`;
                     (catalogoFotos[clave] = catalogoFotos[clave] || []).push({
                         numero: parseInt(m[1], 10),
-                        formato: r.format || "jpg"
+                        formato: r.format || "jpg",
+                        eje: eje
                     });
                 });
                 Object.values(catalogoFotos).forEach((lista) => lista.sort((a, b) => a.numero - b.numero));
@@ -3397,7 +3403,7 @@
         })();
 
         function fotosDe(categoria, productoNombre, ejeSlug) {
-            const clave = `${categoria}/${crearSlug(productoNombre)}/${ejeSlug || ""}`;
+            const clave = `${categoria}/${crearSlug(productoNombre)}/${normEje(ejeSlug)}`;
             return catalogoFotos[clave] || [];
         }
 
@@ -4219,14 +4225,14 @@
                 const ejes = card.dataset.coverEjes ? card.dataset.coverEjes.split(",") : [""];
                 let cover = null;
                 for (const eje of ejes) {
-                    const lista = catalogoFotos[`${cat}/${slug}/${eje}`];
+                    const lista = catalogoFotos[`${cat}/${slug}/${normEje(eje)}`];
                     if (lista && lista.length) {
-                        cover = { eje, foto: lista[0] };
+                        cover = lista[0];
                         break;
                     }
                 }
                 if (cover) {
-                    img.src = cloudinaryFotoUrl(cat, slug, cover.eje || null, cover.foto.numero, COVER_TX, cover.foto.formato);
+                    img.src = cloudinaryFotoUrl(cat, slug, cover.eje, cover.numero, COVER_TX, cover.formato);
                 } else {
                     card.classList.add("pendiente");
                     card.disabled = true;
@@ -4325,7 +4331,7 @@
             await cargaFotosPromise;
             const slug = crearSlug(producto.nombre);
             ejesModalLista.querySelectorAll(".eje-opcion").forEach((btn) => {
-                const lista = catalogoFotos[`${categoriaId}/${slug}/${btn.dataset.ejeSlug}`];
+                const lista = catalogoFotos[`${categoriaId}/${slug}/${normEje(btn.dataset.ejeSlug)}`];
                 if (!lista || !lista.length) {
                     btn.classList.add("eje-opcion-pendiente");
                     btn.disabled = true;
@@ -4456,10 +4462,10 @@
             const fotos = numeros.map((foto) => ({
                 numero: foto.numero,
                 formato: foto.formato,
-                thumb: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "c_fit,w_700,q_auto,f_auto", foto.formato),
-                main: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "c_fit,w_1400,q_auto,f_auto", foto.formato),
-                full: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "c_fit,w_1920,q_auto,f_auto", foto.formato),
-                original: cloudinaryFotoUrl(idCategoria, productoNombre, ejeSlug, foto.numero, "", foto.formato)
+                thumb: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_700,q_auto,f_auto", foto.formato),
+                main: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_1400,q_auto,f_auto", foto.formato),
+                full: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_1920,q_auto,f_auto", foto.formato),
+                original: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "", foto.formato)
             }));
 
             galeriaActual = { fotos, productoNombre, ejeSlug, indice: 0 };
