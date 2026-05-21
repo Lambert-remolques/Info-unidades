@@ -146,6 +146,17 @@
             background-repeat: no-repeat, no-repeat;
         }
 
+        .hero-fotos {
+            min-height: 470px;
+            background-image:
+                linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 52%),
+                linear-gradient(165deg, rgba(16, 18, 19, 0.86) 0%, rgba(16, 18, 19, 0.55) 48%, rgba(16, 18, 19, 0.9) 100%),
+                url("fotos.jpg");
+            background-size: cover, cover, cover;
+            background-position: center, center, center 62%;
+            background-repeat: no-repeat, no-repeat, no-repeat;
+        }
+
         .hero-inicio .hero-title {
             font-size: clamp(1.95rem, 5vw, 4.1rem);
         }
@@ -631,7 +642,8 @@
         }
 
         @media (max-width: 720px) {
-            .hero-inicio {
+            .hero-inicio,
+            .hero-fotos {
                 min-height: 380px;
             }
 
@@ -924,7 +936,14 @@
                 background: var(--verde);
             }
 
+            .hero {
+                display: flex;
+            }
+
             .hero-inner {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
                 padding-top: 112px;
                 padding-bottom: 56px;
             }
@@ -3666,6 +3685,7 @@
             const esInicio = seccion === "inicio";
             hero.classList.toggle("hero-inicio", esInicio);
             hero.classList.toggle("hero-fichas", seccion === "fichas");
+            hero.classList.toggle("hero-fotos", seccion === "fotos");
 
             if (esInicio) {
                 const linea1 = usuarioActual.nombre ? `¡Hola, ${usuarioActual.nombre}!` : "¡Hola!";
