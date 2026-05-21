@@ -485,6 +485,13 @@
             line-height: 1.55;
         }
 
+        @media (min-width: 721px) {
+            .inicio-intro {
+                max-width: none;
+                white-space: nowrap;
+            }
+        }
+
         .empty-state {
             padding: 28px;
             border-left: 5px solid var(--verde);
@@ -2874,10 +2881,10 @@
                         <h2 class="section-title">Inicio</h2>
                     </div>
                 </div>
-                <p class="construction-copy">Catálogo interno con fichas técnicas, fotos y adicionales de cada unidad. Elegí una sección para empezar.</p>
+                <p class="construction-copy inicio-intro">Catálogo interno con fichas técnicas, fotos y adicionales de cada unidad. Elegí una sección para empezar.</p>
                 <div class="home-grid">
-                    ${crearTarjetaInicio("Fichas técnicas", "Consulta de fichas PDF por categoría, unidad y configuración.", "fichas")}
-                    ${crearTarjetaInicio("Fotos", "Galería de fotos de cada unidad por categoría y configuración.", "fotos")}
+                    ${crearTarjetaInicio("Fichas técnicas", "Consulta de fichas técnicas por unidad y carrozado.", "fichas")}
+                    ${crearTarjetaInicio("Fotos", "Galería de fotos de cada unidad por carrozado y configuración.", "fotos")}
                     ${crearTarjetaInicio("Adicionales", "Sección en construcción para próximos recursos complementarios.", "adicionales")}
                 </div>
             `;
