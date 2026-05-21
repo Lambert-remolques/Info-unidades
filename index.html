@@ -3228,7 +3228,7 @@
         <div class="ejes-modal-overlay" id="ejesModalOverlay"></div>
         <div class="ejes-modal-box" role="dialog" aria-modal="true" aria-label="Configuraciones">
             <button class="ejes-modal-close" id="ejesModalClose" type="button" aria-label="Cerrar">×</button>
-            <p class="ejes-modal-kicker">Galería de fotos</p>
+            <p class="ejes-modal-kicker" id="ejesModalKicker">Galería de fotos</p>
             <h3 class="ejes-modal-title" id="ejesModalTitle"></h3>
             <p class="ejes-modal-sub">Elegí una configuración para ver sus fotos</p>
             <div class="ejes-modal-lista" id="ejesModalLista"></div>
@@ -4184,11 +4184,14 @@
         });
 
         const ejesModal = document.querySelector("#ejesModal");
+        const ejesModalKicker = document.querySelector("#ejesModalKicker");
         const ejesModalTitle = document.querySelector("#ejesModalTitle");
         const ejesModalLista = document.querySelector("#ejesModalLista");
 
         function abrirModalEjes(categoriaId, producto) {
             const opciones = producto.fotosOpciones || [];
+            const categoria = categorias.find((c) => c.id === categoriaId);
+            ejesModalKicker.textContent = categoria ? `Galería de fotos · ${categoria.nombre}` : "Galería de fotos";
             ejesModalTitle.textContent = producto.nombre;
             ejesModalLista.innerHTML = opciones.map((op) => {
                 const eje = op.ejeSlug || crearSlug(op.nombre);
