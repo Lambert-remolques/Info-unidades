@@ -106,7 +106,7 @@
 
         .hero {
             position: relative;
-            min-height: 300px;
+            min-height: 470px;
             overflow: hidden;
             color: var(--blanco);
             background:
@@ -174,7 +174,7 @@
         }
 
         .hero-fichas {
-            min-height: 380px;
+            min-height: 470px;
         }
 
         .hero-fichas .hero-plano {
@@ -414,16 +414,40 @@
         }
 
         .inicio-bloque-titulo {
-            display: inline-block;
-            margin: 0 0 18px;
-            padding-bottom: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            margin: 0 0 20px;
+            padding-bottom: 9px;
             color: var(--verde);
-            font-size: 1.05rem;
+            font-size: 1.35rem;
             font-weight: 900;
             font-style: italic;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            border-bottom: 2px solid var(--verde);
+            border-bottom: 3px solid var(--verde);
+        }
+
+        .inicio-bloque-icono {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            border-radius: var(--radio);
+            background: var(--verde);
+            color: var(--blanco);
+        }
+
+        .inicio-bloque-icono svg {
+            width: 19px;
+            height: 19px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .recientes-grid {
@@ -1110,7 +1134,7 @@
 
         @media (max-width: 720px) {
             .hero {
-                min-height: auto;
+                min-height: 380px;
             }
 
             .hero-inner {
@@ -3807,14 +3831,43 @@
 
         // ===== Novedades / cambios recientes =====
         // Para agregar una novedad: sumar un objeto AL PRINCIPIO del array (la más reciente arriba).
-        // destino: { seccion, categoria, producto }. "producto" es el slug de la unidad y es opcional
-        // (si se omite, el enlace lleva a la categoría o sección indicada).
+        // tipo "ficha"  -> abre el PDF. Campos: pdf, titulo.
+        // tipo "galeria" -> abre la galería. Campos: cat, unidad, eje.
         const NOVEDADES = [
             {
                 fecha: "21/05/2026",
                 apartado: "Fichas técnicas",
-                texto: "Se agregó la ficha técnica del acoplado Baranda volcable.",
-                destino: { seccion: "fichas", categoria: "acoplados", producto: "baranda-volcable" }
+                texto: "Se agregó la ficha técnica del semirremolque Batea.",
+                tipo: "ficha",
+                pdf: "fichas/semirremolques/batea.pdf",
+                titulo: "Batea"
+            },
+            {
+                fecha: "21/05/2026",
+                apartado: "Fotos",
+                texto: "Se cargó la galería de fotos del acoplado Baranda volcable · 4 ejes.",
+                tipo: "galeria",
+                cat: "acoplados",
+                unidad: "Baranda volcable",
+                eje: "4-ejes"
+            },
+            {
+                fecha: "21/05/2026",
+                apartado: "Fotos",
+                texto: "Se cargó la galería de fotos del acoplado Todo puertas · 3 ejes.",
+                tipo: "galeria",
+                cat: "acoplados",
+                unidad: "Todo puertas",
+                eje: "3-ejes"
+            },
+            {
+                fecha: "21/05/2026",
+                apartado: "Fotos",
+                texto: "Se cargó la galería de fotos del semirremolque Batea · 1+2 ejes.",
+                tipo: "galeria",
+                cat: "semirremolques",
+                unidad: "Batea",
+                eje: "1-2-eje"
             }
         ];
 
@@ -3841,6 +3894,13 @@
             } catch (e) {}
         }
 
+        const ICONO_RAYO = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"></path></svg>`;
+        const ICONO_ESTRELLA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.25 4.15 1 5.85L12 17.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"></path></svg>`;
+
+        function tituloBloque(icono, texto) {
+            return `<h3 class="inicio-bloque-titulo"><span class="inicio-bloque-icono">${icono}</span>${texto}</h3>`;
+        }
+
         function crearBloqueRecientes() {
             const lista = leerRecientes();
             if (!lista.length) return "";
@@ -3855,7 +3915,7 @@
             `).join("");
             return `
                 <div class="inicio-bloque">
-                    <h3 class="inicio-bloque-titulo">Vistas recientemente</h3>
+                    ${tituloBloque(ICONO_RELOJ, "Vistos recientemente")}
                     <div class="recientes-grid">${cards}</div>
                 </div>
             `;
@@ -3878,7 +3938,7 @@
             `).join("");
             return `
                 <div class="inicio-bloque">
-                    <h3 class="inicio-bloque-titulo">Novedades</h3>
+                    ${tituloBloque(ICONO_ESTRELLA, "Novedades")}
                     <ul class="novedades-lista">${items}</ul>
                 </div>
             `;
@@ -3887,7 +3947,7 @@
         function mostrarInicio() {
             catalogView.innerHTML = `
                 <div class="inicio-bloque">
-                    <h3 class="inicio-bloque-titulo">Acceso rápido</h3>
+                    ${tituloBloque(ICONO_RAYO, "Acceso rápido")}
                     <div class="home-grid">
                         ${crearTarjetaInicio("Fichas técnicas", "Consulta de fichas técnicas por unidad y carrozado.", "fichas")}
                         ${crearTarjetaInicio("Fotos", "Galería de fotos de cada unidad por carrozado y configuración.", "fotos")}
@@ -4854,9 +4914,13 @@
             const novedadBtn = event.target.closest("[data-novedad]");
             if (novedadBtn) {
                 const nov = NOVEDADES[parseInt(novedadBtn.dataset.novedad, 10)];
-                if (nov && nov.destino) {
-                    mostrarSeccion(nov.destino.seccion, nov.destino.categoria || "", nov.destino.producto || "");
-                    window.scrollTo({ top: 0, behavior: "smooth" });
+                if (nov) {
+                    if (nov.tipo === "ficha") {
+                        abrirPdf(nov.pdf, nov.titulo);
+                    } else if (nov.tipo === "galeria") {
+                        mostrarGaleria(nov.cat, nov.unidad, nov.eje || null);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
                 }
                 return;
             }
