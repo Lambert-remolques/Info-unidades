@@ -138,6 +138,28 @@
             opacity: 0.55;
         }
 
+        .hero-inicio {
+            min-height: 470px;
+            background-image:
+                linear-gradient(165deg, rgba(16, 18, 19, 0.86) 0%, rgba(16, 18, 19, 0.55) 48%, rgba(16, 18, 19, 0.9) 100%),
+                url("hero-unidades.jpg");
+            background-size: cover, cover;
+            background-position: center, center 62%;
+            background-repeat: no-repeat, no-repeat;
+        }
+
+        .hero-inicio .hero-title {
+            font-size: clamp(1.95rem, 5vw, 4.1rem);
+        }
+
+        .hero-saludo-linea {
+            display: block;
+        }
+
+        .hero-saludo-linea2 {
+            margin-top: 0.34em;
+        }
+
         .hero-inner {
             position: relative;
             z-index: 1;
@@ -353,8 +375,249 @@
             gap: 26px;
         }
 
-        .home-card {
-            min-height: 230px;
+        .inicio-bloque {
+            padding: 24px;
+            border-radius: 18px;
+            background: #edf6f0;
+            border: 1px solid rgba(21, 153, 71, 0.12);
+        }
+
+        .inicio-bloque + .inicio-bloque {
+            margin-top: 22px;
+        }
+
+        .inicio-bloque-titulo {
+            display: inline-block;
+            margin: 0 0 18px;
+            padding-bottom: 6px;
+            color: var(--verde);
+            font-size: 1.05rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid var(--verde);
+        }
+
+        .recientes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .reciente-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--radio);
+            border-left: 4px solid var(--verde);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: var(--sombra-card);
+            text-align: left;
+            cursor: pointer;
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .reciente-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 22px rgba(38, 38, 38, 0.18);
+            }
+        }
+
+        .reciente-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .reciente-nombre {
+            color: var(--negro);
+            font-size: 0.92rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .reciente-meta {
+            color: var(--gris-texto);
+            font-size: 0.73rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .reciente-flecha {
+            display: flex;
+            flex-shrink: 0;
+            color: var(--verde);
+        }
+
+        .reciente-flecha svg {
+            width: 17px;
+            height: 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .reciente-card:hover .reciente-flecha svg {
+                transform: translateX(4px);
+            }
+        }
+
+        .novedades-lista {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .novedad-item {
+            padding: 16px 20px;
+            border-radius: var(--radio);
+            border-left: 4px solid var(--verde);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: var(--sombra-card);
+        }
+
+        .novedad-cabecera {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 7px;
+        }
+
+        .novedad-fecha {
+            color: var(--gris-texto);
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+        .novedad-sep {
+            color: rgba(38, 38, 38, 0.3);
+        }
+
+        .novedad-apartado {
+            color: var(--verde);
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .novedad-texto {
+            margin: 0 0 11px;
+            color: var(--negro);
+            font-size: 0.92rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .novedad-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--verde);
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .novedad-link svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .novedad-link:hover svg {
+                transform: translateX(4px);
+            }
+        }
+
+        .site-footer {
+            margin-top: 64px;
+            padding: 34px 0;
+            background: linear-gradient(135deg, #101213 0%, #1a1d1e 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .site-footer-inner {
+            width: min(1280px, calc(100% - 112px));
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            align-items: flex-start;
+        }
+
+        .site-footer-logo {
+            width: 134px;
+            height: auto;
+            filter: drop-shadow(0 3px 7px rgba(0, 0, 0, 0.5));
+        }
+
+        .site-footer-texto {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.82rem;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+
+        @media (min-width: 900px) {
+            .site-footer-texto {
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .hero-inicio {
+                min-height: 380px;
+            }
+
+            .site-footer-inner {
+                width: min(100% - 32px, 1280px);
+            }
+        }
+
+        .home-card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            margin-bottom: 15px;
+            border-radius: var(--radio);
+            background: rgba(21, 153, 71, 0.10);
+            color: var(--verde);
+        }
+
+        .home-card-icon svg {
+            width: 25px;
+            height: 25px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .product-card {
@@ -421,12 +684,42 @@
         }
 
         .card-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
             margin-top: auto;
+            padding: 10px 14px;
+            border-radius: var(--radio);
             color: var(--verde);
+            background: rgba(21, 153, 71, 0.12);
             font-size: 0.75rem;
             font-weight: 900;
             font-style: italic;
             text-transform: uppercase;
+            transition: background 160ms ease, color 160ms ease;
+        }
+
+        .card-action svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .product-card:hover .card-action {
+                background: var(--verde);
+                color: var(--blanco);
+            }
+
+            .product-card:hover .card-action svg {
+                transform: translateX(4px);
+            }
         }
 
         .back-button {
@@ -483,13 +776,6 @@
             font-size: 0.98rem;
             font-weight: 500;
             line-height: 1.55;
-        }
-
-        @media (min-width: 721px) {
-            .inicio-intro {
-                max-width: none;
-                white-space: nowrap;
-            }
         }
 
         .empty-state {
@@ -2379,6 +2665,13 @@
         <section class="view active" id="catalogView" aria-live="polite"></section>
     </main>
 
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <img class="site-footer-logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
+            <p class="site-footer-texto">Catálogo desarrollado por el Área de Comunicación. Ante dudas o sugerencias, comunicarse con el área correspondiente.</p>
+        </div>
+    </footer>
+
     <button class="back-to-top" type="button" id="backToTop" aria-label="Volver arriba">
         <svg viewBox="0 0 24 24" aria-hidden="true">
             <polyline points="6 14 12 8 18 14"></polyline>
@@ -2737,6 +3030,7 @@
         const categoryPanel = document.querySelector(".category-panel");
         const categoryList = document.querySelector("#categoryList");
         const catalogView = document.querySelector("#catalogView");
+        const hero = document.querySelector(".hero");
         const heroTitle = document.querySelector("#heroTitle");
         const heroDescription = document.querySelector("#heroDescription");
         const scrollBar = document.querySelector("#scrollBar");
@@ -2758,6 +3052,7 @@
         const BACK_TO_TOP_THRESHOLD = 300;
         let seccionActual = "inicio";
         let productoEnVista = null;
+        let usuarioActual = { email: "", nombre: "", genero: "" };
 
         function toggleDrawer(forceOpen) {
             const abrir = typeof forceOpen === "boolean" ? forceOpen : !siteMenu.classList.contains("open");
@@ -2801,6 +3096,17 @@
         }
 
         function actualizarHero(seccion) {
+            const esInicio = seccion === "inicio";
+            hero.classList.toggle("hero-inicio", esInicio);
+
+            if (esInicio) {
+                const linea1 = usuarioActual.nombre ? `¡Hola, ${usuarioActual.nombre}!` : "¡Hola!";
+                const linea2 = `${palabraBienvenida(usuarioActual.genero)} al catálogo`;
+                heroTitle.innerHTML = `<span class="hero-saludo-linea">${linea1}</span><span class="hero-saludo-linea hero-saludo-linea2">${linea2}</span>`;
+                heroDescription.textContent = "Todo sobre nuestras unidades: información técnica, fotos y adicionales.";
+                return;
+            }
+
             const contenido = HERO_CONTENT[seccion] || HERO_CONTENT.inicio;
             heroTitle.textContent = contenido.titulo;
             heroDescription.textContent = contenido.descripcion;
@@ -2874,19 +3180,133 @@
             mostrarCategoria(categoriaId, seccion);
         }
 
+        const ICONOS_INICIO = {
+            fichas: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v5h5"></path><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>`,
+            fotos: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>`,
+            adicionales: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>`
+        };
+
+        const FLECHA_INGRESAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>`;
+
+        // ===== Registro de usuarios =====
+        // Para dar de alta un usuario nuevo: agregar una línea con su mail (en minúscula),
+        // su nombre y el género ("m" muestra "Bienvenido", "f" muestra "Bienvenida").
+        // Si un usuario no está acá, se muestra el saludo genérico "Bienvenido/a".
+        const REGISTRO_USUARIOS = {
+            "adm.ventas@lamberthermanos.com.ar": { nombre: "Nicolás", genero: "m" },
+            "claudio.lambert@lamberthermanos.com.ar": { nombre: "Claudio", genero: "m" },
+            "pabloglezer@lamberthermanos.com.ar": { nombre: "Pablo", genero: "m" },
+            "comunicacion@lamberthermanos.com.ar": { nombre: "Oriana", genero: "f" }
+        };
+
+        function obtenerUsuario(email) {
+            if (!email) return { nombre: "", genero: "" };
+            const registro = REGISTRO_USUARIOS[email.trim().toLowerCase()];
+            return registro ? { nombre: registro.nombre, genero: registro.genero } : { nombre: "", genero: "" };
+        }
+
+        function palabraBienvenida(genero) {
+            if (genero === "f") return "Bienvenida";
+            if (genero === "m") return "Bienvenido";
+            return "Bienvenido/a";
+        }
+
+        function aplicarBienvenida() {
+            if (seccionActual === "inicio") {
+                actualizarHero("inicio");
+            }
+        }
+
+        // ===== Novedades / cambios recientes =====
+        // Para agregar una novedad: sumar un objeto AL PRINCIPIO del array (la más reciente arriba).
+        // destino: { seccion, categoria, producto }. "producto" es el slug de la unidad y es opcional
+        // (si se omite, el enlace lleva a la categoría o sección indicada).
+        const NOVEDADES = [
+            {
+                fecha: "21/05/2026",
+                apartado: "Fichas técnicas",
+                texto: "Se agregó la ficha técnica del acoplado Baranda volcable.",
+                destino: { seccion: "fichas", categoria: "acoplados", producto: "baranda-volcable" }
+            }
+        ];
+
+        const RECIENTES_KEY = "lambert:recientes";
+        const RECIENTES_MAX = 6;
+
+        function leerRecientes() {
+            try {
+                const data = JSON.parse(localStorage.getItem(RECIENTES_KEY) || "[]");
+                return Array.isArray(data) ? data : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function registrarReciente(catId, slug, nombre, catNombre, seccion) {
+            if (!catId || !slug) return;
+            let lista = leerRecientes().filter((it) => !(it.catId === catId && it.slug === slug && it.seccion === seccion));
+            lista.unshift({ catId, slug, nombre, catNombre, seccion });
+            lista = lista.slice(0, RECIENTES_MAX);
+            try {
+                localStorage.setItem(RECIENTES_KEY, JSON.stringify(lista));
+            } catch (e) {}
+        }
+
+        function crearBloqueRecientes() {
+            const lista = leerRecientes();
+            if (!lista.length) return "";
+            const cards = lista.map((it) => `
+                <button class="reciente-card button-reset" type="button" data-reciente-cat="${it.catId}" data-reciente-slug="${it.slug}" data-reciente-seccion="${it.seccion}">
+                    <span class="reciente-info">
+                        <span class="reciente-nombre">${it.nombre}</span>
+                        <span class="reciente-meta">${it.catNombre} · ${it.seccion === "fotos" ? "Fotos" : "Fichas técnicas"}</span>
+                    </span>
+                    <span class="reciente-flecha" aria-hidden="true">${FLECHA_INGRESAR}</span>
+                </button>
+            `).join("");
+            return `
+                <div class="inicio-bloque">
+                    <h3 class="inicio-bloque-titulo">Vistas recientemente</h3>
+                    <div class="recientes-grid">${cards}</div>
+                </div>
+            `;
+        }
+
+        function crearBloqueNovedades() {
+            if (!NOVEDADES.length) return "";
+            const items = NOVEDADES.map((nov, indice) => `
+                <li class="novedad-item">
+                    <div class="novedad-cabecera">
+                        <span class="novedad-fecha">${nov.fecha}</span>
+                        <span class="novedad-sep" aria-hidden="true">·</span>
+                        <span class="novedad-apartado">${nov.apartado}</span>
+                    </div>
+                    <p class="novedad-texto">${nov.texto}</p>
+                    <button class="novedad-link button-reset" type="button" data-novedad="${indice}">
+                        <span>Ver</span>${FLECHA_INGRESAR}
+                    </button>
+                </li>
+            `).join("");
+            return `
+                <div class="inicio-bloque">
+                    <h3 class="inicio-bloque-titulo">Novedades</h3>
+                    <ul class="novedades-lista">${items}</ul>
+                </div>
+            `;
+        }
+
         function mostrarInicio() {
             catalogView.innerHTML = `
-                <div class="section-head">
-                    <div class="section-title-wrap">
-                        <h2 class="section-title">Inicio</h2>
+                <div class="inicio-bloque">
+                    <h3 class="inicio-bloque-titulo">Acceso rápido</h3>
+                    <div class="home-grid">
+                        ${crearTarjetaInicio("Fichas técnicas", "Consulta de fichas técnicas por unidad y carrozado.", "fichas")}
+                        ${crearTarjetaInicio("Fotos", "Galería de fotos de cada unidad por carrozado y configuración.", "fotos")}
+                        ${crearTarjetaInicio("Adicionales", "Descripción categorizada de cada adicional.", "adicionales")}
                     </div>
                 </div>
-                <p class="construction-copy inicio-intro">Catálogo interno con fichas técnicas, fotos y adicionales de cada unidad. Elegí una sección para empezar.</p>
-                <div class="home-grid">
-                    ${crearTarjetaInicio("Fichas técnicas", "Consulta de fichas técnicas por unidad y carrozado.", "fichas")}
-                    ${crearTarjetaInicio("Fotos", "Galería de fotos de cada unidad por carrozado y configuración.", "fotos")}
-                    ${crearTarjetaInicio("Adicionales", "Sección en construcción para próximos recursos complementarios.", "adicionales")}
-                </div>
+                ${crearBloqueRecientes()}
+                ${crearBloqueNovedades()}
             `;
             history.replaceState(null, "", "#inicio");
         }
@@ -2894,10 +3314,11 @@
         function crearTarjetaInicio(nombre, descripcion, seccion) {
             return `
                 <button class="product-card product-card-button button-reset home-card" type="button" data-go-section="${seccion}">
+                    <span class="home-card-icon" aria-hidden="true">${ICONOS_INICIO[seccion] || ""}</span>
                     <h3 class="product-name">${nombre}</h3>
                     <p class="product-description">${descripcion}</p>
                     <hr class="divider">
-                    <span class="card-action">Ingresar</span>
+                    <span class="card-action"><span>Ingresar</span>${FLECHA_INGRESAR}</span>
                 </button>
             `;
         }
@@ -3094,6 +3515,7 @@
             categoryPanel.hidden = false;
             actualizarBotones(categoria.id);
             productoEnVista = { categoria, producto, seccion };
+            registrarReciente(categoria.id, slugProducto, producto.nombre, categoria.nombre, seccion);
 
             const opcionesProducto = opcionesPorSeccion(producto, seccion);
             const opcionesHtml = opcionesProducto.length
@@ -3623,6 +4045,23 @@
                 return;
             }
 
+            const recienteBtn = event.target.closest("[data-reciente-slug]");
+            if (recienteBtn) {
+                mostrarSeccion(recienteBtn.dataset.recienteSeccion, recienteBtn.dataset.recienteCat, recienteBtn.dataset.recienteSlug);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            const novedadBtn = event.target.closest("[data-novedad]");
+            if (novedadBtn) {
+                const nov = NOVEDADES[parseInt(novedadBtn.dataset.novedad, 10)];
+                if (nov && nov.destino) {
+                    mostrarSeccion(nov.destino.seccion, nov.destino.categoria || "", nov.destino.producto || "");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+                return;
+            }
+
             const volver = event.target.closest("[data-back-category]");
             if (volver) {
                 mostrarCategoria(volver.dataset.backCategory, seccionActual);
@@ -3811,6 +4250,13 @@
     document.getElementById("scrollBarUser").textContent = email;
     document.getElementById("drawerUserEmail").textContent = email;
     document.getElementById("contenido").style.display = "block";
+    if (typeof obtenerUsuario === "function") {
+      const datos = obtenerUsuario(email);
+      usuarioActual = { email, nombre: datos.nombre, genero: datos.genero };
+    }
+    if (typeof aplicarBienvenida === "function") {
+      aplicarBienvenida();
+    }
     iniciarMonitorInactividad();
   });
 </script>
