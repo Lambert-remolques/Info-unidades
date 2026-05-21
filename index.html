@@ -417,7 +417,7 @@
 
         .recientes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 14px;
         }
 
@@ -1071,7 +1071,8 @@
             }
 
             .home-grid,
-            .novedades-lista {
+            .novedades-lista,
+            .recientes-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -3797,7 +3798,7 @@
             }
         ];
 
-        const RECIENTES_KEY = "lambert:recientes";
+        const RECIENTES_KEY = "lambert:recientes2";
         const RECIENTES_MAX = 6;
 
         function leerRecientes() {
@@ -3809,10 +3810,11 @@
             }
         }
 
-        function registrarReciente(catId, slug, nombre, catNombre, seccion) {
-            if (!catId || !slug) return;
-            let lista = leerRecientes().filter((it) => !(it.catId === catId && it.slug === slug && it.seccion === seccion));
-            lista.unshift({ catId, slug, nombre, catNombre, seccion });
+        // entry: { clave, tipo: "ficha"|"galeria"|"adicional", titulo, meta, ...params }
+        function registrarReciente(entry) {
+            if (!entry || !entry.clave) return;
+            let lista = leerRecientes().filter((it) => it.clave !== entry.clave);
+            lista.unshift(entry);
             lista = lista.slice(0, RECIENTES_MAX);
             try {
                 localStorage.setItem(RECIENTES_KEY, JSON.stringify(lista));
@@ -3822,11 +3824,11 @@
         function crearBloqueRecientes() {
             const lista = leerRecientes();
             if (!lista.length) return "";
-            const cards = lista.map((it) => `
-                <button class="reciente-card button-reset" type="button" data-reciente-cat="${it.catId}" data-reciente-slug="${it.slug}" data-reciente-seccion="${it.seccion}">
+            const cards = lista.map((it, indice) => `
+                <button class="reciente-card button-reset" type="button" data-reciente="${indice}">
                     <span class="reciente-info">
-                        <span class="reciente-nombre">${it.nombre}</span>
-                        <span class="reciente-meta">${it.catNombre} · ${it.seccion === "fotos" ? "Fotos" : "Fichas técnicas"}</span>
+                        <span class="reciente-nombre">${it.titulo}</span>
+                        <span class="reciente-meta">${it.meta}</span>
                     </span>
                     <span class="reciente-flecha" aria-hidden="true">${FLECHA_INGRESAR}</span>
                 </button>
@@ -3961,6 +3963,13 @@
         function abrirAdicionalDetalle(slug) {
             const item = adicionalesPlanos.find((it) => it.slug === slug);
             if (!item) return;
+            registrarReciente({
+                clave: "adicional:" + slug,
+                tipo: "adicional",
+                titulo: item.nombre,
+                meta: "Adicionales",
+                slug: slug
+            });
             adicionalDetalleNombre.textContent = item.nombre;
             adicionalDetalleCategoria.textContent = item.categoriaNombre;
             adicionalDetalleDescripcion.textContent = item.descripcion;
@@ -4051,13 +4060,15 @@
                 return crearTarjetaFoto(producto, categoriaId);
             }
 
+            const catNombre = categorias.find((c) => c.id === categoriaId)?.nombre || "";
+
             if (producto.fichaDirecta) {
-                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", producto.pdf || PDF_PLACEHOLDER);
+                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", producto.pdf || PDF_PLACEHOLDER, catNombre);
             }
 
             const opcionesFicha = opcionesPorSeccion(producto, seccion);
             if (opcionesFicha.length === 1) {
-                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", opcionesFicha[0].pdf || PDF_PLACEHOLDER);
+                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", opcionesFicha[0].pdf || PDF_PLACEHOLDER, catNombre);
             }
 
             return crearTarjetaSeleccion(producto, "Ver ficha técnica", producto.descripcion);
@@ -4094,9 +4105,9 @@
 
         const BOTON_FICHA_PENDIENTE = `<span class="sheet-link sheet-link-pendiente">${ICONO_RELOJ}<span>Ficha técnica en preparación</span></span>`;
 
-        function botonFicha(nombre, url) {
+        function botonFicha(nombre, url, catNombre) {
             if (fichasVerificadas.get(url) === false) return BOTON_FICHA_PENDIENTE;
-            return `<button class="sheet-link" type="button" data-pdf="${url}" data-pdf-titulo="${nombre}">${ICONO_FICHA}<span>Ver ficha técnica</span></button>`;
+            return `<button class="sheet-link" type="button" data-pdf="${url}" data-pdf-titulo="${nombre}" data-pdf-cat="${catNombre || ""}">${ICONO_FICHA}<span>Ver ficha técnica</span></button>`;
         }
 
         function verificarFichasVisibles(contenedor) {
@@ -4138,13 +4149,13 @@
             });
         }
 
-        function crearTarjetaAccion(nombre, descripcion, textoBoton, url) {
+        function crearTarjetaAccion(nombre, descripcion, textoBoton, url, catNombre) {
             return `
                 <article class="product-card">
                     <h3 class="product-name">${nombre}</h3>
                     <p class="product-description">${descripcion}</p>
                     <hr class="divider">
-                    ${botonFicha(nombre, url)}
+                    ${botonFicha(nombre, url, catNombre)}
                 </article>
             `;
         }
@@ -4180,7 +4191,18 @@
         });
         document.addEventListener("click", (event) => {
             const pdfBtn = event.target.closest("[data-pdf]");
-            if (pdfBtn) abrirPdf(pdfBtn.dataset.pdf, pdfBtn.dataset.pdfTitulo);
+            if (pdfBtn) {
+                abrirPdf(pdfBtn.dataset.pdf, pdfBtn.dataset.pdfTitulo);
+                if (pdfBtn.dataset.pdfCat) {
+                    registrarReciente({
+                        clave: "ficha:" + pdfBtn.dataset.pdf,
+                        tipo: "ficha",
+                        titulo: pdfBtn.dataset.pdfTitulo,
+                        meta: pdfBtn.dataset.pdfCat + " · Ficha técnica",
+                        pdf: pdfBtn.dataset.pdf
+                    });
+                }
+            }
         });
 
         const ejesModal = document.querySelector("#ejesModal");
@@ -4264,7 +4286,6 @@
             categoryPanel.hidden = false;
             actualizarBotones(categoria.id);
             productoEnVista = { categoria, producto, seccion };
-            registrarReciente(categoria.id, slugProducto, producto.nombre, categoria.nombre, seccion);
 
             const opcionesProducto = opcionesPorSeccion(producto, seccion);
             const opcionesHtml = opcionesProducto.length
@@ -4314,6 +4335,16 @@
             const tituloUnidad = ejeSlug
                 ? `${producto.nombre} · ${ejeDisplayName(ejeSlug)}`
                 : producto.nombre;
+
+            registrarReciente({
+                clave: `galeria:${idCategoria}:${crearSlug(producto.nombre)}:${ejeSlug || ""}`,
+                tipo: "galeria",
+                titulo: tituloUnidad,
+                meta: `${categoria.nombre} · Fotos`,
+                cat: idCategoria,
+                unidad: producto.nombre,
+                eje: ejeSlug || ""
+            });
 
             catalogView.innerHTML = `
                 <button class="back-button" type="button" data-galeria-back="${crearSlug(producto.nombre)}">Volver</button>
@@ -4784,10 +4815,19 @@
                 return;
             }
 
-            const recienteBtn = event.target.closest("[data-reciente-slug]");
+            const recienteBtn = event.target.closest("[data-reciente]");
             if (recienteBtn) {
-                mostrarSeccion(recienteBtn.dataset.recienteSeccion, recienteBtn.dataset.recienteCat, recienteBtn.dataset.recienteSlug);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                const it = leerRecientes()[parseInt(recienteBtn.dataset.reciente, 10)];
+                if (it) {
+                    if (it.tipo === "ficha") {
+                        abrirPdf(it.pdf, it.titulo);
+                    } else if (it.tipo === "galeria") {
+                        mostrarGaleria(it.cat, it.unidad, it.eje || null);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                    } else if (it.tipo === "adicional") {
+                        abrirAdicionalDetalle(it.slug);
+                    }
+                }
                 return;
             }
 
