@@ -3347,11 +3347,12 @@
             return `${PDF_BASE}/${categoria}/${productoSlug}.pdf`;
         }
 
-        function cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, numero, transform = "", formato = "jpg") {
+        function cloudinaryFotoUrl(categoria, productoNombre, ejeSlug, numero, transform = "", formato = "jpg", version) {
             const productoSlug = crearSlug(productoNombre);
             const ejePath = ejeSlug ? `/${ejeSlug}` : "";
             const tx = transform ? `${transform}/` : "";
-            return `${CLOUDINARY_BASE}/${tx}unidades/${categoria}/${productoSlug}${ejePath}/foto-${numero}.${formato}`;
+            const ver = version ? `v${version}/` : "";
+            return `${CLOUDINARY_BASE}/${tx}${ver}unidades/${categoria}/${productoSlug}${ejePath}/foto-${numero}.${formato}`;
         }
 
         function cargarImagen(url) {
@@ -3395,7 +3396,8 @@
                     (catalogoFotos[clave] = catalogoFotos[clave] || []).push({
                         numero: parseInt(m[1], 10),
                         formato: r.format || "jpg",
-                        eje: eje
+                        eje: eje,
+                        version: r.version
                     });
                 });
                 Object.values(catalogoFotos).forEach((lista) => lista.sort((a, b) => a.numero - b.numero));
@@ -4115,10 +4117,10 @@
         const COVER_TX = "c_fit,w_640,h_440,q_auto,f_auto";
         const ICONO_CAMARA_OFF = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path><circle cx="12" cy="13" r="3.6"></circle><path d="m3 3 18 18"></path></svg>`;
 
-        function tarjetaFotoCover(nombre, categoriaId, slug, ejes, attrClic) {
+        function tarjetaFotoCover(nombre, categoriaId, slug, ejes, attrClic, numero) {
             return `
                 <button class="product-card product-card-button button-reset foto-card" type="button" ${attrClic}
-                    data-cover-cat="${categoriaId}" data-cover-slug="${slug}" data-cover-ejes="${ejes.join(",")}">
+                    data-cover-cat="${categoriaId}" data-cover-slug="${slug}" data-cover-ejes="${ejes.join(",")}" data-cover-num="${numero || 0}">
                     <span class="foto-card-cover">
                         <img class="foto-card-img" alt="" loading="lazy">
                         <span class="foto-card-sinfotos">${ICONO_CAMARA_OFF}<span>Sin fotos todavía</span></span>
@@ -4132,23 +4134,25 @@
         }
 
         // Eje preferido para la portada de ciertas unidades (clave: "categoria/slug").
-        const PORTADA_EJE = {
-            "acoplados/baranda-volcable": "4-ejes",
-            "acoplados/pollero": "3-ejes"
+        // Portada elegida para ciertas unidades (clave "categoria/slug").
+        // { eje } usa la primera foto de esa configuración; { eje, numero } usa una foto puntual.
+        const PORTADA = {
+            "acoplados/baranda-volcable": { eje: "4-ejes", numero: 6 },
+            "acoplados/pollero": { eje: "3-ejes" }
         };
 
         function crearTarjetaFoto(producto, categoriaId) {
             const opciones = producto.fotosOpciones || [];
             const slug = crearSlug(producto.nombre);
             let ejes = opciones.map((o) => o.ejeSlug || crearSlug(o.nombre));
-            const preferido = PORTADA_EJE[`${categoriaId}/${slug}`];
-            if (preferido && ejes.includes(preferido)) {
-                ejes = [preferido, ...ejes.filter((e) => e !== preferido)];
+            const portada = PORTADA[`${categoriaId}/${slug}`];
+            if (portada && portada.eje && ejes.includes(portada.eje)) {
+                ejes = [portada.eje, ...ejes.filter((e) => e !== portada.eje)];
             }
             const attrClic = opciones.length
                 ? `data-fotos-ejes="${slug}"`
                 : `data-galeria-directa="${slug}"`;
-            return tarjetaFotoCover(producto.nombre, categoriaId, slug, ejes, attrClic);
+            return tarjetaFotoCover(producto.nombre, categoriaId, slug, ejes, attrClic, portada && portada.numero);
         }
 
         function crearTarjetaProducto(producto, seccion = "fichas", categoriaId = "") {
@@ -4225,15 +4229,16 @@
                 const slug = card.dataset.coverSlug;
                 const ejes = card.dataset.coverEjes ? card.dataset.coverEjes.split(",") : [""];
                 let cover = null;
+                const numPref = parseInt(card.dataset.coverNum || "0", 10);
                 for (const eje of ejes) {
                     const lista = catalogoFotos[`${cat}/${slug}/${normEje(eje)}`];
                     if (lista && lista.length) {
-                        cover = lista[0];
+                        cover = (numPref && lista.find((f) => f.numero === numPref)) || lista[0];
                         break;
                     }
                 }
                 if (cover) {
-                    img.src = cloudinaryFotoUrl(cat, slug, cover.eje, cover.numero, COVER_TX, cover.formato);
+                    img.src = cloudinaryFotoUrl(cat, slug, cover.eje, cover.numero, COVER_TX, cover.formato, cover.version);
                 } else {
                     card.classList.add("pendiente");
                     card.disabled = true;
@@ -4463,10 +4468,10 @@
             const fotos = numeros.map((foto) => ({
                 numero: foto.numero,
                 formato: foto.formato,
-                thumb: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_700,q_auto,f_auto", foto.formato),
-                main: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_1400,q_auto,f_auto", foto.formato),
-                full: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_1920,q_auto,f_auto", foto.formato),
-                original: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "", foto.formato)
+                thumb: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_700,q_auto,f_auto", foto.formato, foto.version),
+                main: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_1400,q_auto,f_auto", foto.formato, foto.version),
+                full: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "c_fit,w_1920,q_auto,f_auto", foto.formato, foto.version),
+                original: cloudinaryFotoUrl(idCategoria, productoNombre, foto.eje, foto.numero, "", foto.formato, foto.version)
             }));
 
             galeriaActual = { fotos, productoNombre, ejeSlug, indice: 0 };
