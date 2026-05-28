@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 720" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      .ic { fill: none; stroke: #ffffff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0.92; }
+    </style>
+  </defs>
+
+  <!-- ===== FILA 1 (y ~ 50-130) ===== -->
+
+  <!-- LLAVE -->
+  <g class="ic" transform="translate(60,80) rotate(-25)">
+    <path d="M 0 18 L 50 18 M 50 4 a 18 18 0 1 1 0 28"/>
+    <circle cx="60" cy="18" r="6"/>
+  </g>
+
+  <!-- RUEDA -->
+  <g class="ic" transform="translate(245,55)">
+    <circle cx="40" cy="40" r="38"/>
+    <circle cx="40" cy="40" r="14"/>
+    <circle cx="40" cy="40" r="3"/>
+    <line x1="40" y1="4" x2="40" y2="26"/>
+    <line x1="40" y1="54" x2="40" y2="76"/>
+    <line x1="4" y1="40" x2="26" y2="40"/>
+    <line x1="54" y1="40" x2="76" y2="40"/>
+    <line x1="14" y1="14" x2="30" y2="30"/>
+    <line x1="50" y1="50" x2="66" y2="66"/>
+    <line x1="14" y1="66" x2="30" y2="50"/>
+    <line x1="50" y1="30" x2="66" y2="14"/>
+  </g>
+
+  <!-- CAJA HERRAMIENTAS -->
+  <g class="ic" transform="translate(440,70)">
+    <rect x="0" y="14" width="100" height="56" rx="5"/>
+    <path d="M 24 14 L 24 0 L 76 0 L 76 14"/>
+    <line x1="0" y1="34" x2="100" y2="34"/>
+    <rect x="40" y="42" width="20" height="12" rx="2"/>
+  </g>
+
+  <!-- ANILLA AMARRE (D-ring) -->
+  <g class="ic" transform="translate(620,70)">
+    <rect x="0" y="50" width="90" height="16" rx="3"/>
+    <path d="M 22 50 L 22 28 A 23 23 0 0 1 68 28 L 68 50"/>
+    <circle cx="12" cy="58" r="2.5"/>
+    <circle cx="78" cy="58" r="2.5"/>
+  </g>
+
+  <!-- ===== FILA 2 (y ~ 180-280) ===== -->
+
+  <!-- LUZ / REFLECTOR -->
+  <g class="ic" transform="translate(60,210)">
+    <rect x="0" y="0" width="90" height="48" rx="6"/>
+    <circle cx="28" cy="24" r="11"/>
+    <circle cx="62" cy="24" r="11"/>
+    <line x1="16" y1="58" x2="74" y2="58"/>
+  </g>
+
+  <!-- GANCHO -->
+  <g class="ic" transform="translate(265,185)">
+    <line x1="25" y1="0" x2="25" y2="38"/>
+    <path d="M 25 38 a 22 22 0 1 0 0 44 a 16 16 0 1 1 0 -32"/>
+  </g>
+
+  <!-- LONA enrollada -->
+  <g class="ic" transform="translate(415,215)">
+    <ellipse cx="18" cy="20" rx="9" ry="20"/>
+    <line x1="18" y1="0" x2="120" y2="0"/>
+    <line x1="18" y1="40" x2="120" y2="40"/>
+    <ellipse cx="120" cy="20" rx="9" ry="20"/>
+    <path d="M 28 10 Q 70 10 110 10" opacity="0.7"/>
+  </g>
+
+  <!-- CADENA -->
+  <g class="ic" transform="translate(625,200)">
+    <ellipse cx="15" cy="15" rx="14" ry="9" transform="rotate(45 15 15)"/>
+    <ellipse cx="35" cy="35" rx="14" ry="9" transform="rotate(-45 35 35)"/>
+    <ellipse cx="55" cy="55" rx="14" ry="9" transform="rotate(45 55 55)"/>
+    <ellipse cx="75" cy="75" rx="14" ry="9" transform="rotate(-45 75 75)"/>
+  </g>
+
+  <!-- ===== FILA 3 (y ~ 320-420) ===== -->
+
+  <!-- ESCALERA -->
+  <g class="ic" transform="translate(95,330)">
+    <line x1="0" y1="0" x2="0" y2="100"/>
+    <line x1="30" y1="0" x2="30" y2="100"/>
+    <line x1="0" y1="18" x2="30" y2="18"/>
+    <line x1="0" y1="42" x2="30" y2="42"/>
+    <line x1="0" y1="66" x2="30" y2="66"/>
+    <line x1="0" y1="90" x2="30" y2="90"/>
+  </g>
+
+  <!-- BIDÓN -->
+  <g class="ic" transform="translate(250,330)">
+    <path d="M 8 22 L 8 100 L 68 100 L 68 22 L 52 22 L 52 10 L 24 10 L 24 22 Z"/>
+    <line x1="14" y1="38" x2="62" y2="38"/>
+    <circle cx="38" cy="68" r="11"/>
+  </g>
+
+  <!-- ENGRANAJE -->
+  <g class="ic" transform="translate(415,335)">
+    <circle cx="45" cy="45" r="17"/>
+    <rect x="40" y="0" width="10" height="14" rx="2"/>
+    <rect x="40" y="76" width="10" height="14" rx="2"/>
+    <rect x="0" y="40" width="14" height="10" rx="2"/>
+    <rect x="76" y="40" width="14" height="10" rx="2"/>
+    <rect x="40" y="0" width="10" height="14" rx="2" transform="rotate(45 45 45)"/>
+    <rect x="40" y="76" width="10" height="14" rx="2" transform="rotate(45 45 45)"/>
+    <rect x="0" y="40" width="14" height="10" rx="2" transform="rotate(45 45 45)"/>
+    <rect x="76" y="40" width="14" height="10" rx="2" transform="rotate(45 45 45)"/>
+  </g>
+
+  <!-- LLANTA REPUESTO sobre soporte -->
+  <g class="ic" transform="translate(610,340)">
+    <rect x="0" y="60" width="90" height="11" rx="2"/>
+    <circle cx="45" cy="32" r="30"/>
+    <circle cx="45" cy="32" r="11"/>
+  </g>
+
+  <!-- ===== FILA 4 (y ~ 460-560) ===== -->
+
+  <!-- EJE con ruedas -->
+  <g class="ic" transform="translate(65,470)">
+    <circle cx="22" cy="44" r="22"/>
+    <circle cx="22" cy="44" r="7"/>
+    <line x1="44" y1="44" x2="142" y2="44"/>
+    <circle cx="92" cy="44" r="13"/>
+    <circle cx="92" cy="44" r="3"/>
+    <circle cx="164" cy="44" r="22"/>
+    <circle cx="164" cy="44" r="7"/>
+  </g>
+
+  <!-- CINTAS AMARRE (ratchet strap) -->
+  <g class="ic" transform="translate(290,486)">
+    <rect x="0" y="14" width="58" height="10" rx="2"/>
+    <rect x="58" y="6" width="48" height="26" rx="3"/>
+    <line x1="72" y1="6" x2="72" y2="32"/>
+    <line x1="92" y1="6" x2="92" y2="32"/>
+    <rect x="106" y="14" width="58" height="10" rx="2"/>
+    <path d="M 164 19 L 182 19 M 182 7 a 11 11 0 1 1 0 24"/>
+  </g>
+
+  <!-- RUEDA AUXILIAR -->
+  <g class="ic" transform="translate(500,478)">
+    <circle cx="35" cy="35" r="33"/>
+    <circle cx="35" cy="35" r="13"/>
+    <line x1="35" y1="6" x2="35" y2="22"/>
+    <line x1="35" y1="48" x2="35" y2="64"/>
+    <line x1="6" y1="35" x2="22" y2="35"/>
+    <line x1="48" y1="35" x2="64" y2="35"/>
+  </g>
+
+  <!-- ===== FILA 5 (y ~ 610-710) ===== -->
+
+  <!-- PUERTA TÉRMICA -->
+  <g class="ic" transform="translate(220,605)">
+    <rect x="0" y="0" width="76" height="110" rx="3"/>
+    <rect x="8" y="8" width="60" height="94" rx="2"/>
+    <line x1="8" y1="32" x2="68" y2="32" opacity="0.7"/>
+    <line x1="8" y1="55" x2="68" y2="55" opacity="0.7"/>
+    <line x1="8" y1="78" x2="68" y2="78" opacity="0.7"/>
+    <rect x="-9" y="46" width="10" height="20" rx="2"/>
+    <circle cx="61" cy="15" r="2"/>
+    <circle cx="61" cy="95" r="2"/>
+  </g>
+
+  <!-- TRABA PORTACONTENEDOR (twist lock) -->
+  <g class="ic" transform="translate(430,615)">
+    <rect x="0" y="70" width="90" height="30" rx="3"/>
+    <rect x="36" y="36" width="18" height="34"/>
+    <rect x="8" y="16" width="74" height="20" rx="3"/>
+    <line x1="45" y1="16" x2="45" y2="0"/>
+    <circle cx="45" cy="4" r="3"/>
+  </g>
+
+</svg>

@@ -139,11 +139,12 @@
         .hero-inicio {
             min-height: 470px;
             background-image:
+                linear-gradient(to bottom, transparent 45%, rgba(0, 0, 0, 0.6) 100%),
                 linear-gradient(165deg, rgba(16, 18, 19, 0.86) 0%, rgba(16, 18, 19, 0.55) 48%, rgba(16, 18, 19, 0.9) 100%),
                 url("hero-unidades.jpg");
-            background-size: cover, cover;
-            background-position: center, center 62%;
-            background-repeat: no-repeat, no-repeat;
+            background-size: cover, cover, cover;
+            background-position: center, center, center 62%;
+            background-repeat: no-repeat, no-repeat, no-repeat;
         }
 
         .hero-fotos {
@@ -175,6 +176,29 @@
 
         .hero-fichas {
             min-height: 470px;
+        }
+
+        .hero-adicionales {
+            min-height: 470px;
+        }
+
+        .hero-iconos-adicionales {
+            display: none;
+        }
+
+        .hero-adicionales .hero-iconos-adicionales {
+            display: block;
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: min(54%, 680px);
+            height: auto;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image: linear-gradient(to left, #000 22%, transparent 96%);
+            mask-image: linear-gradient(to left, #000 22%, transparent 96%);
         }
 
         .hero-fichas .hero-plano {
@@ -256,10 +280,11 @@
 
         .hero-description {
             margin: 0;
-            color: rgba(255, 255, 255, 0.78);
+            color: rgba(255, 255, 255, 0.92);
             font-size: clamp(0.9rem, 1.3vw, 1.05rem);
             font-weight: 500;
             line-height: 1.55;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
         }
 
         .category-panel {
@@ -667,11 +692,13 @@
 
         @media (max-width: 720px) {
             .hero-inicio,
-            .hero-fotos {
+            .hero-fotos,
+            .hero-adicionales {
                 min-height: 380px;
             }
 
-            .hero-fichas .hero-plano {
+            .hero-fichas .hero-plano,
+            .hero-adicionales .hero-iconos-adicionales {
                 display: none;
             }
 
@@ -3175,6 +3202,7 @@
 
     <header class="hero">
         <img class="hero-plano" src="plano.png" alt="" aria-hidden="true">
+        <img class="hero-iconos-adicionales" src="adicionales-hero.svg" alt="" aria-hidden="true">
         <div class="hero-inner">
             <div class="top-nav">
                 <nav class="site-menu" id="siteMenu" aria-label="Secciones principales">
@@ -3727,6 +3755,7 @@
             hero.classList.toggle("hero-inicio", esInicio);
             hero.classList.toggle("hero-fichas", seccion === "fichas");
             hero.classList.toggle("hero-fotos", seccion === "fotos");
+            hero.classList.toggle("hero-adicionales", seccion === "adicionales");
 
             if (esInicio) {
                 const linea1 = usuarioActual.nombre ? `¡Hola, ${usuarioActual.nombre}!` : "¡Hola!";
