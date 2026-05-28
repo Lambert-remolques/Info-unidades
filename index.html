@@ -1597,6 +1597,38 @@
             color: var(--blanco);
         }
 
+        .adicional-chip--all {
+            background: var(--negro);
+            border-color: var(--negro);
+            color: var(--blanco);
+        }
+
+        .adicional-chip--all:hover {
+            background: #1a1a1a;
+            border-color: #1a1a1a;
+            color: var(--blanco);
+        }
+
+        .adicional-chip--all.active {
+            background: var(--verde);
+            border-color: var(--verde-oscuro);
+            color: var(--blanco);
+        }
+
+        .adicional-chip--all .chip-count {
+            background: rgba(255, 255, 255, 0.18);
+            color: var(--blanco);
+        }
+
+        .chip-separator {
+            display: inline-block;
+            width: 1px;
+            height: 24px;
+            margin: 0 6px;
+            background: rgba(0, 0, 0, 0.18);
+            align-self: center;
+        }
+
         .chip-count {
             display: inline-grid;
             place-items: center;
@@ -1700,6 +1732,11 @@
             font-style: italic;
             text-transform: uppercase;
             line-height: 1.2;
+            min-height: calc(0.95rem * 1.2 * 2);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .adicional-ubicacion {
@@ -1823,20 +1860,27 @@
             overflow-y: auto;
         }
 
-        .adicional-detalle-categoria {
-            margin: 0 0 4px;
+        .adicional-detalle-dato {
+            margin: 0;
+            color: var(--negro);
+            font-size: 0.85rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .adicional-detalle-dato-label {
             color: var(--verde);
-            font-size: 0.7rem;
-            font-weight: 900;
-            font-style: italic;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
+            font-size: 0.72rem;
+            margin-right: 6px;
         }
 
         .adicional-detalle-nombre {
-            margin: 0;
+            margin: 18px 0 0;
             color: var(--negro);
-            font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+            font-size: clamp(1.35rem, 2.6vw, 1.75rem);
             font-weight: 900;
             font-style: italic;
             text-transform: uppercase;
@@ -1844,39 +1888,21 @@
         }
 
         .adicional-detalle-content .red-rule {
-            margin: 14px 0 18px;
+            margin: 14px 0 20px;
         }
 
         .adicional-detalle-descripcion {
-            margin: 0 0 22px;
+            margin: 0 0 26px;
             color: var(--negro);
-            font-size: 0.92rem;
+            font-size: 1.05rem;
             font-weight: 500;
-            line-height: 1.55;
+            line-height: 1.6;
         }
 
-        .adicional-detalle-ubicacion-wrap {
+        .adicional-detalle-foot {
             margin-top: auto;
             padding-top: 16px;
             border-top: 1px dashed rgba(38, 38, 38, 0.18);
-        }
-
-        .adicional-detalle-label {
-            margin: 0 0 4px;
-            color: var(--verde);
-            font-size: 0.68rem;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-
-        .adicional-detalle-ubicacion {
-            margin: 0;
-            color: var(--negro);
-            font-size: 0.92rem;
-            font-weight: 700;
-            line-height: 1.4;
         }
 
         @media (max-width: 720px) {
@@ -3324,13 +3350,18 @@
             <button class="adicional-detalle-close" id="adicionalDetalleClose" type="button" aria-label="Cerrar">×</button>
             <div class="adicional-detalle-foto" id="adicionalDetalleFoto"></div>
             <div class="adicional-detalle-body">
-                <p class="adicional-detalle-categoria" id="adicionalDetalleCategoria"></p>
+                <p class="adicional-detalle-dato">
+                    <span class="adicional-detalle-dato-label">Categoría:</span>
+                    <span id="adicionalDetalleCategoria"></span>
+                </p>
                 <h3 class="adicional-detalle-nombre" id="adicionalDetalleNombre"></h3>
                 <div class="red-rule" aria-hidden="true"></div>
                 <p class="adicional-detalle-descripcion" id="adicionalDetalleDescripcion"></p>
-                <div class="adicional-detalle-ubicacion-wrap">
-                    <p class="adicional-detalle-label">Ubicación en la unidad</p>
-                    <p class="adicional-detalle-ubicacion" id="adicionalDetalleUbicacion"></p>
+                <div class="adicional-detalle-foot">
+                    <p class="adicional-detalle-dato">
+                        <span class="adicional-detalle-dato-label">Ubicación en la unidad:</span>
+                        <span id="adicionalDetalleUbicacion"></span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -3642,7 +3673,7 @@
                     productoConFicha("semirremolques", "Forestal", "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.", opcionesSemirremolque("Forestal")),
                     productoConFicha("semirremolques", "Isotérmico", "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.", opcionesSemirremolque("Isotérmico")),
                     productoConFicha("semirremolques", "Tolva descarga ventral", "Unidad equipada con sistema de descarga por tolva en la parte inferior.", opcionesSemirremolque("Tolva descarga ventral")),
-                    productoConFicha("semirremolques", "Portacontenedor extensible", "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.", opcionesSemirremolque("Portacontenedor extensible")),
+                    productoConFicha("semirremolques", "Portacontenedor", "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.", opcionesSemirremolque("Portacontenedor")),
                     productoConFicha("semirremolques", "Jaula simple", "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opcionesSemirremolque("Jaula simple")),
                     productoConFicha("semirremolques", "Jaula doble piso", "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opcionesSemirremolque("Jaula doble piso")),
                     productoConFicha("semirremolques", "Batea", "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.", opcionesSemirremolque("Batea")),
@@ -4023,19 +4054,15 @@
         function mostrarAdicionales(categoriaInicial) {
             adicionalFiltroCategoria = categoriaInicial || "todos";
 
-            const chipsHtml = ['<button class="adicional-chip" type="button" data-adicional-chip="todos">Todos <span class="chip-count">' + adicionalesPlanos.length + '</span></button>']
-                .concat(adicionalesCategorias.map((cat) => `<button class="adicional-chip" type="button" data-adicional-chip="${cat.id}">${cat.nombre} <span class="chip-count">${cat.items.length}</span></button>`))
+            const chipTodos = `<button class="adicional-chip adicional-chip--all" type="button" data-adicional-chip="todos">Ver todos <span class="chip-count">${adicionalesPlanos.length}</span></button>`;
+            const separador = '<span class="chip-separator" aria-hidden="true"></span>';
+            const chipsFiltros = adicionalesCategorias
+                .map((cat) => `<button class="adicional-chip" type="button" data-adicional-chip="${cat.id}">${cat.nombre} <span class="chip-count">${cat.items.length}</span></button>`)
                 .join("");
+            const chipsHtml = chipTodos + separador + chipsFiltros;
 
             catalogView.innerHTML = `
                 <div class="adicionales-sticky">
-                    <div class="section-head">
-                        <div class="section-title-wrap">
-                            <h2 class="section-title">Adicionales</h2>
-                        </div>
-                    </div>
-                    <p class="construction-copy">Listado completo de adicionales disponibles. Filtrá por categoría.</p>
-
                     <div class="adicional-chips" id="adicionalChips">${chipsHtml}</div>
                 </div>
 
