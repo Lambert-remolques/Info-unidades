@@ -1532,7 +1532,8 @@
         .adicional-chips {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            column-gap: 10px;
+            row-gap: 16px;
             margin-bottom: 22px;
         }
 
@@ -1541,7 +1542,7 @@
             top: 0;
             z-index: 20;
             margin: -16px -16px 8px;
-            padding: 16px 16px 4px;
+            padding: 22px 16px 16px;
             background: #f8f8f8;
             box-shadow: 0 8px 12px -10px rgba(0, 0, 0, 0.18);
             transition: top 180ms ease;
@@ -1620,13 +1621,17 @@
             color: var(--blanco);
         }
 
-        .chip-separator {
-            display: inline-block;
-            width: 1px;
-            height: 24px;
-            margin: 0 6px;
-            background: rgba(0, 0, 0, 0.18);
-            align-self: center;
+        .adicionales-sticky .adicional-chips--todos {
+            margin-bottom: 24px;
+        }
+
+        .adicional-filtro-label {
+            margin: 0 0 20px;
+            color: var(--gris-texto);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
         }
 
         .chip-count {
@@ -4086,15 +4091,15 @@
             adicionalFiltroCategoria = categoriaInicial || "todos";
 
             const chipTodos = `<button class="adicional-chip adicional-chip--all" type="button" data-adicional-chip="todos">Ver todos <span class="chip-count">${adicionalesPlanos.length}</span></button>`;
-            const separador = '<span class="chip-separator" aria-hidden="true"></span>';
             const chipsFiltros = adicionalesCategorias
                 .map((cat) => `<button class="adicional-chip" type="button" data-adicional-chip="${cat.id}">${cat.nombre} <span class="chip-count">${cat.items.length}</span></button>`)
                 .join("");
-            const chipsHtml = chipTodos + separador + chipsFiltros;
 
             catalogView.innerHTML = `
                 <div class="adicionales-sticky">
-                    <div class="adicional-chips" id="adicionalChips">${chipsHtml}</div>
+                    <div class="adicional-chips adicional-chips--todos" id="adicionalChipsTodos">${chipTodos}</div>
+                    <p class="adicional-filtro-label">Filtrar por categoría:</p>
+                    <div class="adicional-chips adicional-chips--filtros" id="adicionalChips">${chipsFiltros}</div>
                 </div>
 
                 <div class="adicional-grid" id="adicionalGrid"></div>
