@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mockup paletas de categorías</title>
+<style>
+  :root {
+    --negro: #262626;
+    --blanco: #ffffff;
+    --gris-texto: #555555;
+    --fuente: 'Segoe UI', system-ui, sans-serif;
+    --radio: 14px;
+    --sombra: 0 4px 14px rgba(38, 38, 38, 0.08);
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--fuente);
+    background: #f4f5f7;
+    padding: 30px 24px 60px;
+    color: var(--negro);
+  }
+
+  h1 { margin: 0 0 8px; }
+  h2 {
+    margin: 40px 0 6px;
+    font-size: 1.15rem;
+  }
+  .nota {
+    color: #666;
+    font-size: 0.88rem;
+    margin: 0 0 18px;
+    max-width: 800px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  /* ===== Tarjeta base ===== */
+  .card {
+    border-radius: var(--radio);
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .franja {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 5px 12px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .foto {
+    aspect-ratio: 4 / 3;
+    background:
+      repeating-linear-gradient(135deg, transparent 0 14px, rgba(38, 38, 38, 0.03) 14px 15px),
+      #f3f3f3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(38, 38, 38, 0.45);
+    border-bottom: 3px solid #159947;
+  }
+
+  .foto svg {
+    width: 34px;
+    height: 34px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+  }
+
+  .foto span {
+    font-size: 0.68rem;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .info {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nombre {
+    margin: 0;
+    color: var(--negro);
+    font-size: 1rem;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    line-height: 1.2;
+    min-height: calc(1rem * 1.2 * 2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ubicacion {
+    margin: 0;
+    color: rgba(85, 85, 85, 0.78);
+    font-size: 0.72rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* =============================== */
+  /* OPCIÓN 0 — actual (todo verde)  */
+  /* =============================== */
+  .opt0 .franja {
+    background: rgba(21, 153, 71, 0.08);
+    color: #078334;
+  }
+
+  /* =============================== */
+  /* OPCIÓN A — tonal armónica       */
+  /* =============================== */
+  .opt-a .franja.c1 { background: rgba(21, 153, 71, 0.10); color: #078334; }      /* verde Lambert */
+  .opt-a .franja.c2 { background: rgba(71, 85, 105, 0.12); color: #334155; }      /* gris pizarra */
+  .opt-a .franja.c3 { background: rgba(64, 64, 64, 0.12); color: #404040; }       /* carbón */
+  .opt-a .franja.c4 { background: rgba(180, 143, 30, 0.14); color: #8b6914; }     /* mostaza */
+  .opt-a .franja.c5 { background: rgba(139, 69, 19, 0.10); color: #8b4513; }      /* terracota */
+  .opt-a .franja.c6 { background: rgba(13, 148, 136, 0.12); color: #0f766e; }     /* teal */
+  .opt-a .franja.c7 { background: rgba(30, 64, 175, 0.10); color: #1e40af; }      /* navy */
+  .opt-a .franja.c8 { background: rgba(124, 58, 237, 0.10); color: #6d28d9; }     /* violeta */
+
+  /* =============================== */
+  /* OPCIÓN B — pasteles diferenciados */
+  /* =============================== */
+  .opt-b .franja.c1 { background: #e3f2fd; color: #1565c0; }    /* azul */
+  .opt-b .franja.c2 { background: #ffe9d6; color: #c2410c; }    /* naranja */
+  .opt-b .franja.c3 { background: #e8eaf6; color: #3949ab; }    /* índigo */
+  .opt-b .franja.c4 { background: #fff4cc; color: #a16207; }    /* amarillo mostaza */
+  .opt-b .franja.c5 { background: #f3e5d4; color: #8b4513; }    /* marrón */
+  .opt-b .franja.c6 { background: #d6f0ee; color: #0f766e; }    /* turquesa */
+  .opt-b .franja.c7 { background: #ede0ff; color: #6d28d9; }    /* violeta */
+  .opt-b .franja.c8 { background: #ffe1eb; color: #be185d; }    /* rosa/coral */
+
+  .leyenda {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: var(--sombra);
+    font-size: 0.85rem;
+    color: #444;
+    max-width: 920px;
+  }
+  .leyenda strong { color: #000; }
+</style>
+</head>
+<body>
+
+  <h1>Mockup — paletas de color por categoría</h1>
+  <p class="nota">Comparación visual con las 8 categorías reales. Cada tarjeta muestra cómo se vería en grilla cuando el filtro está en "Ver todos". Mirá cuál te resulta más prolija.</p>
+
+  <!-- ============================================================ -->
+  <h2>Opción 0 — Actual (todas en verde Lambert)</h2>
+  <p class="nota">La que está aplicada ahora. Identitaria, sin diferenciación por categoría.</p>
+  <div class="grid opt0">
+    <div class="card"><div class="franja c1">Acople y Conexión</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Acople frenos</h3><p class="ubicacion">📍 En la parte delantera del remolque.</p></div></div>
+    <div class="card"><div class="franja c2">Rodado, Frenos y Suspensión</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Cubierta auxiliar</h3><p class="ubicacion">📍 Lateral del chasis.</p></div></div>
+    <div class="card"><div class="franja c3">Estructura y Chasis</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Defensa trasera</h3><p class="ubicacion">📍 Parte trasera de la unidad.</p></div></div>
+    <div class="card"><div class="franja c4">Caja de Carga y Configuración</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Tinteros</h3><p class="ubicacion">📍 Embutidos en el piso de la unidad.</p></div></div>
+    <div class="card"><div class="franja c5">Piso y Superficie de Carga</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Piso de madera dura</h3><p class="ubicacion">📍 Superficie superior de carga.</p></div></div>
+    <div class="card"><div class="franja c6">Sistemas Hidráulicos</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Bomba hidráulica</h3><p class="ubicacion">📍 Compartimento delantero.</p></div></div>
+    <div class="card"><div class="franja c7">Equipamiento de Furgones y Térmicos</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Puerta térmica</h3><p class="ubicacion">📍 Parte trasera del furgón.</p></div></div>
+    <div class="card"><div class="franja c8">Accesorios y Operatividad</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Soporte porta rueda</h3><p class="ubicacion">📍 Bajo chasis.</p></div></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>Opción A — Paleta tonal armónica</h2>
+  <p class="nota">Verdes + tonos tierra/neutros + acentos sutiles. Mantiene fidelidad al verde Lambert (la primera sigue siendo verde), las demás están en tonos elegantes y compatibles. Más sobrio, identitario.</p>
+  <div class="leyenda" style="margin-bottom:14px;">
+    <strong>Paleta:</strong>
+    <span style="color:#078334;">■ Verde Lambert</span> ·
+    <span style="color:#334155;">■ Pizarra</span> ·
+    <span style="color:#404040;">■ Carbón</span> ·
+    <span style="color:#8b6914;">■ Mostaza</span> ·
+    <span style="color:#8b4513;">■ Terracota</span> ·
+    <span style="color:#0f766e;">■ Teal</span> ·
+    <span style="color:#1e40af;">■ Navy</span> ·
+    <span style="color:#6d28d9;">■ Violeta</span>
+  </div>
+  <div class="grid opt-a">
+    <div class="card"><div class="franja c1">Acople y Conexión</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Acople frenos</h3><p class="ubicacion">📍 En la parte delantera del remolque.</p></div></div>
+    <div class="card"><div class="franja c2">Rodado, Frenos y Suspensión</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Cubierta auxiliar</h3><p class="ubicacion">📍 Lateral del chasis.</p></div></div>
+    <div class="card"><div class="franja c3">Estructura y Chasis</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Defensa trasera</h3><p class="ubicacion">📍 Parte trasera de la unidad.</p></div></div>
+    <div class="card"><div class="franja c4">Caja de Carga y Configuración</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Tinteros</h3><p class="ubicacion">📍 Embutidos en el piso de la unidad.</p></div></div>
+    <div class="card"><div class="franja c5">Piso y Superficie de Carga</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Piso de madera dura</h3><p class="ubicacion">📍 Superficie superior de carga.</p></div></div>
+    <div class="card"><div class="franja c6">Sistemas Hidráulicos</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Bomba hidráulica</h3><p class="ubicacion">📍 Compartimento delantero.</p></div></div>
+    <div class="card"><div class="franja c7">Equipamiento de Furgones y Térmicos</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Puerta térmica</h3><p class="ubicacion">📍 Parte trasera del furgón.</p></div></div>
+    <div class="card"><div class="franja c8">Accesorios y Operatividad</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Soporte porta rueda</h3><p class="ubicacion">📍 Bajo chasis.</p></div></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>Opción B — Paleta pastel diferenciada</h2>
+  <p class="nota">Colores más distintos entre sí pero en versiones suaves (estilo "etiquetas pasteles"). Más vistosa y fácil de distinguir a primera vista, pero se aleja del look monocromo de Lambert.</p>
+  <div class="leyenda" style="margin-bottom:14px;">
+    <strong>Paleta:</strong>
+    <span style="color:#1565c0;">■ Azul</span> ·
+    <span style="color:#c2410c;">■ Naranja</span> ·
+    <span style="color:#3949ab;">■ Índigo</span> ·
+    <span style="color:#a16207;">■ Mostaza</span> ·
+    <span style="color:#8b4513;">■ Marrón</span> ·
+    <span style="color:#0f766e;">■ Turquesa</span> ·
+    <span style="color:#6d28d9;">■ Violeta</span> ·
+    <span style="color:#be185d;">■ Rosa</span>
+  </div>
+  <div class="grid opt-b">
+    <div class="card"><div class="franja c1">Acople y Conexión</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Acople frenos</h3><p class="ubicacion">📍 En la parte delantera del remolque.</p></div></div>
+    <div class="card"><div class="franja c2">Rodado, Frenos y Suspensión</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Cubierta auxiliar</h3><p class="ubicacion">📍 Lateral del chasis.</p></div></div>
+    <div class="card"><div class="franja c3">Estructura y Chasis</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Defensa trasera</h3><p class="ubicacion">📍 Parte trasera de la unidad.</p></div></div>
+    <div class="card"><div class="franja c4">Caja de Carga y Configuración</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Tinteros</h3><p class="ubicacion">📍 Embutidos en el piso de la unidad.</p></div></div>
+    <div class="card"><div class="franja c5">Piso y Superficie de Carga</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Piso de madera dura</h3><p class="ubicacion">📍 Superficie superior de carga.</p></div></div>
+    <div class="card"><div class="franja c6">Sistemas Hidráulicos</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Bomba hidráulica</h3><p class="ubicacion">📍 Compartimento delantero.</p></div></div>
+    <div class="card"><div class="franja c7">Equipamiento de Furgones y Térmicos</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Puerta térmica</h3><p class="ubicacion">📍 Parte trasera del furgón.</p></div></div>
+    <div class="card"><div class="franja c8">Accesorios y Operatividad</div><div class="foto"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span>Foto pendiente</span></div><div class="info"><h3 class="nombre">Soporte porta rueda</h3><p class="ubicacion">📍 Bajo chasis.</p></div></div>
+  </div>
+
+</body>
+</html>
