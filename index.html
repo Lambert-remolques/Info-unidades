@@ -1680,7 +1680,7 @@
         .adicional-foto {
             position: relative;
             aspect-ratio: 4 / 3;
-            background: #ededed;
+            background: #ffffff;
             overflow: hidden;
             border-bottom: 3px solid var(--verde);
         }
@@ -1728,7 +1728,8 @@
         .adicional-foto img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: #ffffff;
             display: block;
         }
 
@@ -1946,10 +1947,23 @@
             justify-content: center;
             gap: 10px;
             min-height: 280px;
+            background: #ffffff;
+            color: rgba(38, 38, 38, 0.45);
+            overflow: hidden;
+        }
+
+        .adicional-detalle-foto-placeholder {
             background:
                 repeating-linear-gradient(135deg, transparent 0 16px, rgba(38, 38, 38, 0.03) 16px 17px),
                 #f3f3f3;
-            color: rgba(38, 38, 38, 0.45);
+        }
+
+        .adicional-detalle-foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #ffffff;
+            display: block;
         }
 
         .adicional-detalle-foto svg {
@@ -3553,6 +3567,7 @@
         // (recursos con el tag "catalogo") y se arma un índice en memoria.
         const FOTOS_LIST_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/catalogo.json`;
         let catalogoFotos = {};
+        let catalogoFotosAdicionales = {};
 
         // Normaliza la configuración de ejes para tolerar "2-eje" vs "2-ejes".
         function normEje(eje) {
@@ -3566,26 +3581,35 @@
                 const data = await resp.json();
                 (data.resources || []).forEach((r) => {
                     const partes = (r.public_id || "").split("/");
-                    if (partes[0] !== "unidades") return;
                     const m = partes[partes.length - 1].match(/^foto-(\d+)$/);
                     if (!m) return;
-                    let categoria, slug, eje;
-                    if (partes.length === 5) {
-                        categoria = partes[1]; slug = partes[2]; eje = partes[3];
-                    } else if (partes.length === 4) {
-                        categoria = partes[1]; slug = partes[2]; eje = "";
-                    } else {
-                        return;
+                    if (partes[0] === "unidades") {
+                        let categoria, slug, eje;
+                        if (partes.length === 5) {
+                            categoria = partes[1]; slug = partes[2]; eje = partes[3];
+                        } else if (partes.length === 4) {
+                            categoria = partes[1]; slug = partes[2]; eje = "";
+                        } else {
+                            return;
+                        }
+                        const clave = `${categoria}/${slug}/${normEje(eje)}`;
+                        (catalogoFotos[clave] = catalogoFotos[clave] || []).push({
+                            numero: parseInt(m[1], 10),
+                            formato: r.format || "jpg",
+                            eje: eje,
+                            version: r.version
+                        });
+                    } else if (partes[0] === "adicionales" && partes.length === 4) {
+                        const clave = `${partes[1]}/${partes[2]}`;
+                        (catalogoFotosAdicionales[clave] = catalogoFotosAdicionales[clave] || []).push({
+                            numero: parseInt(m[1], 10),
+                            formato: r.format || "jpg",
+                            version: r.version
+                        });
                     }
-                    const clave = `${categoria}/${slug}/${normEje(eje)}`;
-                    (catalogoFotos[clave] = catalogoFotos[clave] || []).push({
-                        numero: parseInt(m[1], 10),
-                        formato: r.format || "jpg",
-                        eje: eje,
-                        version: r.version
-                    });
                 });
                 Object.values(catalogoFotos).forEach((lista) => lista.sort((a, b) => a.numero - b.numero));
+                Object.values(catalogoFotosAdicionales).forEach((lista) => lista.sort((a, b) => a.numero - b.numero));
             } catch (e) {}
         })();
 
@@ -3597,6 +3621,28 @@
         async function detectarFotos(categoria, productoNombre, ejeSlug) {
             await cargaFotosPromise;
             return fotosDe(categoria, productoNombre, ejeSlug).slice();
+        }
+
+        // Las fotos de adicionales se llenan dentro de cargaFotosPromise (mismo tag "catalogo").
+
+        cargaFotosPromise.then(() => {
+            if (document.getElementById("adicionalGrid")) {
+                renderAdicionalesGrid();
+            }
+            if (adicionalDetalleSlugActual) {
+                abrirAdicionalDetalle(adicionalDetalleSlugActual);
+            }
+        });
+
+        function cloudinaryAdicionalUrl(categoriaId, slug, numero, transform = "", formato = "jpg", version) {
+            const tx = transform ? `${transform}/` : "";
+            const ver = version ? `v${version}/` : "";
+            return `${CLOUDINARY_BASE}/${tx}${ver}adicionales/${categoriaId}/${slug}/foto-${numero}.${formato}`;
+        }
+
+        function fotosDeAdicional(adicional) {
+            const clave = `${adicional.categoriaId}/${adicional.slug}`;
+            return catalogoFotosAdicionales[clave] || [];
         }
 
         function opcionesEjes(productoNombre) {
@@ -4257,24 +4303,32 @@
                 return;
             }
 
-            grid.innerHTML = filtrados.map((it) => `
-                <button class="adicional-card" type="button" data-adicional-slug="${it.slug}">
-                    <div class="adicional-categoria-franja">${it.categoriaNombre}</div>
-                    <div class="adicional-foto adicional-foto-placeholder">
-                        <span class="adicional-codigo-badge">${it.codigo}</span>
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
+            grid.innerHTML = filtrados.map((it) => {
+                const fotos = fotosDeAdicional(it);
+                const foto1 = fotos.find((f) => f.numero === 1) || fotos[0];
+                const fotoHtml = foto1
+                    ? `<img src="${cloudinaryAdicionalUrl(it.categoriaId, it.slug, foto1.numero, "c_fit,w_600,h_450,q_auto,f_auto", foto1.formato, foto1.version)}" alt="${it.nombre}" loading="lazy">`
+                    : `<svg viewBox="0 0 24 24" aria-hidden="true">
                             <rect x="3" y="5" width="18" height="14" rx="2"/>
                             <circle cx="12" cy="12" r="3.5"/>
                             <path d="M8 5l1.5-2h5L16 5"/>
                         </svg>
-                        <span>Foto pendiente</span>
+                        <span>Foto pendiente</span>`;
+                const fotoClase = foto1 ? "adicional-foto" : "adicional-foto adicional-foto-placeholder";
+                return `
+                <button class="adicional-card" type="button" data-adicional-slug="${it.slug}">
+                    <div class="adicional-categoria-franja">${it.categoriaNombre}</div>
+                    <div class="${fotoClase}">
+                        <span class="adicional-codigo-badge">${it.codigo}</span>
+                        ${fotoHtml}
                         <span class="adicional-hover-overlay" aria-hidden="true">Ver detalle →</span>
                     </div>
                     <div class="adicional-info">
                         <h3 class="adicional-nombre">${it.nombre}</h3>
                     </div>
                 </button>
-            `).join("");
+            `;
+            }).join("");
         }
 
         let adicionalDetalleSlugActual = null;
@@ -4317,14 +4371,23 @@
             adicionalDetalleCodigo.textContent = item.codigo;
             adicionalDetalleDescripcion.textContent = item.descripcion;
             adicionalDetalleUbicacion.textContent = item.ubicacion;
-            adicionalDetalleFoto.innerHTML = `
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="3" y="5" width="18" height="14" rx="2"/>
-                    <circle cx="12" cy="12" r="3.5"/>
-                    <path d="M8 5l1.5-2h5L16 5"/>
-                </svg>
-                <span>Foto pendiente</span>
-            `;
+            const fotosItem = fotosDeAdicional(item);
+            const fotoModal = fotosItem.find((f) => f.numero === 1) || fotosItem[0];
+            if (fotoModal) {
+                const urlModal = cloudinaryAdicionalUrl(item.categoriaId, item.slug, fotoModal.numero, "c_fit,w_900,h_700,q_auto,f_auto", fotoModal.formato, fotoModal.version);
+                adicionalDetalleFoto.innerHTML = `<img src="${urlModal}" alt="${item.nombre}">`;
+                adicionalDetalleFoto.classList.remove("adicional-detalle-foto-placeholder");
+            } else {
+                adicionalDetalleFoto.innerHTML = `
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/>
+                        <circle cx="12" cy="12" r="3.5"/>
+                        <path d="M8 5l1.5-2h5L16 5"/>
+                    </svg>
+                    <span>Foto pendiente</span>
+                `;
+                adicionalDetalleFoto.classList.add("adicional-detalle-foto-placeholder");
+            }
             const lista = obtenerListaAdicionalesActual();
             const hayNavegacion = lista.length > 1;
             adicionalDetallePrev.hidden = !hayNavegacion;
