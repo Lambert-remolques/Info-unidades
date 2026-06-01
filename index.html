@@ -3080,6 +3080,10 @@
             display: block;
         }
 
+        .foto-card-img-relleno {
+            object-fit: cover;
+        }
+
         .foto-card-sinfotos {
             display: none;
         }
@@ -4437,12 +4441,12 @@
         const COVER_TX = "c_fit,w_640,h_440,q_auto,f_auto";
         const ICONO_CAMARA_OFF = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path><circle cx="12" cy="13" r="3.6"></circle><path d="m3 3 18 18"></path></svg>`;
 
-        function tarjetaFotoCover(nombre, categoriaId, slug, ejes, attrClic, numero) {
+        function tarjetaFotoCover(nombre, categoriaId, slug, ejes, attrClic, numero, relleno) {
             return `
                 <button class="product-card product-card-button button-reset foto-card" type="button" ${attrClic}
-                    data-cover-cat="${categoriaId}" data-cover-slug="${slug}" data-cover-ejes="${ejes.join(",")}" data-cover-num="${numero || 0}">
+                    data-cover-cat="${categoriaId}" data-cover-slug="${slug}" data-cover-ejes="${ejes.join(",")}" data-cover-num="${numero || 0}"${relleno ? ' data-cover-relleno="1"' : ''}>
                     <span class="foto-card-cover">
-                        <img class="foto-card-img" alt="" loading="lazy">
+                        <img class="foto-card-img${relleno ? ' foto-card-img-relleno' : ''}" alt="" loading="lazy">
                         <span class="foto-card-sinfotos">${ICONO_CAMARA_OFF}<span>Sin fotos todavía</span></span>
                     </span>
                     <span class="foto-card-cuerpo">
@@ -4458,7 +4462,8 @@
         // { eje } usa la primera foto de esa configuración; { eje, numero } usa una foto puntual.
         const PORTADA = {
             "acoplados/baranda-volcable": { eje: "4-ejes", numero: 6 },
-            "acoplados/pollero": { eje: "3-ejes" }
+            "acoplados/pollero": { eje: "3-ejes" },
+            "semirremolques/baranda-volcable": { eje: "1-3-eje", numero: 2, relleno: true }
         };
 
         function crearTarjetaFoto(producto, categoriaId) {
@@ -4472,7 +4477,7 @@
             const attrClic = opciones.length
                 ? `data-fotos-ejes="${slug}"`
                 : `data-galeria-directa="${slug}"`;
-            return tarjetaFotoCover(producto.nombre, categoriaId, slug, ejes, attrClic, portada && portada.numero);
+            return tarjetaFotoCover(producto.nombre, categoriaId, slug, ejes, attrClic, portada && portada.numero, portada && portada.relleno);
         }
 
         function crearTarjetaProducto(producto, seccion = "fichas", categoriaId = "") {
@@ -4558,7 +4563,8 @@
                     }
                 }
                 if (cover) {
-                    img.src = cloudinaryFotoUrl(cat, slug, cover.eje, cover.numero, COVER_TX, cover.formato, cover.version);
+                    const tx = card.dataset.coverRelleno === "1" ? "c_fill,g_auto,w_640,h_440,q_auto,f_auto" : COVER_TX;
+                    img.src = cloudinaryFotoUrl(cat, slug, cover.eje, cover.numero, tx, cover.formato, cover.version);
                 } else {
                     card.classList.add("pendiente");
                     card.disabled = true;
