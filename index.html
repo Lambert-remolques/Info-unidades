@@ -1685,6 +1685,22 @@
             border-bottom: 3px solid var(--verde);
         }
 
+        .adicional-codigo-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 9px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--negro);
+            font-size: 0.66rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            z-index: 2;
+            white-space: nowrap;
+        }
+
         .adicional-foto img {
             width: 100%;
             height: 100%;
@@ -3372,6 +3388,10 @@
                     <span class="adicional-detalle-dato-label">Categoría:</span>
                     <span id="adicionalDetalleCategoria"></span>
                 </p>
+                <p class="adicional-detalle-dato">
+                    <span class="adicional-detalle-dato-label">Código:</span>
+                    <span id="adicionalDetalleCodigo"></span>
+                </p>
                 <h3 class="adicional-detalle-nombre" id="adicionalDetalleNombre"></h3>
                 <div class="red-rule" aria-hidden="true"></div>
                 <p class="adicional-detalle-descripcion" id="adicionalDetalleDescripcion"></p>
@@ -3544,7 +3564,7 @@
         const adicionalesCategorias = [
             {
                 id: "acople-conexion",
-                nombre: "Acople y Conexión",
+                nombre: "Acople y conexión",
                 items: [
                     { codigo: "AD001", nombre: "Acople Frenos", descripcion: "Dispositivo que actúa como punto de conexión entre el vehículo tractor y el sistema de frenado del remolque. Transforma la acción de frenado del coche en una acción de frenado proporcional en el remolque.", ubicacion: "En la parte delantera del remolque." },
                     { codigo: "AD002", nombre: "Acople Luces", descripcion: "Componente encargado de transmitir la energía eléctrica y las señales luminosas desde el vehículo tractor hacia el remolque.", ubicacion: "En la parte trasera del vehículo y en el remolque." },
@@ -3554,7 +3574,7 @@
             },
             {
                 id: "aumento-carga",
-                nombre: "Aumento de Carga",
+                nombre: "Aumento de carga",
                 items: [
                     { codigo: "AD003", nombre: "Alargue de arco sobre baranda", descripcion: "Extensión de los arcos que sostienen la lona para ganar altura de carga.", ubicacion: "En la parte superior de la caja de carga." },
                     { codigo: "AD049", nombre: "Sobre baranda para batea", descripcion: "Dispositivos extra para aumentar la altura de la caja volcadora.", ubicacion: "Sobre las paredes laterales de la batea." },
@@ -3563,7 +3583,7 @@
             },
             {
                 id: "amarre-sujecion",
-                nombre: "Amarre y Sujeción de Carga",
+                nombre: "Amarre y sujeción de carga",
                 items: [
                     { codigo: "AD004", nombre: "Amarre embutido tipo Masisa", descripcion: "Amarres embutidos en el piso fabricados por Lambert (no homologados). Diseñados para fajas de pallets, evitando amarrar al bandón.", ubicacion: "Distribuidos en el piso o laterales internos." },
                     { codigo: "AD005", nombre: "Anilla para amarre (tipo ACINDAR)", descripcion: "Amarre homologado, resistente, especialmente utilizado para cargas pesadas como bobinas de acero, hierro, chapa, entre otros.", ubicacion: "Distribuidos en el piso o laterales internos." },
@@ -3575,7 +3595,7 @@
             },
             {
                 id: "piso-superficie",
-                nombre: "Piso y Superficie de Carga",
+                nombre: "Piso y superficie de carga",
                 items: [
                     { codigo: "AD006", nombre: "Bocas de descarga", descripcion: "Aberturas con cierre deslizante para descargar cereales por gravedad.", ubicacion: "En la parte inferior del remolque, en el chasis." },
                     { codigo: "AD013", nombre: "Diferencia de piso 1/8 a 4 mm", descripcion: "Cambio del espesor de la chapa del piso para mayor resistencia a impactos o carga pesada.", ubicacion: "Piso de la unidad." },
@@ -3603,7 +3623,7 @@
             },
             {
                 id: "cajon-compartimiento",
-                nombre: "Cajón y Compartimiento",
+                nombre: "Cajón y compartimiento",
                 items: [
                     { codigo: "AD008", nombre: "Cajón cocina - nuevo modelo 2026", descripcion: "Gabinete diseñado para guardar anafe, alimentos y utensilios. Medidas: 1170 × 500 × 540 mm. Modelo 2026.", ubicacion: "En el chasis de la unidad." },
                     { codigo: "AD009", nombre: "Cajón de herramientas chico (carrocería)", descripcion: "Compartimento metálico o plástico para herramientas menores. Medidas: 650 × 460 × 540 mm. Para carrocerías.", ubicacion: "En el chasis de la unidad." },
@@ -3615,7 +3635,7 @@
             },
             {
                 id: "furgon-termico",
-                nombre: "Furgón Térmico",
+                nombre: "Furgón térmico",
                 items: [
                     { codigo: "SIN CÓDIGO", nombre: "Cambio de paneles a 100 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 100 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." },
                     { codigo: "SIN CÓDIGO", nombre: "Cambio de paneles a 75 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 75 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." },
@@ -3630,7 +3650,7 @@
             },
             {
                 id: "tren-rodante",
-                nombre: "Tren Rodante",
+                nombre: "Tren rodante",
                 items: [
                     { codigo: "AD054", nombre: "Cambio de suspensión convencional a suspensión neumática por eje", descripcion: "Sustitución del sistema de suspensión mecánica por uno neumático independiente por eje, mejorando confort, estabilidad y cuidado de la carga.", ubicacion: "En cada eje de la unidad." },
                     { codigo: "SIN CÓDIGO", nombre: "Colocación de tercer eje común en camión", descripcion: "Incorporación de un eje adicional común para aumentar la capacidad de carga y distribuir mejor el peso.", ubicacion: "En camión." },
@@ -3645,7 +3665,7 @@
             },
             {
                 id: "equipamiento-hidraulico",
-                nombre: "Equipamiento Hidráulico",
+                nombre: "Equipamiento hidráulico",
                 items: [
                     { codigo: "AD018", nombre: "Equipo hidráulico para batea (en camión)", descripcion: "Kit de bomba, toma de fuerza y mandos para poder elevar el volcador.", ubicacion: "Se instala en el chasis del camión tractor." },
                     { codigo: "AD019", nombre: "Equipo hidráulico para volcadora", descripcion: "Cilindro y conexiones necesarias para el vuelco de la caja.", ubicacion: "Bajo la caja de carga o en el frente de la misma." },
@@ -3665,7 +3685,7 @@
             },
             {
                 id: "puertas-tapas",
-                nombre: "Puertas, Tapas y Accesos",
+                nombre: "Puertas, tapas y accesos",
                 items: [
                     { codigo: "AD035", nombre: "Puerta guillotina interior", descripcion: "Puerta de apertura vertical para acceso rápido o compartimentado.", ubicacion: "Interior del furgón." },
                     { codigo: "AD037", nombre: "Puerta simbra interior", descripcion: "Puerta batiente de rejilla para ventilación o separación interna.", ubicacion: "Interior de la unidad de carga." },
@@ -4135,6 +4155,7 @@
                 <button class="adicional-card" type="button" data-adicional-slug="${it.slug}">
                     <div class="adicional-categoria-franja">${it.categoriaNombre}</div>
                     <div class="adicional-foto adicional-foto-placeholder">
+                        <span class="adicional-codigo-badge">${it.codigo}</span>
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <rect x="3" y="5" width="18" height="14" rx="2"/>
                             <circle cx="12" cy="12" r="3.5"/>
@@ -4162,6 +4183,7 @@
             });
             adicionalDetalleNombre.textContent = item.nombre;
             adicionalDetalleCategoria.textContent = item.categoriaNombre;
+            adicionalDetalleCodigo.textContent = item.codigo;
             adicionalDetalleDescripcion.textContent = item.descripcion;
             adicionalDetalleUbicacion.textContent = item.ubicacion;
             adicionalDetalleFoto.innerHTML = `
@@ -4877,6 +4899,7 @@
         const adicionalDetalleClose = document.querySelector("#adicionalDetalleClose");
         const adicionalDetalleNombre = document.querySelector("#adicionalDetalleNombre");
         const adicionalDetalleCategoria = document.querySelector("#adicionalDetalleCategoria");
+        const adicionalDetalleCodigo = document.querySelector("#adicionalDetalleCodigo");
         const adicionalDetalleDescripcion = document.querySelector("#adicionalDetalleDescripcion");
         const adicionalDetalleUbicacion = document.querySelector("#adicionalDetalleUbicacion");
         const adicionalDetalleFoto = document.querySelector("#adicionalDetalleFoto");
