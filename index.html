@@ -70,13 +70,34 @@
         }
 
         .site-menu {
+            position: relative;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             padding-top: 7px;
         }
 
+        .menu-indicator {
+            position: absolute;
+            top: 7px;
+            left: 0;
+            width: 0;
+            height: 34px;
+            border-radius: var(--radio);
+            background: var(--verde);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+            transition:
+                left  340ms cubic-bezier(0.22, 1, 0.36, 1),
+                width 340ms cubic-bezier(0.22, 1, 0.36, 1),
+                top   340ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 200ms ease;
+        }
+
         .menu-button {
+            position: relative;
+            z-index: 1;
             min-height: 34px;
             padding: 0 15px;
             border: 0;
@@ -94,7 +115,7 @@
 
         .menu-button.active {
             color: var(--blanco);
-            background: var(--verde);
+            background: transparent;
         }
 
         @media (hover: hover) {
@@ -370,6 +391,29 @@
         .view.active {
             display: block;
             animation: fadeIn 260ms ease both;
+        }
+
+        #catalogView {
+            transition: opacity 180ms ease, transform 180ms ease;
+        }
+
+        #catalogView.catalog-view--saliendo {
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+        }
+
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0;
+            background: linear-gradient(90deg, var(--verde), var(--verde-oscuro));
+            box-shadow: 0 0 8px rgba(21, 153, 71, 0.45);
+            z-index: 9999;
+            pointer-events: none;
+            transition: width 80ms ease-out;
         }
 
         @keyframes fadeIn {
@@ -3252,6 +3296,10 @@
                 box-shadow: 0 4px 18px rgba(21, 153, 71, 0.55);
             }
 
+            .menu-indicator {
+                display: none;
+            }
+
             .drawer-close {
                 display: grid;
                 place-items: center;
@@ -4020,6 +4068,44 @@
             transition: width 200ms ease;
         }
 
+        .descarga-zip-spinner--done {
+            border: none !important;
+            animation: none !important;
+            background: rgba(21, 153, 71, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .descarga-check-svg {
+            width: 30px;
+            height: 30px;
+            display: block;
+        }
+
+        .descarga-check-circle {
+            fill: none;
+            stroke: var(--verde);
+            stroke-width: 3;
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            animation: drawCheckCircle 380ms ease-out forwards;
+        }
+
+        .descarga-check-path {
+            fill: none;
+            stroke: var(--verde);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 46;
+            stroke-dashoffset: 46;
+            animation: drawCheckPath 320ms ease-out forwards 320ms;
+        }
+
+        @keyframes drawCheckCircle { to { stroke-dashoffset: 0; } }
+        @keyframes drawCheckPath   { to { stroke-dashoffset: 0; } }
+
         .galeria-mosaico {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -4198,6 +4284,7 @@
     </style>
 </head>
 <body>
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 <div class="lambert-loader-overlay" id="initialLoader">
     <div class="lambert-loader-pista">
         <div class="lambert-loader-ruta"></div>
@@ -4260,6 +4347,7 @@
                 <nav class="site-menu" id="siteMenu" aria-label="Secciones principales">
                     <button class="drawer-close" type="button" id="drawerClose" aria-label="Cerrar menú">×</button>
                     <p class="drawer-label">Menú</p>
+                    <span class="menu-indicator" id="menuIndicator" aria-hidden="true"></span>
                     <button class="menu-button active" type="button" data-section="inicio">Inicio</button>
                     <button class="menu-button" type="button" data-section="fichas">Fichas técnicas</button>
                     <button class="menu-button" type="button" data-section="fotos">Fotos</button>
@@ -4966,7 +5054,32 @@
             menuButtons.forEach((button) => {
                 button.classList.toggle("active", button.dataset.section === seccion);
             });
+            actualizarIndicadorMenu();
         }
+
+        function actualizarIndicadorMenu() {
+            const indicador = document.getElementById("menuIndicator");
+            if (!indicador) return;
+            if (window.matchMedia("(max-width: 720px)").matches) {
+                indicador.style.opacity = "0";
+                return;
+            }
+            const activo = document.querySelector(".site-menu .menu-button.active");
+            if (!activo) {
+                indicador.style.opacity = "0";
+                return;
+            }
+            requestAnimationFrame(() => {
+                indicador.style.left  = activo.offsetLeft + "px";
+                indicador.style.top   = activo.offsetTop  + "px";
+                indicador.style.width = activo.offsetWidth + "px";
+                indicador.style.height = activo.offsetHeight + "px";
+                indicador.style.opacity = "1";
+            });
+        }
+
+        window.addEventListener("resize", actualizarIndicadorMenu);
+        window.addEventListener("load",   actualizarIndicadorMenu);
 
         function actualizarHero(seccion) {
             const esInicio = seccion === "inicio";
@@ -5030,7 +5143,28 @@
             });
         }
 
+        let saltarTransicionSeccion = false;
+        let timerTransicionSeccion = null;
+
         function mostrarSeccion(seccion, categoriaId = "acoplados", productoSlug = "") {
+            if (saltarTransicionSeccion) {
+                return ejecutarVistaSeccion(seccion, categoriaId, productoSlug);
+            }
+            if (timerTransicionSeccion) {
+                clearTimeout(timerTransicionSeccion);
+                timerTransicionSeccion = null;
+            }
+            catalogView.classList.add("catalog-view--saliendo");
+            timerTransicionSeccion = setTimeout(() => {
+                ejecutarVistaSeccion(seccion, categoriaId, productoSlug);
+                requestAnimationFrame(() => {
+                    catalogView.classList.remove("catalog-view--saliendo");
+                });
+                timerTransicionSeccion = null;
+            }, 180);
+        }
+
+        function ejecutarVistaSeccion(seccion, categoriaId = "acoplados", productoSlug = "") {
             seccionActual = seccion;
             actualizarMenu(seccion);
             actualizarHero(seccion);
@@ -6934,9 +7068,38 @@
             return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
         }
 
+        const DESCARGA_ZIP_BOX_HTML = `
+            <span class="descarga-zip-spinner" aria-hidden="true"></span>
+            <div class="descarga-zip-info">
+                <p class="descarga-zip-titulo">Preparando descarga…</p>
+                <p class="descarga-zip-subtitulo" id="descargaZipSubtitulo">Procesando 0 de 0</p>
+                <div class="descarga-zip-barra"><span class="descarga-zip-barra-fill" id="descargaZipBarraFill"></span></div>
+            </div>
+        `;
+
+        function mostrarChecksDescarga() {
+            const spinner = document.querySelector(".descarga-zip-spinner");
+            const titulo = document.querySelector(".descarga-zip-titulo");
+            const subtitulo = document.querySelector("#descargaZipSubtitulo");
+            const barra = document.querySelector(".descarga-zip-barra");
+            if (!spinner || !titulo || !subtitulo || !barra) return;
+            spinner.classList.add("descarga-zip-spinner--done");
+            spinner.innerHTML = `
+                <svg viewBox="0 0 52 52" class="descarga-check-svg" aria-hidden="true">
+                    <circle class="descarga-check-circle" cx="26" cy="26" r="24"></circle>
+                    <path class="descarga-check-path" d="M14 27l8 8 16-18"></path>
+                </svg>
+            `;
+            titulo.textContent = "¡Listo!";
+            subtitulo.textContent = "La descarga se inició";
+            barra.style.display = "none";
+        }
+
         async function descargarTodasFotos(boton) {
             if (!galeriaActual || !galeriaActual.fotos.length) return;
             const overlay = document.querySelector("#descargaZipOverlay");
+            const box = overlay.querySelector(".descarga-zip-box");
+            box.innerHTML = DESCARGA_ZIP_BOX_HTML;
             const subtitulo = document.querySelector("#descargaZipSubtitulo");
             const barraFill = document.querySelector("#descargaZipBarraFill");
             const total = galeriaActual.fotos.length;
@@ -6944,6 +7107,7 @@
             overlay.hidden = false;
             subtitulo.textContent = `Procesando 0 de ${total}`;
             barraFill.style.width = "0%";
+            let exito = false;
             try {
                 const [JSZip, logo] = await Promise.all([cargarJSZip(), cargarLogoMarcaAgua()]);
                 const zip = new JSZip();
@@ -6971,10 +7135,15 @@
                 document.body.appendChild(a);
                 a.click();
                 setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+                exito = true;
             } catch (e) {
                 console.error(e);
                 alert("No se pudo generar el archivo ZIP. Probá de nuevo.");
             } finally {
+                if (exito) {
+                    mostrarChecksDescarga();
+                    await new Promise((r) => setTimeout(r, 1100));
+                }
                 overlay.hidden = true;
                 if (boton) boton.disabled = false;
             }
@@ -7200,10 +7369,36 @@
             });
         }
 
+        // Barra de progreso de scroll
+        let rafScroll = false;
+        function actualizarBarraScroll() {
+            rafScroll = false;
+            const bar = document.getElementById("scrollProgress");
+            if (!bar) return;
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const pct = total > 0 ? Math.min(100, (window.scrollY / total) * 100) : 0;
+            bar.style.width = pct + "%";
+        }
+        window.addEventListener("scroll", () => {
+            if (rafScroll) return;
+            rafScroll = true;
+            requestAnimationFrame(actualizarBarraScroll);
+        }, { passive: true });
+        window.addEventListener("resize", actualizarBarraScroll);
+
         function iniciar() {
             inicializarFooter();
             inicializarTiltCards();
             crearBotonesCategoria();
+            saltarTransicionSeccion = true;
+            try {
+                ejecutarIniciar();
+            } finally {
+                saltarTransicionSeccion = false;
+            }
+        }
+
+        function ejecutarIniciar() {
             const partes = window.location.hash.replace("#", "").split("/").filter(Boolean);
 
             if (!partes.length) {
