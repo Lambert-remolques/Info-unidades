@@ -663,7 +663,7 @@
 
         .site-footer {
             margin-top: 64px;
-            padding: 34px 0;
+            padding: 48px 0 22px;
             background: linear-gradient(135deg, #101213 0%, #1a1d1e 100%);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
@@ -671,29 +671,182 @@
         .site-footer-inner {
             width: min(1280px, calc(100% - 112px));
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.4fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .site-footer-col {
             display: flex;
             flex-direction: column;
-            gap: 11px;
-            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .site-footer-marca {
+            justify-content: flex-start;
+            align-self: center;
         }
 
         .site-footer-logo {
-            width: 134px;
+            width: 158px;
             height: auto;
             filter: drop-shadow(0 3px 7px rgba(0, 0, 0, 0.5));
         }
 
-        .site-footer-texto {
+        .site-footer-titulo {
+            margin: 0 0 6px;
+            color: var(--blanco);
+            font-size: 0.78rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .site-footer-titulo::after {
+            content: "";
+            display: block;
+            width: 32px;
+            height: 2px;
+            margin-top: 8px;
+            background: var(--verde);
+        }
+
+        .site-footer-menu {
+            list-style: none;
             margin: 0;
-            color: rgba(255, 255, 255, 0.72);
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .site-footer-link {
+            display: inline-block;
+            padding: 4px 0;
+            border: 0;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: var(--fuente);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: color 160ms ease, transform 160ms ease;
+        }
+
+        .site-footer-link:hover {
+            color: var(--verde);
+            transform: translateX(4px);
+        }
+
+        .site-footer-soporte-texto {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.6);
             font-size: 0.82rem;
             font-weight: 500;
             line-height: 1.55;
+            max-width: 320px;
         }
 
-        @media (min-width: 900px) {
-            .site-footer-texto {
-                white-space: nowrap;
+        .site-footer-reportar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            padding: 11px 20px;
+            border-radius: 999px;
+            background: var(--verde);
+            color: var(--blanco);
+            font-family: var(--fuente);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(21, 153, 71, 0.32);
+            transition: background 160ms ease, transform 160ms ease;
+            align-self: flex-start;
+        }
+
+        .site-footer-reportar:hover {
+            background: var(--verde-oscuro);
+            transform: translateY(-1px);
+        }
+
+        .site-footer-bottom {
+            width: min(1280px, calc(100% - 112px));
+            margin: 36px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.74rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .site-footer-sep {
+            opacity: 0.5;
+        }
+
+        @media (max-width: 900px) {
+            .site-footer-inner {
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+            }
+
+            .site-footer-marca {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .site-footer {
+                padding: 38px 0 22px;
+            }
+
+            .site-footer-inner {
+                grid-template-columns: 1fr;
+                gap: 28px;
+                text-align: center;
+            }
+
+            .site-footer-marca {
+                align-items: center;
+            }
+
+            .site-footer-titulo::after {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .site-footer-menu {
+                align-items: center;
+            }
+
+            .site-footer-link:hover {
+                transform: none;
+            }
+
+            .site-footer-soporte-texto {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .site-footer-reportar {
+                align-self: center;
+            }
+
+            .site-footer-bottom {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .site-footer-sep {
+                display: none;
             }
         }
 
@@ -709,7 +862,8 @@
                 display: none;
             }
 
-            .site-footer-inner {
+            .site-footer-inner,
+            .site-footer-bottom {
                 width: min(100% - 32px, 1280px);
             }
         }
@@ -3790,8 +3944,33 @@
 
     <footer class="site-footer">
         <div class="site-footer-inner">
-            <img class="site-footer-logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
-            <p class="site-footer-texto">Catálogo desarrollado por el Área de Comunicación. Ante dudas o sugerencias, comunicarse con el área correspondiente.</p>
+            <div class="site-footer-col site-footer-marca">
+                <img class="site-footer-logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
+            </div>
+            <div class="site-footer-col">
+                <h4 class="site-footer-titulo">Navegación</h4>
+                <ul class="site-footer-menu">
+                    <li><button class="site-footer-link" type="button" data-footer-nav="inicio">Inicio</button></li>
+                    <li><button class="site-footer-link" type="button" data-footer-nav="fichas">Fichas técnicas</button></li>
+                    <li><button class="site-footer-link" type="button" data-footer-nav="fotos">Fotos</button></li>
+                    <li><button class="site-footer-link" type="button" data-footer-nav="adicionales">Adicionales</button></li>
+                </ul>
+            </div>
+            <div class="site-footer-col">
+                <h4 class="site-footer-titulo">Soporte</h4>
+                <p class="site-footer-soporte-texto">¿Encontraste algún error o tenés una sugerencia? Escribinos directamente.</p>
+                <a class="site-footer-reportar" id="footerReportar" href="#" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0 0 20.464 3.488"/>
+                    </svg>
+                    <span>Reportar un problema</span>
+                </a>
+            </div>
+        </div>
+        <div class="site-footer-bottom">
+            <span class="site-footer-copyright">© 2026 Lambert Remolques S.R.L.</span>
+            <span class="site-footer-sep" aria-hidden="true">·</span>
+            <span class="site-footer-version">Última actualización del sistema: <span id="footerUltimaActualizacion">02/06/2026</span></span>
         </div>
     </footer>
 
@@ -3954,6 +4133,11 @@
     <script>
         const PDF_BASE = "fichas";
         const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
+
+        // Actualizar manualmente con cada cambio significativo del sistema (formato DD/MM/AAAA)
+        const ULTIMA_ACTUALIZACION_SISTEMA = "02/06/2026";
+        const WHATSAPP_REPORTE_NUMERO = "543442624518";
+        const WHATSAPP_REPORTE_MENSAJE = "Hola! Quiero reportar un problema en el catálogo: [detalle del problema]";
         const FOTO_PLACEHOLDER = "https://example.com/fotos";
         const CLOUDINARY_CLOUD = "lambert-remolques";
         const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
@@ -6268,7 +6452,28 @@
             }
         });
 
+        function inicializarFooter() {
+            const fechaSpan = document.getElementById("footerUltimaActualizacion");
+            if (fechaSpan) fechaSpan.textContent = ULTIMA_ACTUALIZACION_SISTEMA;
+            const reportarLink = document.getElementById("footerReportar");
+            if (reportarLink) {
+                reportarLink.href = `https://wa.me/${WHATSAPP_REPORTE_NUMERO}?text=${encodeURIComponent(WHATSAPP_REPORTE_MENSAJE)}`;
+            }
+            document.querySelectorAll("[data-footer-nav]").forEach((link) => {
+                link.addEventListener("click", () => {
+                    const seccion = link.dataset.footerNav;
+                    if (seccion === "fichas" || seccion === "fotos") {
+                        mostrarSeccion(seccion, "acoplados");
+                    } else {
+                        mostrarSeccion(seccion);
+                    }
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+            });
+        }
+
         function iniciar() {
+            inicializarFooter();
             crearBotonesCategoria();
             const partes = window.location.hash.replace("#", "").split("/").filter(Boolean);
 
