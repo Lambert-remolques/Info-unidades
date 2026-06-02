@@ -2278,6 +2278,143 @@
             text-align: center;
         }
 
+        .lambert-loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 60px 20px;
+            background: var(--blanco);
+            border-radius: 12px;
+            min-height: 280px;
+        }
+
+        .lambert-loader-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            background: #ffffff;
+            transition: opacity 320ms ease;
+        }
+
+        .lambert-loader-overlay .lambert-loader-pista {
+            width: 100%;
+            max-width: none;
+        }
+
+        .lambert-loader-overlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lambert-loader-pista {
+            position: relative;
+            width: 320px;
+            max-width: 100%;
+            height: 110px;
+            overflow: hidden;
+        }
+
+        .lambert-loader-ruta {
+            position: absolute;
+            bottom: 18px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(38, 38, 38, 0.22);
+        }
+
+        .lambert-loader-marcas {
+            position: absolute;
+            bottom: 9px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-image: repeating-linear-gradient(to right, rgba(38, 38, 38, 0.26) 0 22px, transparent 22px 44px);
+            animation: lambert-ruta-mover 1.2s linear infinite;
+        }
+
+        @keyframes lambert-ruta-mover {
+            from { background-position: 0 0; }
+            to   { background-position: -44px 0; }
+        }
+
+        .lambert-loader-camion {
+            position: absolute;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: lambert-camion-vaiven 2.6s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes lambert-camion-vaiven {
+            0%, 50%, 100% { transform: translateX(-50%) translateY(0); }
+            25%           { transform: translateX(-50%) translateY(-2px); }
+            75%           { transform: translateX(-50%) translateY(-1px); }
+        }
+
+        .lambert-loader-rueda {
+            transform-origin: center;
+            transform-box: fill-box;
+            animation: lambert-rueda-girar 0.6s linear infinite;
+        }
+
+        @keyframes lambert-rueda-girar {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .lambert-loader-polvareda {
+            position: absolute;
+            bottom: 26px;
+            left: calc(50% - 110px);
+            width: 36px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(38, 38, 38, 0.18);
+            animation: lambert-polvo 0.6s ease-out infinite;
+            filter: blur(2px);
+        }
+
+        @keyframes lambert-polvo {
+            0%   { transform: translateX(0) scale(1); opacity: 0.7; }
+            100% { transform: translateX(-50px) scale(1.6); opacity: 0; }
+        }
+
+        .lambert-loader-texto {
+            color: var(--negro);
+            font-size: 0.95rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+        }
+
+        .lambert-loader-puntos {
+            display: inline-block;
+            width: 24px;
+            text-align: left;
+        }
+
+        .lambert-loader-puntos::after {
+            content: "";
+            animation: lambert-puntos 1.4s steps(4, jump-none) infinite;
+        }
+
+        @keyframes lambert-puntos {
+            0%   { content: ""; }
+            25%  { content: "."; }
+            50%  { content: ".."; }
+            75%  { content: "..."; }
+        }
+
         .galeria-main {
             position: relative;
             display: block;
@@ -3860,6 +3997,28 @@
     </style>
 </head>
 <body>
+<div class="lambert-loader-overlay" id="initialLoader">
+    <div class="lambert-loader-pista">
+        <div class="lambert-loader-ruta"></div>
+        <div class="lambert-loader-marcas"></div>
+        <div class="lambert-loader-polvareda"></div>
+        <svg class="lambert-loader-camion" viewBox="0 0 200 80" width="180" height="72" aria-hidden="true">
+            <rect x="2" y="14" width="120" height="46" rx="3" fill="#ffffff" stroke="#159947" stroke-width="3"/>
+            <line x1="40" y1="14" x2="40" y2="60" stroke="#159947" stroke-width="2"/>
+            <line x1="80" y1="14" x2="80" y2="60" stroke="#159947" stroke-width="2"/>
+            <path d="M125 20 L145 20 L160 38 L180 38 L188 50 L188 60 L125 60 Z" fill="#159947" stroke="#078334" stroke-width="2"/>
+            <path d="M148 26 L160 38 L172 38 L165 26 Z" fill="rgba(255,255,255,0.85)"/>
+            <circle cx="186" cy="48" r="2.5" fill="#ffeb3b"/>
+            <circle class="lambert-loader-rueda" cx="32" cy="64" r="9" fill="#262626"/>
+            <circle cx="32" cy="64" r="3" fill="#777"/>
+            <circle class="lambert-loader-rueda" cx="92" cy="64" r="9" fill="#262626"/>
+            <circle cx="92" cy="64" r="3" fill="#777"/>
+            <circle class="lambert-loader-rueda" cx="166" cy="64" r="9" fill="#262626"/>
+            <circle cx="166" cy="64" r="3" fill="#777"/>
+        </svg>
+    </div>
+    <div class="lambert-loader-texto">Cargando catálogo<span class="lambert-loader-puntos"></span></div>
+</div>
 <div id="contenido" style="display:none;">
     <div class="scroll-bar" id="scrollBar" aria-hidden="true">
         <div class="scroll-bar-left">
@@ -4558,6 +4717,34 @@
             fotos: { titulo: "Fotos", descripcion: "Acceso rápido a las fotos de cada unidad" },
             adicionales: { titulo: "Adicionales", descripcion: "Acceso rápido a los adicionales" }
         };
+
+        function loaderLambertHtml(texto) {
+            const t = texto || "Cargando";
+            return `
+                <div class="lambert-loader">
+                    <div class="lambert-loader-pista">
+                        <div class="lambert-loader-ruta"></div>
+                        <div class="lambert-loader-marcas"></div>
+                        <div class="lambert-loader-polvareda"></div>
+                        <svg class="lambert-loader-camion" viewBox="0 0 200 80" width="180" height="72" aria-hidden="true">
+                            <rect x="2" y="14" width="120" height="46" rx="3" fill="#ffffff" stroke="#159947" stroke-width="3"/>
+                            <line x1="40" y1="14" x2="40" y2="60" stroke="#159947" stroke-width="2"/>
+                            <line x1="80" y1="14" x2="80" y2="60" stroke="#159947" stroke-width="2"/>
+                            <path d="M125 20 L145 20 L160 38 L180 38 L188 50 L188 60 L125 60 Z" fill="#159947" stroke="#078334" stroke-width="2"/>
+                            <path d="M148 26 L160 38 L172 38 L165 26 Z" fill="rgba(255,255,255,0.85)"/>
+                            <circle cx="186" cy="48" r="2.5" fill="#ffeb3b"/>
+                            <circle class="lambert-loader-rueda" cx="32" cy="64" r="9" fill="#262626"/>
+                            <circle cx="32" cy="64" r="3" fill="#777"/>
+                            <circle class="lambert-loader-rueda" cx="92" cy="64" r="9" fill="#262626"/>
+                            <circle cx="92" cy="64" r="3" fill="#777"/>
+                            <circle class="lambert-loader-rueda" cx="166" cy="64" r="9" fill="#262626"/>
+                            <circle cx="166" cy="64" r="3" fill="#777"/>
+                        </svg>
+                    </div>
+                    <div class="lambert-loader-texto">${t}<span class="lambert-loader-puntos"></span></div>
+                </div>
+            `;
+        }
 
         function crearSlug(texto) {
             return texto
@@ -5640,7 +5827,7 @@
                         <h2 class="section-title">${tituloUnidad}</h2>
                     </div>
                 </div>
-                <div class="galeria-loading">Cargando fotos…</div>
+                ${loaderLambertHtml("Cargando fotos")}
             `;
 
             const numeros = await detectarFotos(idCategoria, productoNombre, ejeSlug);
@@ -6577,6 +6764,11 @@
       aplicarBienvenida();
     }
     iniciarMonitorInactividad();
+    const initialLoader = document.getElementById("initialLoader");
+    if (initialLoader) {
+      initialLoader.classList.add("hide");
+      setTimeout(() => initialLoader.remove(), 380);
+    }
   });
 </script>
 </body>
