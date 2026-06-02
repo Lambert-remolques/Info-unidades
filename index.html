@@ -6856,6 +6856,7 @@
                 actualizarChips();
                 const hash = adicionalFiltroCategoria === "todos" ? "#adicionales" : `#adicionales/${adicionalFiltroCategoria}`;
                 history.replaceState(null, "", hash);
+                window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
 
