@@ -532,6 +532,192 @@
             letter-spacing: 0.03em;
         }
 
+        /* ===== Métricas del catálogo ===== */
+        .inicio-metricas {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            background: var(--blanco);
+            border: 1px solid rgba(38, 38, 38, 0.08);
+            border-radius: var(--radio);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--sombra-card);
+        }
+
+        .inicio-metricas::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--verde);
+        }
+
+        .inicio-metrica {
+            text-align: center;
+            padding: 28px 18px 24px;
+            border-right: 1px solid rgba(38, 38, 38, 0.08);
+        }
+
+        .inicio-metrica:last-child { border-right: none; }
+
+        .inicio-metrica-numero {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--verde-oscuro);
+            line-height: 1;
+            margin-bottom: 10px;
+            font-variant-numeric: tabular-nums;
+            transition: opacity 200ms ease;
+        }
+
+        .inicio-metrica-numero.cargando { opacity: 0.35; }
+
+        .inicio-metrica-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.13em;
+            color: var(--negro);
+            font-weight: 800;
+        }
+
+        .inicio-metrica-detalle {
+            font-size: 0.7rem;
+            color: var(--gris-texto);
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* ===== Mosaico de fotos aleatorias ===== */
+        .inicio-mosaico-cabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .inicio-mosaico-cabecera .inicio-bloque-titulo {
+            margin-bottom: 0;
+        }
+
+        .inicio-mosaico-recargar {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--blanco);
+            border: 1px solid rgba(38, 38, 38, 0.18);
+            border-radius: 999px;
+            padding: 9px 16px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--negro);
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 150ms ease, color 150ms ease;
+        }
+
+        .inicio-mosaico-recargar:hover {
+            border-color: var(--verde);
+            color: var(--verde-oscuro);
+        }
+
+        .inicio-mosaico-recargar svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .inicio-mosaico {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: 220px 220px;
+            gap: 12px;
+            grid-template-areas:
+                "uno dos tres"
+                "uno cuatro cinco";
+        }
+
+        .inicio-mosaico-item {
+            position: relative;
+            border-radius: var(--radio);
+            overflow: hidden;
+            cursor: pointer;
+            background: #2b2b2b;
+            border: none;
+            padding: 0;
+            text-align: left;
+            font-family: inherit;
+            color: var(--blanco);
+            box-shadow: var(--sombra-card);
+            transition: transform 200ms ease;
+        }
+
+        .inicio-mosaico-item:nth-child(1) { grid-area: uno; }
+        .inicio-mosaico-item:nth-child(2) { grid-area: dos; }
+        .inicio-mosaico-item:nth-child(3) { grid-area: tres; }
+        .inicio-mosaico-item:nth-child(4) { grid-area: cuatro; }
+        .inicio-mosaico-item:nth-child(5) { grid-area: cinco; }
+
+        .inicio-mosaico-imagen {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 400ms ease;
+        }
+
+        @media (hover: hover) {
+            .inicio-mosaico-item:hover { transform: scale(1.015); }
+            .inicio-mosaico-item:hover .inicio-mosaico-imagen { transform: scale(1.06); }
+        }
+
+        .inicio-mosaico-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 55%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 16px 18px;
+            color: var(--blanco);
+        }
+
+        .inicio-mosaico-categoria {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            opacity: 0.92;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .inicio-mosaico-titulo {
+            font-size: 0.92rem;
+            font-weight: 800;
+            line-height: 1.25;
+        }
+
+        .inicio-mosaico-item:nth-child(1) .inicio-mosaico-titulo {
+            font-size: 1.4rem;
+        }
+
+        .inicio-mosaico-vacio {
+            grid-column: 1 / -1;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--gris-texto);
+            font-size: 0.85rem;
+            background: var(--blanco);
+            border: 1px dashed rgba(38, 38, 38, 0.18);
+            border-radius: var(--radio);
+        }
+
         .reciente-flecha {
             display: flex;
             align-items: center;
@@ -563,100 +749,6 @@
             }
 
             .reciente-card:hover .reciente-flecha svg {
-                transform: translateX(4px);
-            }
-        }
-
-        .novedades-lista {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 26px;
-        }
-
-        .novedad-item {
-            display: flex;
-            flex-direction: column;
-            padding: 16px 20px;
-            border-radius: var(--radio);
-            border-left: 4px solid var(--verde);
-            background: rgba(255, 255, 255, 0.96);
-            box-shadow: var(--sombra-card);
-        }
-
-        .novedad-cabecera {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 7px;
-        }
-
-        .novedad-fecha {
-            color: var(--gris-texto);
-            font-size: 0.76rem;
-            font-weight: 700;
-        }
-
-        .novedad-sep {
-            color: rgba(38, 38, 38, 0.3);
-        }
-
-        .novedad-apartado {
-            color: var(--verde);
-            font-size: 0.74rem;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-
-        .novedad-texto {
-            margin: 0 0 11px;
-            color: var(--negro);
-            font-size: 0.92rem;
-            font-weight: 500;
-            line-height: 1.5;
-        }
-
-        .novedad-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 15px;
-            border-radius: var(--radio);
-            color: var(--verde);
-            background: rgba(21, 153, 71, 0.12);
-            font-size: 0.74rem;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-            cursor: pointer;
-            align-self: flex-start;
-            margin-top: auto;
-            transition: background 160ms ease, color 160ms ease;
-        }
-
-        .novedad-link svg {
-            width: 14px;
-            height: 14px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2.6;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            transition: transform 160ms ease;
-        }
-
-        @media (hover: hover) {
-            .novedad-link:hover {
-                background: var(--verde);
-                color: var(--blanco);
-            }
-
-            .novedad-link:hover svg {
                 transform: translateX(4px);
             }
         }
@@ -1351,9 +1443,32 @@
             }
 
             .home-grid,
-            .novedades-lista,
             .recientes-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .inicio-metricas {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .inicio-metrica:nth-child(2) { border-right: none; }
+
+            .inicio-metrica:nth-child(1),
+            .inicio-metrica:nth-child(2) {
+                border-bottom: 1px solid rgba(38, 38, 38, 0.08);
+            }
+
+            .inicio-mosaico {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 220px 160px 160px;
+                grid-template-areas:
+                    "uno uno"
+                    "dos tres"
+                    "cuatro cinco";
+            }
+
+            .inicio-mosaico-item:nth-child(1) .inicio-mosaico-titulo {
+                font-size: 1.15rem;
             }
         }
 
@@ -4394,6 +4509,12 @@
             if (adicionalDetalleSlugActual) {
                 abrirAdicionalDetalle(adicionalDetalleSlugActual);
             }
+            if (document.getElementById("inicioMetricas")) {
+                actualizarMetricas();
+            }
+            if (document.getElementById("inicioMosaico")) {
+                renderMosaico();
+            }
         });
 
         function cloudinaryAdicionalUrl(categoriaId, slug, numero, transform = "", formato = "jpg", version) {
@@ -4904,48 +5025,6 @@
             }
         }
 
-        // ===== Novedades / cambios recientes =====
-        // Para agregar una novedad: sumar un objeto AL PRINCIPIO del array (la más reciente arriba).
-        // tipo "ficha"  -> abre el PDF. Campos: pdf, titulo.
-        // tipo "galeria" -> abre la galería. Campos: cat, unidad, eje.
-        const NOVEDADES = [
-            {
-                fecha: "21/05/2026",
-                apartado: "Fichas técnicas",
-                texto: "Se agregó la ficha técnica del semirremolque Batea.",
-                tipo: "ficha",
-                pdf: "fichas/semirremolques/batea.pdf",
-                titulo: "Batea"
-            },
-            {
-                fecha: "21/05/2026",
-                apartado: "Fotos",
-                texto: "Se cargó la galería de fotos del acoplado Baranda volcable · 4 ejes.",
-                tipo: "galeria",
-                cat: "acoplados",
-                unidad: "Baranda volcable",
-                eje: "4-ejes"
-            },
-            {
-                fecha: "21/05/2026",
-                apartado: "Fotos",
-                texto: "Se cargó la galería de fotos del acoplado Todo puertas · 3 ejes.",
-                tipo: "galeria",
-                cat: "acoplados",
-                unidad: "Todo puertas",
-                eje: "3-ejes"
-            },
-            {
-                fecha: "21/05/2026",
-                apartado: "Fotos",
-                texto: "Se cargó la galería de fotos del semirremolque Batea · 1+2 ejes.",
-                tipo: "galeria",
-                cat: "semirremolques",
-                unidad: "Batea",
-                eje: "1-2-eje"
-            }
-        ];
-
         const RECIENTES_KEY = "lambert:recientes2";
         const RECIENTES_MAX = 6;
 
@@ -4970,7 +5049,9 @@
         }
 
         const ICONO_RAYO = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"></path></svg>`;
-        const ICONO_ESTRELLA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.25 4.15 1 5.85L12 17.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"></path></svg>`;
+        const ICONO_METRICAS = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V10"></path><path d="M9 21V4"></path><path d="M15 21v-9"></path><path d="M21 21v-5"></path></svg>`;
+        const ICONO_MOSAICO = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>`;
+        const ICONO_RECARGAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path><path d="M3 21v-5h5"></path></svg>`;
 
         function tituloBloque(icono, texto) {
             return `<h3 class="inicio-bloque-titulo"><span class="inicio-bloque-icono">${icono}</span>${texto}</h3>`;
@@ -4996,27 +5077,199 @@
             `;
         }
 
-        function crearBloqueNovedades() {
-            if (!NOVEDADES.length) return "";
-            const items = NOVEDADES.map((nov, indice) => `
-                <li class="novedad-item">
-                    <div class="novedad-cabecera">
-                        <span class="novedad-fecha">${nov.fecha}</span>
-                        <span class="novedad-sep" aria-hidden="true">·</span>
-                        <span class="novedad-apartado">${nov.apartado}</span>
-                    </div>
-                    <p class="novedad-texto">${nov.texto}</p>
-                    <button class="novedad-link button-reset" type="button" data-novedad="${indice}">
-                        <span>Ver</span>${FLECHA_INGRESAR}
-                    </button>
-                </li>
-            `).join("");
+        // ===== Métricas automáticas =====
+        let cloudinaryCargado = false;
+        cargaFotosPromise.then(() => { cloudinaryCargado = true; });
+
+        // Catálogo de fichas técnicas reales: se trae el árbol del repo y se cuentan
+        // los PDFs que viven dentro de /fichas. Así el número refleja sólo las subidas.
+        const GITHUB_FICHAS_API = "https://api.github.com/repos/Lambert-remolques/Info-unidades/git/trees/main?recursive=1";
+        let fichasDisponibles = null;
+
+        const cargaFichasPromise = (async () => {
+            try {
+                const resp = await fetch(GITHUB_FICHAS_API);
+                if (!resp.ok) { fichasDisponibles = new Set(); return; }
+                const data = await resp.json();
+                const set = new Set();
+                (data.tree || []).forEach((entry) => {
+                    if (entry.type === "blob" && entry.path.startsWith("fichas/") && entry.path.toLowerCase().endsWith(".pdf")) {
+                        set.add(entry.path);
+                    }
+                });
+                fichasDisponibles = set;
+            } catch (e) {
+                fichasDisponibles = new Set();
+            }
+        })();
+
+        cargaFichasPromise.then(() => {
+            if (document.getElementById("inicioMetricas")) {
+                actualizarMetricas();
+            }
+        });
+
+        function contarMetricas() {
+            const unidades = categorias.reduce((acc, cat) => acc + cat.productos.length, 0);
+            const adicionales = adicionalesPlanos.length;
+            let fotosUnidades = 0, fotosAdicionales = 0;
+            Object.values(catalogoFotos).forEach((lista) => { fotosUnidades += lista.length; });
+            Object.values(catalogoFotosAdicionales).forEach((lista) => { fotosAdicionales += lista.length; });
+            return {
+                unidades,
+                adicionales,
+                fotos: fotosUnidades + fotosAdicionales,
+                fichas: fichasDisponibles ? fichasDisponibles.size : 0,
+                fotosCargado: cloudinaryCargado,
+                fichasCargado: fichasDisponibles !== null
+            };
+        }
+
+        function crearBloqueMetricas() {
+            const datos = contarMetricas();
             return `
                 <div class="inicio-bloque">
-                    ${tituloBloque(ICONO_ESTRELLA, "Novedades")}
-                    <ul class="novedades-lista">${items}</ul>
+                    ${tituloBloque(ICONO_METRICAS, "Catálogo en números")}
+                    <div class="inicio-metricas" id="inicioMetricas">
+                        <div class="inicio-metrica">
+                            <div class="inicio-metrica-numero" data-metrica="unidades">${datos.unidades}</div>
+                            <div class="inicio-metrica-label">Unidades</div>
+                            <div class="inicio-metrica-detalle">Acoplados · semis · bitrenes · carrocerías</div>
+                        </div>
+                        <div class="inicio-metrica">
+                            <div class="inicio-metrica-numero" data-metrica="adicionales">${datos.adicionales}</div>
+                            <div class="inicio-metrica-label">Adicionales</div>
+                            <div class="inicio-metrica-detalle">En ${adicionalesCategorias.length} categorías</div>
+                        </div>
+                        <div class="inicio-metrica">
+                            <div class="inicio-metrica-numero${datos.fotosCargado ? "" : " cargando"}" data-metrica="fotos">${datos.fotos}</div>
+                            <div class="inicio-metrica-label">Fotos</div>
+                            <div class="inicio-metrica-detalle">Disponibles en el catálogo</div>
+                        </div>
+                        <div class="inicio-metrica">
+                            <div class="inicio-metrica-numero${datos.fichasCargado ? "" : " cargando"}" data-metrica="fichas">${datos.fichas}</div>
+                            <div class="inicio-metrica-label">Fichas técnicas</div>
+                            <div class="inicio-metrica-detalle">Disponibles para consulta</div>
+                        </div>
+                    </div>
                 </div>
             `;
+        }
+
+        function actualizarMetricas() {
+            const cont = document.getElementById("inicioMetricas");
+            if (!cont) return;
+            const datos = contarMetricas();
+            ["unidades", "adicionales", "fotos", "fichas"].forEach((clave) => {
+                const el = cont.querySelector(`[data-metrica="${clave}"]`);
+                if (!el) return;
+                el.textContent = datos[clave];
+                if (clave === "fotos" && datos.fotosCargado) el.classList.remove("cargando");
+                if (clave === "fichas" && datos.fichasCargado) el.classList.remove("cargando");
+            });
+        }
+
+        // ===== Mosaico de fotos aleatorias =====
+        let mosaicoSeleccionActual = [];
+
+        function reunirFotosMosaico() {
+            const pool = [];
+            adicionalesPlanos.forEach((ad) => {
+                const fotos = fotosDeAdicional(ad);
+                if (!fotos.length) return;
+                const f1 = fotos.find((f) => f.numero === 1) || fotos[0];
+                const cat = adicionalesCategorias.find((c) => c.id === ad.categoriaId);
+                pool.push({
+                    tipo: "adicional",
+                    slug: ad.slug,
+                    titulo: ad.nombre,
+                    categoria: cat?.nombre || "Adicional",
+                    imagen: cloudinaryAdicionalUrl(ad.categoriaId, ad.slug, f1.numero, "c_fill,w_800,h_600,q_auto,f_auto", f1.formato, f1.version)
+                });
+            });
+            categorias.forEach((cat) => {
+                cat.productos.forEach((prod) => {
+                    const slug = crearSlug(prod.nombre);
+                    const opciones = (Array.isArray(prod.opciones) && prod.opciones.length)
+                        ? prod.opciones
+                        : [{ ejeSlug: "", nombre: "" }];
+                    opciones.forEach((op) => {
+                        const ejeSlug = op.ejeSlug || "";
+                        const clave = `${cat.id}/${slug}/${normEje(ejeSlug)}`;
+                        const lista = catalogoFotos[clave];
+                        if (!lista || !lista.length) return;
+                        const f1 = lista.find((f) => f.numero === 1) || lista[0];
+                        const tx = "c_fill,w_800,h_600,q_auto,f_auto";
+                        const ver = f1.version ? `v${f1.version}/` : "";
+                        const ejeRuta = ejeSlug ? `${ejeSlug}/` : "";
+                        const url = `${CLOUDINARY_BASE}/${tx}/${ver}unidades/${cat.id}/${slug}/${ejeRuta}foto-${f1.numero}.${f1.formato}`;
+                        pool.push({
+                            tipo: "unidad",
+                            categoriaId: cat.id,
+                            productoNombre: prod.nombre,
+                            ejeSlug: ejeSlug,
+                            titulo: ejeSlug && op.nombre ? `${prod.nombre} ${op.nombre}` : prod.nombre,
+                            categoria: cat.nombre,
+                            imagen: url
+                        });
+                    });
+                });
+            });
+            return pool;
+        }
+
+        function elegirMosaicoAleatorio(n = 5) {
+            const pool = reunirFotosMosaico();
+            if (!pool.length) return [];
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+            return pool.slice(0, n);
+        }
+
+        function renderMosaico() {
+            const cont = document.getElementById("inicioMosaico");
+            if (!cont) return;
+            mosaicoSeleccionActual = elegirMosaicoAleatorio(5);
+            if (!mosaicoSeleccionActual.length) {
+                cont.innerHTML = `<div class="inicio-mosaico-vacio">Las fotos del catálogo aparecerán acá apenas terminen de cargar.</div>`;
+                return;
+            }
+            cont.innerHTML = mosaicoSeleccionActual.map((it, i) => `
+                <button class="inicio-mosaico-item button-reset" type="button" data-mosaico-index="${i}">
+                    <img class="inicio-mosaico-imagen" src="${it.imagen}" alt="${it.titulo}" loading="lazy">
+                    <div class="inicio-mosaico-overlay">
+                        <div class="inicio-mosaico-categoria">${it.categoria}</div>
+                        <div class="inicio-mosaico-titulo">${it.titulo}</div>
+                    </div>
+                </button>
+            `).join("");
+        }
+
+        function crearBloqueMosaico() {
+            return `
+                <div class="inicio-bloque">
+                    <div class="inicio-mosaico-cabecera">
+                        ${tituloBloque(ICONO_MOSAICO, "Explorá el catálogo")}
+                        <button class="inicio-mosaico-recargar" type="button" id="inicioMosaicoRecargar">
+                            ${ICONO_RECARGAR}
+                            <span>Actualizar</span>
+                        </button>
+                    </div>
+                    <div class="inicio-mosaico" id="inicioMosaico"></div>
+                </div>
+            `;
+        }
+
+        function abrirItemMosaico(item) {
+            if (!item) return;
+            if (item.tipo === "adicional") {
+                abrirAdicionalDetalle(item.slug);
+            } else if (item.tipo === "unidad") {
+                mostrarGaleria(item.categoriaId, item.productoNombre, item.ejeSlug || null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
         }
 
         function mostrarInicio() {
@@ -5029,9 +5282,11 @@
                         ${crearTarjetaInicio("Adicionales", "Descripción categorizada de cada adicional.", "adicionales")}
                     </div>
                 </div>
+                ${crearBloqueMetricas()}
+                ${crearBloqueMosaico()}
                 ${crearBloqueRecientes()}
-                ${crearBloqueNovedades()}
             `;
+            renderMosaico();
             history.replaceState(null, "", "#inicio");
         }
 
@@ -6506,6 +6761,19 @@
                 return;
             }
 
+            const mosaicoRecargar = event.target.closest("#inicioMosaicoRecargar");
+            if (mosaicoRecargar) {
+                renderMosaico();
+                return;
+            }
+
+            const mosaicoBtn = event.target.closest("[data-mosaico-index]");
+            if (mosaicoBtn) {
+                const idx = parseInt(mosaicoBtn.dataset.mosaicoIndex, 10);
+                abrirItemMosaico(mosaicoSeleccionActual[idx]);
+                return;
+            }
+
             const recienteBtn = event.target.closest("[data-reciente]");
             if (recienteBtn) {
                 const it = leerRecientes()[parseInt(recienteBtn.dataset.reciente, 10)];
@@ -6517,20 +6785,6 @@
                         window.scrollTo({ top: 0, behavior: "smooth" });
                     } else if (it.tipo === "adicional") {
                         abrirAdicionalDetalle(it.slug);
-                    }
-                }
-                return;
-            }
-
-            const novedadBtn = event.target.closest("[data-novedad]");
-            if (novedadBtn) {
-                const nov = NOVEDADES[parseInt(novedadBtn.dataset.novedad, 10)];
-                if (nov) {
-                    if (nov.tipo === "ficha") {
-                        abrirPdf(nov.pdf, nov.titulo);
-                    } else if (nov.tipo === "galeria") {
-                        mostrarGaleria(nov.cat, nov.unidad, nov.eje || null);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                 }
                 return;

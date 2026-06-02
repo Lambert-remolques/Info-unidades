@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mockup Inicio — métricas + mosaico</title>
+<style>
+  :root {
+    --verde: #2d6a3f;
+    --verde-oscuro: #1f4a2c;
+    --verde-claro: #4a8a5a;
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --texto: #1a1a1a;
+    --texto-suave: #6a6a6a;
+    --linea: #e4e7eb;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--texto);
+    padding-bottom: 60px;
+  }
+
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 36px;
+  }
+
+  /* Etiquetas que marcan qué es nuevo / qué existe */
+  .seccion-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin: 30px 0 14px;
+  }
+  .seccion-tag.nuevo { background: #e8f6ec; color: #1f6a32; }
+  .seccion-tag.existe { background: #eef0f3; color: #555; }
+
+  .nota-intro {
+    background: #fff8e6;
+    border-left: 4px solid #f0b400;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #6b5800;
+    margin-bottom: 12px;
+  }
+
+  /* ============= HERO ============= */
+  .hero {
+    position: relative;
+    height: 260px;
+    border-radius: 22px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2d6a3f 0%, #1f4a2c 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 56px;
+  }
+  .hero h1 {
+    margin: 0 0 8px;
+    font-size: 40px;
+    font-weight: 800;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .hero p {
+    margin: 0;
+    font-size: 17px;
+    opacity: 0.92;
+  }
+
+  /* ============= MÉTRICAS ============= */
+  .metricas {
+    margin-top: 14px;
+    background: var(--card);
+    border-radius: 18px;
+    padding: 32px 12px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid var(--linea);
+    position: relative;
+    overflow: hidden;
+  }
+  .metricas::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--verde) 0%, var(--verde-claro) 100%);
+  }
+  .metrica {
+    text-align: center;
+    border-right: 1px solid var(--linea);
+    padding: 0 16px;
+  }
+  .metrica:last-child { border-right: none; }
+  .metrica-numero {
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--verde-oscuro);
+    line-height: 1;
+    margin-bottom: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .metrica-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--texto-suave);
+    font-weight: 700;
+  }
+  .metrica-detalle {
+    font-size: 11px;
+    color: #9aa0a6;
+    margin-top: 4px;
+  }
+
+  /* ============= ACCESOS RÁPIDOS ============= */
+  .accesos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 14px;
+  }
+  .acceso {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 26px;
+    border: 1px solid var(--linea);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: transform 0.15s;
+  }
+  .acceso:hover { transform: translateY(-2px); }
+  .acceso h3 {
+    margin: 14px 0 6px;
+    font-size: 20px;
+    color: var(--verde-oscuro);
+  }
+  .acceso p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 13.5px;
+  }
+  .acceso-icon {
+    width: 46px; height: 46px;
+    background: var(--verde);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .acceso-icon svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ============= MOSAICO ============= */
+  .mosaico-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 8px 0 14px;
+  }
+  .mosaico-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: var(--verde-oscuro);
+  }
+  .mosaico-header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--texto-suave);
+  }
+  .mosaico-recargar {
+    background: var(--card);
+    border: 1px solid var(--linea);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--texto-suave);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+  .mosaico-recargar:hover { background: #f8f9fa; }
+
+  .mosaico {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 12px;
+    grid-template-areas:
+      "uno dos tres"
+      "uno cuatro cinco";
+  }
+  .mosaico-item {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .mosaico-item:hover { transform: scale(1.015); }
+  .mosaico-item:nth-child(1) { grid-area: uno; }
+  .mosaico-item:nth-child(2) { grid-area: dos; }
+  .mosaico-item:nth-child(3) { grid-area: tres; }
+  .mosaico-item:nth-child(4) { grid-area: cuatro; }
+  .mosaico-item:nth-child(5) { grid-area: cinco; }
+
+  /* Cada item simula una foto distinta */
+  .ph-1 { background: linear-gradient(135deg, #2d6a3f 0%, #1f4a2c 100%); }
+  .ph-2 { background: linear-gradient(135deg, #6b5a3f 0%, #3a2f1f 100%); }
+  .ph-3 { background: linear-gradient(135deg, #3f5b6b 0%, #243744 100%); }
+  .ph-4 { background: linear-gradient(135deg, #5a3f4a 0%, #3a2530 100%); }
+  .ph-5 { background: linear-gradient(135deg, #4a5a3f 0%, #2a3a2a 100%); }
+
+  /* Silueta SVG dentro de la foto */
+  .ph-svg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.18;
+    color: white;
+  }
+  .ph-svg svg { width: 60%; height: 60%; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  .mosaico-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 55%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px 18px;
+    color: white;
+  }
+  .mosaico-categoria {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    opacity: 0.95;
+    margin-bottom: 5px;
+    font-weight: 700;
+  }
+  .mosaico-titulo {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .mosaico-item:nth-child(1) .mosaico-titulo { font-size: 22px; }
+
+  /* ============= VISTOS RECIENTEMENTE ============= */
+  .recientes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .reciente {
+    background: var(--card);
+    border: 1px solid var(--linea);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .reciente:hover { border-color: var(--verde); }
+  .reciente-tipo {
+    font-size: 10.5px;
+    color: var(--verde);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .reciente-titulo {
+    font-weight: 700;
+    color: var(--texto);
+  }
+  .reciente-meta {
+    font-size: 12px;
+    color: var(--texto-suave);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="nota-intro">
+    <strong>Mockup del Inicio</strong> — así quedaría con las dos cosas nuevas: <em>tira de métricas automáticas</em> y <em>mosaico de fotos random del catálogo</em>. Los bloques marcados como EXISTE ya están.
+  </div>
+
+  <!-- ============ HERO ============ -->
+  <span class="seccion-tag existe">Ya existe — Hero</span>
+  <div class="hero">
+    <div>
+      <h1>Catálogo Lambert</h1>
+      <p>Fichas técnicas, fotos y adicionales de toda la flota.</p>
+    </div>
+  </div>
+
+  <!-- ============ MÉTRICAS (NUEVO) ============ -->
+  <span class="seccion-tag nuevo">Nuevo — Métricas automáticas</span>
+  <div class="metricas">
+    <div class="metrica">
+      <div class="metrica-numero">14</div>
+      <div class="metrica-label">Unidades</div>
+      <div class="metrica-detalle">Semis · acoplados · tractos</div>
+    </div>
+    <div class="metrica">
+      <div class="metrica-numero">67</div>
+      <div class="metrica-label">Adicionales</div>
+      <div class="metrica-detalle">En 11 categorías</div>
+    </div>
+    <div class="metrica">
+      <div class="metrica-numero">142</div>
+      <div class="metrica-label">Fotos</div>
+      <div class="metrica-detalle">Subidas a Cloudinary</div>
+    </div>
+    <div class="metrica">
+      <div class="metrica-numero">14</div>
+      <div class="metrica-label">Fichas técnicas</div>
+      <div class="metrica-detalle">PDFs disponibles</div>
+    </div>
+  </div>
+
+  <!-- ============ ACCESOS RÁPIDOS (EXISTE) ============ -->
+  <span class="seccion-tag existe">Ya existe — Accesos rápidos</span>
+  <div class="accesos">
+    <div class="acceso">
+      <div class="acceso-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+      </div>
+      <h3>Fichas técnicas</h3>
+      <p>Especificaciones de cada modelo.</p>
+    </div>
+    <div class="acceso">
+      <div class="acceso-icon">
+        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <h3>Fotos</h3>
+      <p>Galería completa por unidad y eje.</p>
+    </div>
+    <div class="acceso">
+      <div class="acceso-icon">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <h3>Adicionales</h3>
+      <p>Componentes y opcionales por categoría.</p>
+    </div>
+  </div>
+
+  <!-- ============ MOSAICO (NUEVO) ============ -->
+  <span class="seccion-tag nuevo">Nuevo — Mosaico aleatorio</span>
+  <div class="mosaico-header">
+    <div>
+      <h2>Explorá el catálogo</h2>
+      <p>Una selección distinta cada vez que entrás al Inicio.</p>
+    </div>
+    <button class="mosaico-recargar">↻ Renovar selección</button>
+  </div>
+
+  <div class="mosaico">
+    <!-- 1: Foto grande -->
+    <div class="mosaico-item ph-1">
+      <div class="ph-svg">
+        <svg viewBox="0 0 100 60"><rect x="2" y="14" width="60" height="32" rx="2"/><rect x="62" y="22" width="22" height="24" rx="2"/><circle cx="18" cy="50" r="6"/><circle cx="32" cy="50" r="6"/><circle cx="74" cy="50" r="6"/></svg>
+      </div>
+      <div class="mosaico-overlay">
+        <div class="mosaico-categoria">Semirremolque</div>
+        <div class="mosaico-titulo">Baranda volcable 1+3 ejes</div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="mosaico-item ph-2">
+      <div class="ph-svg">
+        <svg viewBox="0 0 60 60"><rect x="6" y="14" width="48" height="28" rx="3"/><circle cx="18" cy="28" r="6"/><circle cx="42" cy="28" r="6"/></svg>
+      </div>
+      <div class="mosaico-overlay">
+        <div class="mosaico-categoria">Iluminación</div>
+        <div class="mosaico-titulo">Faro de trabajo LED</div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="mosaico-item ph-3">
+      <div class="ph-svg">
+        <svg viewBox="0 0 100 60"><rect x="14" y="10" width="34" height="32" rx="3"/><rect x="48" y="22" width="36" height="20" rx="2"/><circle cx="26" cy="50" r="6"/><circle cx="70" cy="50" r="6"/></svg>
+      </div>
+      <div class="mosaico-overlay">
+        <div class="mosaico-categoria">Tractocamión</div>
+        <div class="mosaico-titulo">Volvo FH 540</div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="mosaico-item ph-4">
+      <div class="ph-svg">
+        <svg viewBox="0 0 60 60"><rect x="6" y="30" width="48" height="14" rx="2"/><rect x="22" y="18" width="16" height="14"/><rect x="14" y="10" width="32" height="10" rx="2"/><line x1="30" y1="10" x2="30" y2="4"/><circle cx="30" cy="3" r="2"/></svg>
+      </div>
+      <div class="mosaico-overlay">
+        <div class="mosaico-categoria">Trabas</div>
+        <div class="mosaico-titulo">Traba portacontenedor</div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="mosaico-item ph-5">
+      <div class="ph-svg">
+        <svg viewBox="0 0 100 60"><rect x="6" y="16" width="74" height="26" rx="2"/><circle cx="20" cy="50" r="6"/><circle cx="34" cy="50" r="6"/><circle cx="66" cy="50" r="6"/><circle cx="80" cy="50" r="6"/></svg>
+      </div>
+      <div class="mosaico-overlay">
+        <div class="mosaico-categoria">Acoplado</div>
+        <div class="mosaico-titulo">Acoplado playo 2 ejes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ VISTOS RECIENTEMENTE (EXISTE) ============ -->
+  <span class="seccion-tag existe">Ya existe — Vistos recientemente</span>
+  <div class="recientes-grid">
+    <div class="reciente">
+      <div class="reciente-tipo">Semirremolque</div>
+      <div class="reciente-titulo">Tinglado 3 ejes</div>
+      <div class="reciente-meta">Hace 5 min</div>
+    </div>
+    <div class="reciente">
+      <div class="reciente-tipo">Adicional</div>
+      <div class="reciente-titulo">Anilla de amarre</div>
+      <div class="reciente-meta">Hoy</div>
+    </div>
+    <div class="reciente">
+      <div class="reciente-tipo">Acoplado</div>
+      <div class="reciente-titulo">Acoplado bañera</div>
+      <div class="reciente-meta">Ayer</div>
+    </div>
+    <div class="reciente">
+      <div class="reciente-tipo">Adicional</div>
+      <div class="reciente-titulo">Caja de herramientas</div>
+      <div class="reciente-meta">Ayer</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
