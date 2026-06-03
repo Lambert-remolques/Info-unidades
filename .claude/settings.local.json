@@ -3,7 +3,10 @@
     "allow": [
       "Bash(start \"\" \"c:\\\\Users\\\\HP\\\\Desktop\\\\Info-unidades\\\\preview-adicionales.html\")",
       "PowerShell($urls = @\\(\"https://res.cloudinary.com/lambert-remolques/image/upload/adicionales/piso-superficie/tinteros/foto-1.jpg\",\"https://res.cloudinary.com/lambert-remolques/image/upload/adicionales/piso-superficie/tinteros/foto-1.png\",\"https://res.cloudinary.com/lambert-remolques/image/upload/adicionales/tinteros/foto-1.jpg\"\\); foreach \\($u in $urls\\) { try { $resp = Invoke-WebRequest -Uri $u -Method Head -ErrorAction Stop; Write-Output \"OK \\($\\($resp.StatusCode\\)\\): $u\" } catch { Write-Output \"FAIL \\($\\($_.Exception.Response.StatusCode.value__\\)\\): $u\" } })",
-      "Bash(start \"\" \"c:\\\\Users\\\\HP\\\\Desktop\\\\Info-unidades\\\\mockup-loading-skeleton.html\")"
+      "Bash(start \"\" \"c:\\\\Users\\\\HP\\\\Desktop\\\\Info-unidades\\\\mockup-loading-skeleton.html\")",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(git push *)"
     ]
   }
 }
