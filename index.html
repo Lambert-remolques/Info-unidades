@@ -704,8 +704,9 @@
         }
 
         .doc-card .favorito-toggle {
-            top: 44px;
-            right: 10px;
+            top: 42px;
+            left: 10px;
+            right: auto;
             width: 32px;
             height: 32px;
         }
@@ -3712,21 +3713,20 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            background: var(--blanco);
+            padding: 0;
+            border: 0;
             border-radius: var(--radio);
+            background: var(--blanco);
             box-shadow: var(--sombra-card);
-            border-left: 5px solid var(--verde);
             overflow: hidden;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 180ms ease, box-shadow 180ms ease;
+            font-family: var(--fuente);
+            transition: transform 160ms ease, box-shadow 160ms ease;
         }
 
         @media (hover: hover) {
             .doc-card:hover {
                 transform: translateY(-3px);
-                box-shadow: 0 10px 22px rgba(38, 38, 38, 0.22);
+                box-shadow: 0 10px 26px rgba(38, 38, 38, 0.18);
             }
         }
 
@@ -3742,91 +3742,36 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            line-height: 1.25;
             text-align: center;
         }
 
         .doc-body {
-            padding: 22px 18px 16px;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            flex: 1;
-        }
-
-        .doc-icon {
-            position: relative;
-            width: 46px;
-            height: 54px;
-            background: linear-gradient(180deg, #f6f6f6, #e8e8e8);
-            border-radius: 3px;
-            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 7px;
-        }
-
-        .doc-icon::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 14px;
-            height: 14px;
-            background: var(--blanco);
-            box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.08);
-            clip-path: polygon(0 0, 100% 100%, 100% 0);
-        }
-
-        .doc-icon span {
-            font-size: 0.55rem;
-            font-weight: 900;
-            color: var(--rojo);
-            letter-spacing: 0.04em;
+            padding: 22px 18px 18px;
+            gap: 16px;
+            min-height: 130px;
         }
 
         .doc-titulo {
-            margin: 0;
+            margin: auto 0;
             font-size: 1.02rem;
             font-weight: 900;
             font-style: italic;
             text-transform: uppercase;
             line-height: 1.2;
             color: var(--negro);
-            min-height: calc(1.02rem * 1.2 * 2);
+            text-align: center;
             overflow-wrap: break-word;
             word-wrap: break-word;
             hyphens: auto;
-            padding-right: 46px;
+            padding: 0 36px;
         }
 
-        .doc-footer {
-            margin-top: auto;
-            padding: 11px 16px;
-            background: rgba(21, 153, 71, 0.06);
-            border-top: 1px solid rgba(21, 153, 71, 0.14);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            color: var(--verde-oscuro);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: background 160ms ease, color 160ms ease;
-        }
-
-        @media (hover: hover) {
-            .doc-card:hover .doc-footer {
-                background: var(--verde);
-                color: var(--blanco);
-            }
-        }
-
-        .doc-footer svg {
-            flex-shrink: 0;
-            transition: transform 200ms ease;
+        .doc-card .sheet-link {
+            margin-top: 0;
         }
 
         @media (hover: hover) {
@@ -5923,7 +5868,14 @@
 
     <script>
         const PDF_BASE = "fichas";
+        const RECURSOS_BASE = "recursos";
         const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
+
+        // Construye la URL de un PDF de la sección Recursos > Documentos.
+        // Los archivos se suben al repo en: recursos/{categoria-slug}/{titulo-slug}.pdf
+        function urlDocumentoRecurso(categoria, titulo) {
+            return `${RECURSOS_BASE}/${crearSlug(categoria)}/${crearSlug(titulo)}.pdf`;
+        }
 
         // Fecha de última modificación del archivo HTML: se calcula automáticamente
         // desde document.lastModified (formato DD/MM/AAAA).
@@ -7653,16 +7605,14 @@
         }
 
         // ===== Recursos: Documentos y Preguntas frecuentes =====
+        // Documentos disponibles en Recursos > Documentos.
+        // Para agregar uno nuevo:
+        //   1. Definir { titulo, categoria } acá.
+        //   2. Subir el PDF al repo en: recursos/{slug-de-categoria}/{slug-de-titulo}.pdf
+        //      (los slugs los calcula crearSlug: minúsculas + guiones).
         const DOCUMENTOS_RECURSOS = [
-            { titulo: "Documento 1", categoria: "Categoría 1", url: "#" },
-            { titulo: "Documento 2", categoria: "Categoría 2", url: "#" },
-            { titulo: "Documento 3", categoria: "Categoría 1", url: "#" },
-            { titulo: "Documento 4", categoria: "Categoría 3", url: "#" },
-            { titulo: "Documento 5", categoria: "Categoría 2", url: "#" },
-            { titulo: "Documento 6", categoria: "Categoría 3", url: "#" },
-            { titulo: "Documento 7", categoria: "Categoría 1", url: "#" },
-            { titulo: "Documento 8", categoria: "Categoría 4", url: "#" }
-        ];
+            { titulo: "Tren retráctil 1° tramo bitren", categoria: "Tren rodante" }
+        ].map((d) => ({ ...d, url: urlDocumentoRecurso(d.categoria, d.titulo) }));
 
         const FAQ_CATEGORIAS = ["Categoría 1", "Categoría 2", "Categoría 3", "Categoría 4"];
 
@@ -7732,19 +7682,21 @@
                     url: d.url
                 };
                 return `
-                <a class="doc-card" href="${d.url}" target="_blank" rel="noopener">
+                <article class="doc-card">
                     <div class="doc-categoria-franja">${d.categoria}</div>
                     ${botonFavoritoHtml(fav)}
                     <div class="doc-body">
                         <h3 class="doc-titulo">${d.titulo}</h3>
+                        <button class="sheet-link" type="button"
+                            data-pdf="${d.url}"
+                            data-pdf-titulo="${d.titulo}"
+                            data-pdf-cat="${d.categoria}"
+                            data-pdf-tipo="documento">${ICONO_FICHA}<span>Ver documento</span></button>
                     </div>
-                    <div class="doc-footer">
-                        <span>Hacé click para ver</span>
-                        ${ICONO_DOC_FLECHA}
-                    </div>
-                </a>
+                </article>
             `;
             }).join("");
+            verificarFichasVisibles(grid);
         }
 
         function renderFaqChips() {
@@ -8651,11 +8603,12 @@
             if (pdfBtn) {
                 abrirPdf(pdfBtn.dataset.pdf, pdfBtn.dataset.pdfTitulo);
                 if (pdfBtn.dataset.pdfCat) {
+                    const esDocumento = pdfBtn.dataset.pdfTipo === "documento";
                     registrarReciente({
-                        clave: "ficha:" + pdfBtn.dataset.pdf,
-                        tipo: "ficha",
+                        clave: (esDocumento ? "documento:" : "ficha:") + pdfBtn.dataset.pdf,
+                        tipo: esDocumento ? "documento" : "ficha",
                         titulo: pdfBtn.dataset.pdfTitulo,
-                        meta: pdfBtn.dataset.pdfCat + " · Ficha técnica",
+                        meta: pdfBtn.dataset.pdfCat + (esDocumento ? " · Documento" : " · Ficha técnica"),
                         pdf: pdfBtn.dataset.pdf
                     });
                 }
@@ -9789,7 +9742,7 @@
                 } else if (tipo === "documento") {
                     const fav = leerFavoritos().find((f) => f.clave === `documento:${favCardItem.dataset.favSlug}`);
                     if (fav && fav.url && fav.url !== "#") {
-                        window.open(fav.url, "_blank", "noopener");
+                        abrirPdf(fav.url, fav.titulo || fav.nombre || "Documento");
                     } else {
                         mostrarSeccion("recursos", "documentos");
                         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -9832,7 +9785,7 @@
             if (recienteBtn) {
                 const it = leerRecientes()[parseInt(recienteBtn.dataset.reciente, 10)];
                 if (it) {
-                    if (it.tipo === "ficha") {
+                    if (it.tipo === "ficha" || it.tipo === "documento") {
                         abrirPdf(it.pdf, it.titulo);
                     } else if (it.tipo === "galeria") {
                         mostrarGaleria(it.cat, it.unidad, it.eje || null);
