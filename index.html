@@ -4308,6 +4308,107 @@
             transition: width 200ms ease;
         }
 
+        /* ===== Modal de confirmación ===== */
+        .confirm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 250;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: confirmFadeIn 180ms ease;
+        }
+
+        .confirm-modal[hidden] { display: none; }
+
+        @keyframes confirmFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .confirm-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            cursor: pointer;
+        }
+
+        .confirm-box {
+            position: relative;
+            z-index: 1;
+            background: var(--blanco);
+            padding: 28px 30px 24px;
+            border-radius: var(--radio);
+            border-left: 4px solid var(--verde);
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+            animation: confirmSlideUp 220ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes confirmSlideUp {
+            from { transform: translateY(14px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+
+        .confirm-titulo {
+            margin: 0 0 10px;
+            color: var(--negro);
+            font-size: 1.1rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .confirm-mensaje {
+            margin: 0 0 22px;
+            color: var(--gris-texto);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .confirm-acciones {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .confirm-btn {
+            padding: 10px 22px;
+            border: 0;
+            border-radius: var(--radio);
+            font-family: var(--fuente);
+            font-size: 0.78rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease, transform 120ms ease;
+        }
+
+        .confirm-btn:active { transform: scale(0.97); }
+
+        .confirm-btn-cancel {
+            background: rgba(38, 38, 38, 0.08);
+            color: var(--negro);
+        }
+
+        .confirm-btn-cancel:hover {
+            background: rgba(38, 38, 38, 0.18);
+        }
+
+        .confirm-btn-ok {
+            background: var(--rojo);
+            color: var(--blanco);
+        }
+
+        .confirm-btn-ok:hover {
+            background: #b51b14;
+        }
+
         .descarga-zip-spinner--done {
             border: none !important;
             animation: none !important;
@@ -4831,6 +4932,18 @@
                 <p class="descarga-zip-titulo">Preparando descarga…</p>
                 <p class="descarga-zip-subtitulo" id="descargaZipSubtitulo">Procesando 0 de 0</p>
                 <div class="descarga-zip-barra"><span class="descarga-zip-barra-fill" id="descargaZipBarraFill"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirm-modal" id="confirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="confirmTitulo">
+        <div class="confirm-overlay" data-confirm-cancel></div>
+        <div class="confirm-box">
+            <h3 class="confirm-titulo" id="confirmTitulo">¿Confirmar?</h3>
+            <p class="confirm-mensaje" id="confirmMensaje"></p>
+            <div class="confirm-acciones">
+                <button class="confirm-btn confirm-btn-cancel" type="button" data-confirm-cancel>Cancelar</button>
+                <button class="confirm-btn confirm-btn-ok" type="button" id="confirmOk">Sí</button>
             </div>
         </div>
     </div>
@@ -5557,6 +5670,52 @@
             const cont = document.getElementById("favoritosGrid");
             if (cont) renderFavoritosGrid();
         }
+
+        // ===== Modal de confirmación genérico =====
+        let confirmCallback = null;
+
+        function abrirConfirmacion({ titulo, mensaje, textoOk, textoCancel, onConfirm }) {
+            const modal = document.getElementById("confirmModal");
+            if (!modal) return;
+            document.getElementById("confirmTitulo").textContent = titulo || "¿Confirmar?";
+            document.getElementById("confirmMensaje").textContent = mensaje || "";
+            const okBtn = document.getElementById("confirmOk");
+            okBtn.textContent = textoOk || "Sí";
+            const cancelBtns = modal.querySelectorAll(".confirm-btn-cancel");
+            cancelBtns.forEach((b) => { b.textContent = textoCancel || "Cancelar"; });
+            confirmCallback = onConfirm;
+            modal.hidden = false;
+            setTimeout(() => okBtn.focus(), 50);
+        }
+
+        function cerrarConfirmacion() {
+            const modal = document.getElementById("confirmModal");
+            if (modal) modal.hidden = true;
+            confirmCallback = null;
+        }
+
+        document.addEventListener("click", (event) => {
+            if (event.target.closest("[data-confirm-cancel]")) {
+                cerrarConfirmacion();
+                return;
+            }
+            if (event.target.closest("#confirmOk")) {
+                const cb = confirmCallback;
+                cerrarConfirmacion();
+                if (cb) cb();
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            const modal = document.getElementById("confirmModal");
+            if (!modal || modal.hidden) return;
+            if (event.key === "Escape") cerrarConfirmacion();
+            else if (event.key === "Enter") {
+                const cb = confirmCallback;
+                cerrarConfirmacion();
+                if (cb) cb();
+            }
+        });
 
         const ICONO_ESTRELLA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.9 6 6.6.9-4.8 4.6 1.2 6.6-5.9-3.1-5.9 3.1 1.2-6.6L2.5 9.9 9.1 9z"></path></svg>`;
 
@@ -7812,6 +7971,28 @@
                 return;
             }
 
+            const favQuitarBtn = event.target.closest("[data-favorito-quitar]");
+            if (favQuitarBtn) {
+                event.stopPropagation();
+                event.preventDefault();
+                const clave = favQuitarBtn.dataset.favoritoQuitar;
+                const item = leerFavoritos().find((f) => f.clave === clave);
+                const nombre = item ? (item.titulo || item.nombre || "este favorito") : "este favorito";
+                abrirConfirmacion({
+                    titulo: "Quitar de favoritos",
+                    mensaje: `¿Querés quitar "${nombre}" de tus favoritos?`,
+                    textoOk: "Sí, quitar",
+                    textoCancel: "Cancelar",
+                    onConfirm: () => {
+                        const lista = leerFavoritos().filter((f) => f.clave !== clave);
+                        guardarFavoritos(lista);
+                        actualizarBotonesFavorito(clave, false);
+                        refrescarBloqueFavoritos();
+                    }
+                });
+                return;
+            }
+
             const favCardItem = event.target.closest("[data-favorito-item]");
             if (favCardItem) {
                 const tipo = favCardItem.dataset.favTipo;
@@ -7824,17 +8005,6 @@
                     mostrarSeccion("fotos", favCardItem.dataset.favCat, favCardItem.dataset.favSlug);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                 }
-                return;
-            }
-
-            const favQuitarBtn = event.target.closest("[data-favorito-quitar]");
-            if (favQuitarBtn) {
-                event.stopPropagation();
-                const clave = favQuitarBtn.dataset.favoritoQuitar;
-                const lista = leerFavoritos().filter((f) => f.clave !== clave);
-                guardarFavoritos(lista);
-                actualizarBotonesFavorito(clave, false);
-                refrescarBloqueFavoritos();
                 return;
             }
 
