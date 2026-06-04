@@ -722,6 +722,10 @@
             transition: background 160ms ease, color 160ms ease, transform 160ms ease;
         }
 
+        .favoritos-ver-mas[hidden] {
+            display: none;
+        }
+
         .favoritos-ver-mas:hover {
             background: var(--verde);
             color: var(--blanco);
@@ -5600,7 +5604,17 @@
         function aplicarBienvenida() {
             if (seccionActual === "inicio") {
                 actualizarHero("inicio");
+                // Re-renderizar el Inicio para cargar los favoritos del usuario recién logueado
+                if (typeof mostrarInicio === "function" && document.getElementById("inicioMetricas")) {
+                    mostrarInicio();
+                }
             }
+            // Refrescar estado visual de las estrellas en cualquier sección
+            document.querySelectorAll("[data-favorito-clave]").forEach((btn) => {
+                const activo = esFavorito(btn.dataset.favoritoClave);
+                btn.classList.toggle("activo", activo);
+                btn.setAttribute("aria-pressed", activo ? "true" : "false");
+            });
         }
 
         const RECIENTES_KEY = "lambert:recientes2";
@@ -5615,12 +5629,15 @@
             }
         }
 
-        // ===== Favoritos =====
-        const FAVORITOS_KEY = "lambert:favoritos";
+        // ===== Favoritos (por usuario) =====
+        function favoritosKey() {
+            const email = (usuarioActual?.email || "").trim().toLowerCase();
+            return email ? `lambert:favoritos:${email}` : "lambert:favoritos:_anon";
+        }
 
         function leerFavoritos() {
             try {
-                const data = JSON.parse(localStorage.getItem(FAVORITOS_KEY) || "[]");
+                const data = JSON.parse(localStorage.getItem(favoritosKey()) || "[]");
                 return Array.isArray(data) ? data : [];
             } catch (e) {
                 return [];
@@ -5628,7 +5645,7 @@
         }
 
         function guardarFavoritos(lista) {
-            try { localStorage.setItem(FAVORITOS_KEY, JSON.stringify(lista)); } catch (e) {}
+            try { localStorage.setItem(favoritosKey(), JSON.stringify(lista)); } catch (e) {}
         }
 
         function esFavorito(clave) {
