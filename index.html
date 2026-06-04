@@ -656,8 +656,8 @@
         }
 
         .favorito-toggle.activo svg {
-            fill: var(--verde);
-            stroke: var(--verde-oscuro);
+            fill: #f5b800;
+            stroke: #c89000;
         }
 
         @keyframes favoritoToggleStar {
@@ -673,9 +673,16 @@
 
         /* Ubicación de la estrella en cada tipo de tarjeta */
         .adicional-card .favorito-toggle {
-            top: 10px;
+            top: 50px;
             left: 10px;
             right: auto;
+        }
+
+        /* En tarjetas de Fichas técnicas dejamos margen al título para que no se cruce con la estrella.
+           En las fotos no hace falta porque la estrella va sobre la imagen y el título está debajo. */
+        .product-card-wrap > .product-card:not(.foto-card) .product-name,
+        .product-card-wrap > article.product-card .product-name {
+            padding-right: 46px;
         }
 
         /* ===== Bloque "Mis favoritos" en el Inicio ===== */
@@ -2306,6 +2313,7 @@
         }
 
         .adicional-card {
+            position: relative;
             display: flex;
             flex-direction: column;
             padding: 0;
@@ -3141,6 +3149,7 @@
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
+
 
         .user-email {
             color: rgba(255, 255, 255, 0.72);
@@ -4502,6 +4511,7 @@
             color: #9a9a9a;
             cursor: default;
         }
+
     </style>
 </head>
 <body>
@@ -5419,7 +5429,8 @@
             "adm.ventas@lamberthermanos.com.ar": { nombre: "Nicolás", genero: "m" },
             "claudio.lambert@lamberthermanos.com.ar": { nombre: "Claudio", genero: "m" },
             "pabloglezer@lamberthermanos.com.ar": { nombre: "Pablo", genero: "m" },
-            "comunicacion@lamberthermanos.com.ar": { nombre: "Oriana", genero: "f" }
+            "comunicacion@lamberthermanos.com.ar": { nombre: "Oriana", genero: "f" },
+            "juan.proserpi@lamberthermanos.com.ar": { nombre: "Juan", genero: "m" }
         };
 
         function obtenerUsuario(email) {
@@ -7045,6 +7056,70 @@
             }[c]));
         }
 
+        // Palabras vacías que ignoramos en búsquedas con varias palabras (ej. "para", "de").
+        const STOPWORDS_BUSQUEDA = new Set([
+            "de","la","el","los","las","un","una","unos","unas","del","para","con","sin","por",
+            "al","y","o","u","en","a","que","se","su","sus","es","esto","estos","esta","estas"
+        ]);
+
+        // Sinónimos del dominio Lambert. Permite buscar con términos coloquiales.
+        const SINONIMOS_BUSQUEDA = {
+            "camion": ["camion", "tractor", "vehiculo", "coche"],
+            "tractor": ["camion", "tractor", "vehiculo", "coche"],
+            "vehiculo": ["camion", "tractor", "vehiculo", "coche"],
+            "coche": ["camion", "tractor", "vehiculo", "coche"],
+            "acoplado": ["acoplado", "remolque", "carroza"],
+            "remolque": ["acoplado", "remolque", "carroza"],
+            "carroza": ["acoplado", "remolque", "carroza"],
+            "vincular": ["vincular", "acoplar", "conectar", "enganchar", "unir"],
+            "acoplar": ["vincular", "acoplar", "conectar", "enganchar", "unir"],
+            "conectar": ["vincular", "acoplar", "conectar", "enganchar", "unir"],
+            "enganchar": ["vincular", "acoplar", "conectar", "enganchar", "unir"],
+            "unir": ["vincular", "acoplar", "conectar", "enganchar", "unir"],
+            "semi": ["semi", "semirremolque"],
+            "semirremolque": ["semi", "semirremolque"],
+            "bitren": ["bitren"],
+            "rueda": ["rueda", "neumatico", "llanta", "goma"],
+            "neumatico": ["rueda", "neumatico", "llanta", "goma"],
+            "llanta": ["rueda", "neumatico", "llanta", "goma"],
+            "goma": ["rueda", "neumatico", "llanta", "goma"],
+            "luz": ["luz", "luces", "iluminacion", "faro", "faros"],
+            "luces": ["luz", "luces", "iluminacion", "faro", "faros"],
+            "iluminacion": ["luz", "luces", "iluminacion", "faro", "faros"],
+            "faro": ["luz", "luces", "iluminacion", "faro", "faros"],
+            "faros": ["luz", "luces", "iluminacion", "faro", "faros"],
+            "carga": ["carga", "transporte", "transportar"],
+            "transporte": ["carga", "transporte", "transportar"],
+            "transportar": ["carga", "transporte", "transportar"],
+            "puerta": ["puerta", "puertas"],
+            "puertas": ["puerta", "puertas"],
+            "freno": ["freno", "frenos", "frenado"],
+            "frenos": ["freno", "frenos", "frenado"],
+            "frenado": ["freno", "frenos", "frenado"]
+        };
+
+        function expandirSinonimos(palabra) {
+            return SINONIMOS_BUSQUEDA[palabra] || [palabra];
+        }
+
+        function palabrasBusqueda(query) {
+            const q = normalizar(query);
+            if (!q) return [];
+            let palabras = q.split(/\s+/).filter(Boolean);
+            if (palabras.length > 2) {
+                const filtradas = palabras.filter((w) => !STOPWORDS_BUSQUEDA.has(w));
+                if (filtradas.length >= 1) palabras = filtradas;
+            }
+            return palabras;
+        }
+
+        function itemMatcheaPalabras(item, palabras) {
+            return palabras.every((w) => {
+                const sins = expandirSinonimos(w);
+                return sins.some((s) => item.searchHaystack.includes(s));
+            });
+        }
+
         // ===== Corrección automática de búsqueda (Levenshtein) =====
         function levenshtein(a, b) {
             if (!a.length) return b.length;
@@ -7140,7 +7215,10 @@
                 mostrarHistorialBusquedas(container);
                 return;
             }
-            const matches = itemsBusqueda.filter((item) => item.searchHaystack.includes(q));
+            const palabras = palabrasBusqueda(query);
+            const matches = palabras.length
+                ? itemsBusqueda.filter((item) => itemMatcheaPalabras(item, palabras))
+                : itemsBusqueda.filter((item) => item.searchHaystack.includes(q));
             if (matches.length === 0) {
                 const sugerencias = sugerenciasBusqueda(query, 3);
                 if (sugerencias.length === 0) {
