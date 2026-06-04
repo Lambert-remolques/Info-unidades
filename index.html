@@ -619,6 +619,31 @@
             width: 100%;
         }
 
+        .badge-nuevo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 4;
+            background: var(--verde);
+            color: var(--blanco);
+            padding: 5px 12px 5px 14px;
+            font-family: var(--fuente);
+            font-size: 0.62rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: var(--radio) 0 var(--radio) 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            pointer-events: none;
+            animation: badgeNuevoPulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes badgeNuevoPulse {
+            0%, 100% { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18), 0 0 0 0 rgba(21, 153, 71, 0.5); }
+            50%      { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18), 0 0 0 6px rgba(21, 153, 71, 0); }
+        }
+
         .favorito-toggle {
             position: absolute;
             top: 10px;
@@ -3383,6 +3408,230 @@
             box-shadow: 0 10px 22px rgba(21, 153, 71, 0.32);
         }
 
+        /* ===== Botón "?" para repetir el tour ===== */
+        .tour-trigger {
+            position: fixed;
+            bottom: 86px;
+            right: 28px;
+            z-index: 25;
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 50%;
+            color: var(--blanco);
+            background: var(--negro);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            font-family: var(--fuente);
+            font-size: 1.05rem;
+            font-weight: 900;
+            font-style: italic;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .tour-trigger:hover {
+            background: var(--verde);
+            transform: scale(1.08);
+        }
+
+        /* ===== Tour interactivo ===== */
+        body.tour-no-scroll {
+            overflow: hidden;
+        }
+
+        .tour-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 9900;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 240ms ease;
+        }
+
+        .tour-backdrop.activo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tour-backdrop.with-spotlight {
+            background: transparent;
+        }
+
+        .tour-spotlight {
+            position: fixed;
+            border-radius: 8px;
+            z-index: 9910;
+            pointer-events: none;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65);
+            transition: top 380ms cubic-bezier(0.22, 1, 0.36, 1),
+                        left 380ms cubic-bezier(0.22, 1, 0.36, 1),
+                        width 380ms cubic-bezier(0.22, 1, 0.36, 1),
+                        height 380ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .tour-spotlight::after {
+            content: "";
+            position: absolute;
+            inset: -3px;
+            border: 2px solid var(--verde);
+            border-radius: 10px;
+            animation: tourPulseRing 1.8s ease-in-out infinite;
+        }
+
+        @keyframes tourPulseRing {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(21, 153, 71, 0.6); }
+            50%      { box-shadow: 0 0 0 10px rgba(21, 153, 71, 0); }
+        }
+
+        .tour-tooltip {
+            position: fixed;
+            z-index: 9920;
+            background: var(--blanco);
+            border-left: 4px solid var(--verde);
+            border-radius: var(--radio);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+            padding: 22px 26px 18px;
+            width: 360px;
+            max-width: calc(100vw - 32px);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 240ms ease, transform 240ms ease;
+        }
+
+        .tour-tooltip.activo {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tour-close {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            border: 0;
+            background: transparent;
+            color: var(--gris-texto);
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 140ms ease, color 140ms ease;
+        }
+
+        .tour-close:hover {
+            background: rgba(38, 38, 38, 0.08);
+            color: var(--negro);
+        }
+
+        .tour-step-counter {
+            display: inline-block;
+            margin-bottom: 8px;
+            padding: 3px 10px;
+            background: rgba(21, 153, 71, 0.12);
+            color: var(--verde-oscuro);
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border-radius: 999px;
+        }
+
+        .tour-titulo {
+            margin: 0 0 8px;
+            color: var(--negro);
+            font-size: 1.1rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .tour-mensaje {
+            margin: 0 0 18px;
+            color: var(--gris-texto);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .tour-acciones {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tour-skip {
+            background: transparent;
+            border: 0;
+            color: var(--gris-texto);
+            font-family: var(--fuente);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 6px 4px;
+        }
+
+        .tour-skip:hover {
+            color: var(--rojo);
+        }
+
+        .tour-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tour-nav button {
+            padding: 9px 16px;
+            border: 0;
+            border-radius: var(--radio);
+            font-family: var(--fuente);
+            font-size: 0.76rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease, opacity 160ms ease;
+        }
+
+        .tour-prev {
+            background: rgba(38, 38, 38, 0.08);
+            color: var(--negro);
+        }
+
+        .tour-prev:hover:not(:disabled) {
+            background: rgba(38, 38, 38, 0.16);
+        }
+
+        .tour-prev:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .tour-next {
+            background: var(--verde);
+            color: var(--blanco);
+        }
+
+        .tour-next:hover {
+            background: var(--verde-oscuro);
+        }
+
+        @media (max-width: 720px) {
+            .tour-tooltip {
+                width: calc(100vw - 32px);
+                padding: 18px 20px 14px;
+            }
+            .tour-trigger {
+                bottom: 80px;
+                right: 16px;
+            }
+        }
+
         .back-to-top:focus-visible {
             outline: 3px solid rgba(21, 153, 71, 0.45);
             outline-offset: 3px;
@@ -4790,6 +5039,8 @@
         </svg>
     </button>
 
+    <button class="tour-trigger" type="button" id="tourTrigger" aria-label="Ver tour de la aplicación" title="Ver tour del catálogo">?</button>
+
     <div class="menu-overlay" id="menuOverlay" aria-hidden="true"></div>
 
     <div class="search-modal" id="searchModal" hidden aria-label="Buscar unidad">
@@ -5615,7 +5866,314 @@
                 btn.classList.toggle("activo", activo);
                 btn.setAttribute("aria-pressed", activo ? "true" : "false");
             });
+            // Disparo automático del tour para usuarios que nunca lo vieron
+            if (typeof iniciarTourSiCorresponde === "function") {
+                setTimeout(iniciarTourSiCorresponde, 600);
+            }
         }
+
+        // ===== Tour interactivo =====
+        const TOUR_KEY_PREFIX = "lambert:tour-completado:";
+
+        const TOUR_STEPS = [
+            {
+                id: "bienvenida",
+                target: null,
+                seccion: "inicio",
+                titulo: "Bienvenida al catálogo Lambert",
+                mensaje: "Te muestro en 1 minuto los lugares clave del catálogo. Podés saltearlo cuando quieras."
+            },
+            {
+                id: "menu",
+                target: ".site-menu",
+                seccion: null,
+                titulo: "Las 4 secciones principales",
+                mensaje: "Estas son las 4 secciones: Inicio, Fichas técnicas, Fotos y Adicionales."
+            },
+            {
+                id: "buscador",
+                target: "#searchBar",
+                seccion: null,
+                titulo: "Búsqueda rápida",
+                mensaje: "Tocá la lupita o usá Ctrl+K para buscar cualquier cosa: nombre, código o palabras de la descripción."
+            },
+            {
+                id: "metricas",
+                target: "#inicioMetricas",
+                seccion: "inicio",
+                titulo: "Catálogo en números",
+                mensaje: "Estos números se actualizan automáticamente cuando se sube una nueva ficha técnica al catálogo, foto o adicional."
+            },
+            {
+                id: "mosaico",
+                target: "#inicioMosaico",
+                seccion: "inicio",
+                titulo: "Explorá el catálogo",
+                mensaje: "Cada vez que entrás ves una selección distinta de unidades y adicionales. Tocá 'Actualizar' para mezclar de nuevo."
+            },
+            {
+                id: "favoritos",
+                target: "#favoritosBloque",
+                seccion: "inicio",
+                titulo: "Tus favoritos",
+                mensaje: "Marcá con la estrellita las unidades, fotos o adicionales que más consultás. Aparecen acá para volver rápido.",
+                condicion: () => leerFavoritos().length > 0
+            },
+            {
+                id: "recientes",
+                target: ".recientes-grid",
+                seccion: "inicio",
+                titulo: "Tu historial",
+                mensaje: "Acá queda guardado lo último que estuviste viendo, así volvés fácil.",
+                condicion: () => leerRecientes().length > 0
+            },
+            {
+                id: "cierre",
+                target: null,
+                seccion: null,
+                titulo: "¡Listo!",
+                mensaje: "Ya conocés el catálogo. Si querés repetir el tour, tocá el ícono '?' abajo a la derecha.",
+                botonFinal: "Empezar a usar el catálogo"
+            }
+        ];
+
+        let tourStepActual = 0;
+        let tourPasos = [];
+        let tourActivo = false;
+
+        function emailUsuarioTour() {
+            return (usuarioActual?.email || "").trim().toLowerCase();
+        }
+
+        function tourYaCompletado() {
+            const email = emailUsuarioTour();
+            if (!email) return true;
+            try { return localStorage.getItem(TOUR_KEY_PREFIX + email) === "1"; } catch (e) { return true; }
+        }
+
+        function marcarTourCompletado() {
+            const email = emailUsuarioTour();
+            if (!email) return;
+            try { localStorage.setItem(TOUR_KEY_PREFIX + email, "1"); } catch (e) {}
+        }
+
+        function crearElementosTour() {
+            if (document.getElementById("tourBackdrop")) return;
+            const backdrop = document.createElement("div");
+            backdrop.id = "tourBackdrop";
+            backdrop.className = "tour-backdrop";
+            const spotlight = document.createElement("div");
+            spotlight.id = "tourSpotlight";
+            spotlight.className = "tour-spotlight";
+            spotlight.style.display = "none";
+            const tooltip = document.createElement("div");
+            tooltip.id = "tourTooltip";
+            tooltip.className = "tour-tooltip";
+            tooltip.innerHTML = `
+                <button class="tour-close" id="tourClose" type="button" aria-label="Cerrar tour">×</button>
+                <span class="tour-step-counter" id="tourCounter">1 / 8</span>
+                <h3 class="tour-titulo" id="tourTitulo"></h3>
+                <p class="tour-mensaje" id="tourMensaje"></p>
+                <div class="tour-acciones">
+                    <button class="tour-skip" type="button" id="tourSkip">Saltar tour</button>
+                    <div class="tour-nav">
+                        <button class="tour-prev" type="button" id="tourPrev">← Anterior</button>
+                        <button class="tour-next" type="button" id="tourNext">Siguiente →</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(backdrop);
+            document.body.appendChild(spotlight);
+            document.body.appendChild(tooltip);
+
+            document.getElementById("tourClose").addEventListener("click", terminarTour);
+            document.getElementById("tourSkip").addEventListener("click", terminarTour);
+            document.getElementById("tourPrev").addEventListener("click", () => navegarTour(-1));
+            document.getElementById("tourNext").addEventListener("click", () => navegarTour(1));
+        }
+
+        function manejarTeclasTour(e) {
+            if (!tourActivo) return;
+            if (e.key === "Escape") terminarTour();
+            else if (e.key === "ArrowRight") navegarTour(1);
+            else if (e.key === "ArrowLeft") navegarTour(-1);
+        }
+
+        function iniciarTour(force) {
+            if (!force && tourYaCompletado()) return;
+            tourPasos = TOUR_STEPS.filter((s) => !s.condicion || s.condicion());
+            if (!tourPasos.length) return;
+            tourStepActual = 0;
+            tourActivo = true;
+            crearElementosTour();
+            document.addEventListener("keydown", manejarTeclasTour);
+            mostrarPasoTour();
+        }
+
+        function iniciarTourSiCorresponde() {
+            if (!emailUsuarioTour()) return;
+            if (tourYaCompletado()) return;
+            iniciarTour(false);
+        }
+
+        function posicionarTooltipPara(rect, tooltip) {
+            tooltip.style.transform = "none";
+            const tw = tooltip.offsetWidth || 360;
+            const th = tooltip.offsetHeight || 220;
+            const margen = 20;
+            let top, left;
+
+            if (rect.bottom + th + margen < window.innerHeight) {
+                // Abajo del spotlight
+                top = rect.bottom + 20;
+                left = Math.max(margen, Math.min(window.innerWidth - tw - margen, rect.left + rect.width / 2 - tw / 2));
+            } else if (rect.top - th - margen > 0) {
+                // Arriba del spotlight
+                top = rect.top - th - 20;
+                left = Math.max(margen, Math.min(window.innerWidth - tw - margen, rect.left + rect.width / 2 - tw / 2));
+            } else if (rect.right + tw + margen < window.innerWidth) {
+                // A la derecha
+                top = Math.max(margen, Math.min(window.innerHeight - th - margen, rect.top));
+                left = rect.right + 20;
+            } else if (rect.left - tw - margen > 0) {
+                // A la izquierda
+                top = Math.max(margen, Math.min(window.innerHeight - th - margen, rect.top));
+                left = rect.left - tw - 20;
+            } else {
+                // Fallback: pegar el tooltip al borde inferior de la pantalla así no tapa el spotlight
+                top = window.innerHeight - th - margen;
+                left = Math.max(margen, (window.innerWidth - tw) / 2);
+            }
+            tooltip.style.top = top + "px";
+            tooltip.style.left = left + "px";
+        }
+
+        function lockTourScroll() {
+            document.body.classList.add("tour-no-scroll");
+        }
+
+        function unlockTourScroll() {
+            document.body.classList.remove("tour-no-scroll");
+        }
+
+        // Calcula a qué scrollY conviene posicionarse para que el elemento + tooltip queden visibles.
+        function calcularScrollOptimo(el, tooltipHeight) {
+            const rect = el.getBoundingClientRect();
+            const vh = window.innerHeight;
+            const margen = 24;
+            const totalAlto = rect.height + tooltipHeight + margen * 2;
+
+            let targetElTop;
+            if (totalAlto <= vh) {
+                // El conjunto cabe — centramos verticalmente con tooltip debajo del elemento
+                targetElTop = Math.max(margen, (vh - totalAlto) / 2);
+            } else {
+                // Elemento muy grande — lo posicionamos cerca del tope
+                targetElTop = margen + 40;
+            }
+
+            return window.scrollY + rect.top - targetElTop;
+        }
+
+        function mostrarPasoTour(intentoScroll) {
+            intentoScroll = intentoScroll || 0;
+            const paso = tourPasos[tourStepActual];
+            if (!paso) { terminarTour(); return; }
+
+            // Si el paso requiere otra sección, navegar primero (desbloqueo scroll para que pueda reposicionarse)
+            if (paso.seccion && seccionActual !== paso.seccion) {
+                unlockTourScroll();
+                saltarTransicionSeccion = true;
+                mostrarSeccion(paso.seccion);
+                saltarTransicionSeccion = false;
+                setTimeout(() => mostrarPasoTour(0), 80);
+                return;
+            }
+
+            const backdrop = document.getElementById("tourBackdrop");
+            const spotlight = document.getElementById("tourSpotlight");
+            const tooltip = document.getElementById("tourTooltip");
+
+            document.getElementById("tourTitulo").textContent = paso.titulo;
+            document.getElementById("tourMensaje").textContent = paso.mensaje;
+            document.getElementById("tourCounter").textContent = `${tourStepActual + 1} / ${tourPasos.length}`;
+            document.getElementById("tourPrev").disabled = tourStepActual === 0;
+            document.getElementById("tourNext").textContent = (tourStepActual === tourPasos.length - 1)
+                ? (paso.botonFinal || "Finalizar")
+                : "Siguiente →";
+
+            backdrop.classList.add("activo");
+
+            if (paso.target) {
+                const el = document.querySelector(paso.target);
+                if (!el) { navegarTour(1); return; }
+                const rect = el.getBoundingClientRect();
+                // Si el elemento tiene dimensiones inválidas (display:none, etc.) saltar el paso
+                if (rect.width === 0 && rect.height === 0) { navegarTour(1); return; }
+
+                // Primer intento: SIEMPRE scrolleamos para posicionar el elemento óptimamente
+                if (intentoScroll === 0) {
+                    const tooltipH = tooltip.offsetHeight || 220;
+                    const targetY = Math.max(0, calcularScrollOptimo(el, tooltipH));
+                    // Solo scrollear si realmente hay que moverse
+                    if (Math.abs(targetY - window.scrollY) > 2) {
+                        unlockTourScroll();
+                        window.scrollTo({ top: targetY, behavior: "smooth" });
+                        setTimeout(() => mostrarPasoTour(1), 440);
+                        return;
+                    }
+                }
+
+                // Segundo intento (o no hizo falta scroll): mostramos el spotlight con el rect actual
+                const rectFinal = el.getBoundingClientRect();
+                const pad = 8;
+                spotlight.style.display = "block";
+                spotlight.style.top = (rectFinal.top - pad) + "px";
+                spotlight.style.left = (rectFinal.left - pad) + "px";
+                spotlight.style.width = (rectFinal.width + pad * 2) + "px";
+                spotlight.style.height = (rectFinal.height + pad * 2) + "px";
+                backdrop.classList.add("with-spotlight");
+                tooltip.classList.add("activo");
+                requestAnimationFrame(() => posicionarTooltipPara(rectFinal, tooltip));
+            } else {
+                spotlight.style.display = "none";
+                backdrop.classList.remove("with-spotlight");
+                tooltip.style.top = "50%";
+                tooltip.style.left = "50%";
+                tooltip.style.transform = "translate(-50%, -50%)";
+                tooltip.classList.add("activo");
+            }
+
+            // Una vez posicionado el spotlight (o tooltip centrado), bloqueamos el scroll
+            lockTourScroll();
+        }
+
+        function navegarTour(direccion) {
+            const nuevo = tourStepActual + direccion;
+            if (nuevo < 0) return;
+            if (nuevo >= tourPasos.length) { terminarTour(); return; }
+            tourStepActual = nuevo;
+            mostrarPasoTour(0);
+        }
+
+        function terminarTour() {
+            tourActivo = false;
+            const backdrop = document.getElementById("tourBackdrop");
+            const spotlight = document.getElementById("tourSpotlight");
+            const tooltip = document.getElementById("tourTooltip");
+            if (backdrop) backdrop.classList.remove("activo", "with-spotlight");
+            if (spotlight) spotlight.style.display = "none";
+            if (tooltip) tooltip.classList.remove("activo");
+            document.removeEventListener("keydown", manejarTeclasTour);
+            unlockTourScroll();
+            marcarTourCompletado();
+        }
+
+        window.addEventListener("resize", () => {
+            if (!tourActivo) return;
+            const paso = tourPasos[tourStepActual];
+            if (paso && paso.target) mostrarPasoTour();
+        });
 
         const RECIENTES_KEY = "lambert:recientes2";
         const RECIENTES_MAX = 6;
@@ -5900,6 +6458,84 @@
         cargaFichasPromise.then(() => {
             if (document.getElementById("inicioMetricas")) {
                 actualizarMetricas();
+            }
+        });
+
+        // ===== Detección de fichas técnicas "Nuevas" (subidas en los últimos 14 días) =====
+        const FICHAS_NUEVAS_CACHE_KEY = "lambert:fichas-nuevas-cache";
+        const FICHAS_NUEVAS_TTL = 60 * 60 * 1000;            // 1 hora
+        const FICHAS_NUEVAS_DIAS = 14;
+        const FICHAS_NUEVAS_VENTANA_MS = FICHAS_NUEVAS_DIAS * 24 * 60 * 60 * 1000;
+        let fichasNuevas = new Map();
+
+        const cargaFichasNuevasPromise = (async () => {
+            // 1) Intento leer cache localStorage
+            try {
+                const cached = JSON.parse(localStorage.getItem(FICHAS_NUEVAS_CACHE_KEY) || "null");
+                if (cached && cached.timestamp && Array.isArray(cached.entries) && (Date.now() - cached.timestamp) < FICHAS_NUEVAS_TTL) {
+                    fichasNuevas = new Map(cached.entries);
+                    return;
+                }
+            } catch (e) {}
+
+            // 2) Pego a GitHub: traigo commits de los últimos 14 días y reviso archivos cambiados
+            try {
+                const since = new Date(Date.now() - FICHAS_NUEVAS_VENTANA_MS).toISOString();
+                const apiUrl = `https://api.github.com/repos/Lambert-remolques/Info-unidades/commits?since=${since}&per_page=100`;
+                const resp = await fetch(apiUrl);
+                if (!resp.ok) return;
+                const commits = await resp.json();
+                if (!Array.isArray(commits)) return;
+                const nuevas = new Map();
+                for (const c of commits) {
+                    if (!c?.sha || !c?.commit?.author?.date) continue;
+                    try {
+                        const detailResp = await fetch(`https://api.github.com/repos/Lambert-remolques/Info-unidades/commits/${c.sha}`);
+                        if (!detailResp.ok) continue;
+                        const detail = await detailResp.json();
+                        const fecha = c.commit.author.date;
+                        (detail.files || []).forEach((file) => {
+                            if (!file?.filename) return;
+                            if (!file.filename.startsWith("fichas/")) return;
+                            if (!file.filename.toLowerCase().endsWith(".pdf")) return;
+                            if (file.status === "removed") return;
+                            const previa = nuevas.get(file.filename);
+                            if (!previa || previa < fecha) {
+                                nuevas.set(file.filename, fecha);
+                            }
+                        });
+                    } catch (e) {}
+                }
+                fichasNuevas = nuevas;
+                try {
+                    localStorage.setItem(FICHAS_NUEVAS_CACHE_KEY, JSON.stringify({
+                        timestamp: Date.now(),
+                        entries: Array.from(nuevas.entries())
+                    }));
+                } catch (e) {}
+            } catch (e) {}
+        })();
+
+        function esFichaNueva(pdfPath) {
+            if (!pdfPath) return false;
+            return fichasNuevas.has(pdfPath);
+        }
+
+        function productoTieneFichaNueva(producto) {
+            if (producto.fichaDirecta && producto.pdf) {
+                return esFichaNueva(producto.pdf);
+            }
+            if (Array.isArray(producto.opciones)) {
+                return producto.opciones.some((op) => op.pdf && esFichaNueva(op.pdf));
+            }
+            return false;
+        }
+
+        cargaFichasNuevasPromise.then(() => {
+            // Si estamos en Fichas técnicas, re-renderizamos para mostrar los badges
+            if (seccionActual === "fichas") {
+                const activa = document.querySelector(".category-button.active")?.dataset.category;
+                if (activa) mostrarCategoria(activa, "fichas");
             }
         });
 
@@ -6514,22 +7150,24 @@
 
             const catNombre = categorias.find((c) => c.id === categoriaId)?.nombre || "";
             const fav = favEntryProducto("ficha", producto, categoriaId);
+            const esNueva = productoTieneFichaNueva(producto);
 
             if (producto.fichaDirecta) {
-                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", producto.pdf || PDF_PLACEHOLDER, catNombre, fav);
+                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", producto.pdf || PDF_PLACEHOLDER, catNombre, fav, esNueva);
             }
 
             const opcionesFicha = opcionesPorSeccion(producto, seccion);
             if (opcionesFicha.length === 1) {
-                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", opcionesFicha[0].pdf || PDF_PLACEHOLDER, catNombre, fav);
+                return crearTarjetaAccion(producto.nombre, producto.descripcion, "Ver ficha técnica", opcionesFicha[0].pdf || PDF_PLACEHOLDER, catNombre, fav, esNueva);
             }
 
-            return crearTarjetaSeleccion(producto, "Ver ficha técnica", producto.descripcion, fav);
+            return crearTarjetaSeleccion(producto, "Ver ficha técnica", producto.descripcion, fav, esNueva);
         }
 
-        function crearTarjetaSeleccion(producto, accion, descripcion, favEntry) {
+        function crearTarjetaSeleccion(producto, accion, descripcion, favEntry, esNueva) {
             return `
                 <div class="product-card-wrap">
+                    ${esNueva ? '<span class="badge-nuevo">Nuevo</span>' : ""}
                     <button class="product-card product-card-button button-reset" type="button" data-product="${crearSlug(producto.nombre)}">
                         <h3 class="product-name">${producto.nombre}</h3>
                         <p class="product-description">${descripcion}</p>
@@ -6605,9 +7243,10 @@
             });
         }
 
-        function crearTarjetaAccion(nombre, descripcion, textoBoton, url, catNombre, favEntry) {
+        function crearTarjetaAccion(nombre, descripcion, textoBoton, url, catNombre, favEntry, esNueva) {
             return `
                 <div class="product-card-wrap">
+                    ${esNueva ? '<span class="badge-nuevo">Nuevo</span>' : ""}
                     <article class="product-card">
                         <h3 class="product-name">${nombre}</h3>
                         <p class="product-description">${descripcion}</p>
@@ -8247,9 +8886,15 @@
         }, { passive: true });
         window.addEventListener("resize", actualizarBarraScroll);
 
+        function inicializarTourTrigger() {
+            const btn = document.getElementById("tourTrigger");
+            if (btn) btn.addEventListener("click", () => iniciarTour(true));
+        }
+
         function iniciar() {
             inicializarFooter();
             inicializarTiltCards();
+            inicializarTourTrigger();
             crearBotonesCategoria();
             saltarTransicionSeccion = true;
             try {
