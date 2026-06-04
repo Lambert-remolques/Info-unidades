@@ -3262,6 +3262,52 @@
             position: relative;
             display: flex;
             align-items: center;
+            gap: 8px;
+        }
+
+        .rol-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: var(--rojo);
+            color: var(--blanco);
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .rol-chip[hidden],
+        .user-rol-chip-popover[hidden] {
+            display: none;
+        }
+
+        @media (max-width: 520px) {
+            .rol-chip {
+                font-size: 0.62rem;
+                padding: 3px 8px;
+                letter-spacing: 0.04em;
+            }
+        }
+
+        .user-rol-chip-popover {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 6px;
+            padding: 3px 9px;
+            background: var(--rojo);
+            color: var(--blanco);
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            line-height: 1.2;
+            width: fit-content;
         }
 
         .user-avatar {
@@ -5621,6 +5667,7 @@
                 </button>
                 <img class="logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
                 <div class="user-avatar-wrap" id="userAvatarWrap">
+                    <span class="rol-chip" id="rolChip" hidden>Admin</span>
                     <button class="user-avatar" type="button" id="userAvatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Mi perfil">
                         <span id="userAvatarInicial">?</span>
                     </button>
@@ -5692,6 +5739,7 @@
             <div class="user-avatar-info">
                 <p class="user-avatar-nombre" id="userAvatarNombre">Usuario</p>
                 <span class="user-email" id="userEmail" aria-live="polite"></span>
+                <span class="user-rol-chip-popover" id="userRolChipPopover" hidden>Modo Admin</span>
             </div>
         </div>
         <button class="logout-button" type="button" id="logoutButton">
@@ -10050,6 +10098,7 @@
     </div>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
   const firebaseConfig = {
@@ -10061,6 +10110,30 @@
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let rolUsuario = "vendedor";
+
+  async function obtenerRolUsuario(email) {
+    if (!email) return "vendedor";
+    try {
+      const doc = await db.collection("usuarios").doc(email).get();
+      if (doc.exists && doc.data().rol === "admin") {
+        return "admin";
+      }
+    } catch (e) {
+      console.warn("No se pudo leer el rol del usuario, asumiendo vendedor:", e);
+    }
+    return "vendedor";
+  }
+
+  function aplicarRolUsuario(rol) {
+    rolUsuario = rol;
+    const chip = document.getElementById("rolChip");
+    if (chip) chip.hidden = rol !== "admin";
+    const chipPopover = document.getElementById("userRolChipPopover");
+    if (chipPopover) chipPopover.hidden = rol !== "admin";
+  }
 
   const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
   const ACTIVITY_KEY = "lambert:lastActivity";
@@ -10110,6 +10183,7 @@
     document.getElementById("scrollBarUser").textContent = email;
     document.getElementById("drawerUserEmail").textContent = email;
     document.getElementById("contenido").style.display = "block";
+    obtenerRolUsuario(email).then(aplicarRolUsuario);
     if (typeof obtenerUsuario === "function") {
       const datos = obtenerUsuario(email);
       usuarioActual = { email, nombre: datos.nombre, genero: datos.genero };
