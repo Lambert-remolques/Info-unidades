@@ -6,7 +6,8 @@
       "Bash(start \"\" \"c:\\\\Users\\\\HP\\\\Desktop\\\\Info-unidades\\\\mockup-loading-skeleton.html\")",
       "Bash(git pull *)",
       "Bash(git stash *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "PowerShell(Get-ChildItem -File | Where-Object { $_.Name -notmatch '^\\\\.' } | Select-Object Name | Sort-Object Name)"
     ]
   }
 }
