@@ -3755,6 +3755,43 @@
             margin-top: 28px;
         }
 
+        .docs-estado {
+            grid-column: 1 / -1;
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--gris-texto, #555);
+            font-size: 0.98rem;
+            background: var(--blanco);
+            border-radius: var(--radio);
+            box-shadow: var(--sombra-card);
+        }
+
+        .docs-estado--error p {
+            margin: 0 0 14px;
+            color: var(--rojo);
+            font-weight: 600;
+        }
+
+        .docs-retry {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 18px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--verde);
+            color: var(--blanco);
+            font-size: 0.92rem;
+            font-weight: 600;
+            font-family: var(--fuente);
+            cursor: pointer;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .docs-retry:hover {
+            background: var(--verde-oscuro);
+            transform: translateY(-1px);
+        }
+
         .doc-card {
             position: relative;
             display: flex;
@@ -5916,14 +5953,7 @@
 
     <script>
         const PDF_BASE = "fichas";
-        const RECURSOS_BASE = "recursos";
         const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
-
-        // Construye la URL de un PDF de la sección Recursos > Documentos.
-        // Los archivos se suben al repo en: recursos/{categoria-slug}/{titulo-slug}.pdf
-        function urlDocumentoRecurso(categoria, titulo) {
-            return `${RECURSOS_BASE}/${crearSlug(categoria)}/${crearSlug(titulo)}.pdf`;
-        }
 
         // Fecha de última modificación del archivo HTML: se calcula automáticamente
         // desde document.lastModified (formato DD/MM/AAAA).
@@ -7653,14 +7683,50 @@
         }
 
         // ===== Recursos: Documentos y Preguntas frecuentes =====
-        // Documentos disponibles en Recursos > Documentos.
-        // Para agregar uno nuevo:
-        //   1. Definir { titulo, categoria } acá.
-        //   2. Subir el PDF al repo en: recursos/{slug-de-categoria}/{slug-de-titulo}.pdf
-        //      (los slugs los calcula crearSlug: minúsculas + guiones).
-        const DOCUMENTOS_RECURSOS = [
-            { titulo: "Tren retráctil 1° tramo bitren", categoria: "Tren rodante" }
-        ].map((d) => ({ ...d, url: urlDocumentoRecurso(d.categoria, d.titulo) }));
+        // Los documentos se cargan desde Firestore (colección "documentos").
+        // Estructura esperada del documento: { titulo, categoria, url, creadoEn }.
+        let documentosCargados = [];
+        let estadoDocumentos = "cargando";
+
+        async function cargarDocumentos() {
+            estadoDocumentos = "cargando";
+            if (document.getElementById("docsGrid")) renderDocumentosRecursos();
+            try {
+                const snapshot = await db.collection("documentos").orderBy("creadoEn", "desc").get();
+                documentosCargados = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    titulo: doc.data().titulo || "",
+                    categoria: doc.data().categoria || "",
+                    url: doc.data().url || ""
+                }));
+                estadoDocumentos = documentosCargados.length === 0 ? "vacio" : "ok";
+            } catch (e) {
+                console.error("Error cargando documentos:", e);
+                estadoDocumentos = "error";
+            }
+            sincronizarDocumentosEnBusqueda();
+            if (document.getElementById("docsGrid")) renderDocumentosRecursos();
+        }
+
+        function sincronizarDocumentosEnBusqueda() {
+            for (let i = itemsBusqueda.length - 1; i >= 0; i--) {
+                if (itemsBusqueda[i].tipo === "recurso-documento") itemsBusqueda.splice(i, 1);
+            }
+            documentosCargados.forEach((doc) => {
+                itemsBusqueda.push({
+                    tipo: "recurso-documento",
+                    seccion: "recursos",
+                    seccionLabel: "Documentos",
+                    categoriaId: "documentos",
+                    categoriaNombre: doc.categoria,
+                    productoNombre: doc.titulo,
+                    productoSlug: "",
+                    descripcion: "",
+                    tieneOpciones: false,
+                    searchHaystack: normalizar(`${doc.titulo} ${doc.categoria} documento documentos recursos pdf`)
+                });
+            });
+        }
 
         const FAQ_CATEGORIAS = ["Categoría 1", "Categoría 2", "Categoría 3", "Categoría 4"];
 
@@ -7718,12 +7784,32 @@
         function renderDocumentosRecursos() {
             const grid = document.getElementById("docsGrid");
             if (!grid) return;
-            grid.innerHTML = DOCUMENTOS_RECURSOS.map((d) => {
-                const slug = crearSlug(d.titulo);
+
+            if (estadoDocumentos === "cargando") {
+                grid.innerHTML = `<div class="docs-estado">Cargando documentos...</div>`;
+                return;
+            }
+            if (estadoDocumentos === "error") {
+                grid.innerHTML = `
+                    <div class="docs-estado docs-estado--error">
+                        <p>No se pudieron cargar los documentos.</p>
+                        <button class="docs-retry" type="button" id="docsRetryBtn">Reintentar</button>
+                    </div>
+                `;
+                const retryBtn = document.getElementById("docsRetryBtn");
+                if (retryBtn) retryBtn.addEventListener("click", cargarDocumentos);
+                return;
+            }
+            if (estadoDocumentos === "vacio") {
+                grid.innerHTML = `<div class="docs-estado">Todavía no hay documentos cargados.</div>`;
+                return;
+            }
+
+            grid.innerHTML = documentosCargados.map((d) => {
                 const fav = {
-                    clave: `documento:${slug}`,
+                    clave: `documento:${d.id}`,
                     tipo: "documento",
-                    slug,
+                    slug: d.id,
                     nombre: d.titulo,
                     titulo: d.titulo,
                     categoriaNombre: d.categoria,
@@ -8990,21 +9076,6 @@
             });
         });
 
-        DOCUMENTOS_RECURSOS.forEach((doc) => {
-            itemsBusqueda.push({
-                tipo: "recurso-documento",
-                seccion: "recursos",
-                seccionLabel: "Documentos",
-                categoriaId: "documentos",
-                categoriaNombre: doc.categoria,
-                productoNombre: doc.titulo,
-                productoSlug: "",
-                descripcion: "",
-                tieneOpciones: false,
-                searchHaystack: normalizar(`${doc.titulo} ${doc.categoria} documento documentos recursos pdf`)
-            });
-        });
-
         PREGUNTAS_FRECUENTES.forEach((p) => {
             itemsBusqueda.push({
                 tipo: "recurso-faq",
@@ -10184,6 +10255,7 @@
     document.getElementById("drawerUserEmail").textContent = email;
     document.getElementById("contenido").style.display = "block";
     obtenerRolUsuario(email).then(aplicarRolUsuario);
+    if (typeof cargarDocumentos === "function") cargarDocumentos();
     if (typeof obtenerUsuario === "function") {
       const datos = obtenerUsuario(email);
       usuarioActual = { email, nombre: datos.nombre, genero: datos.genero };
