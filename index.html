@@ -3428,6 +3428,287 @@
             line-height: 1.3;
         }
 
+        .admin-button {
+            width: 100%;
+            min-height: 38px;
+            margin-bottom: 8px;
+            padding: 8px 14px;
+            border: 0;
+            border-radius: var(--radio);
+            background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+            color: var(--blanco);
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--fuente);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .admin-button[hidden] {
+            display: none;
+        }
+
+        .admin-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(21, 153, 71, 0.35);
+        }
+
+        .admin-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .admin-modal[hidden] {
+            display: none;
+        }
+
+        .admin-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(2px);
+        }
+
+        .admin-modal-box {
+            position: relative;
+            width: min(100%, 720px);
+            max-height: 90vh;
+            background: var(--blanco);
+            border-radius: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .admin-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+            color: var(--blanco);
+        }
+
+        .admin-modal-title {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .admin-modal-close {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            background: transparent;
+            font-size: 1.6rem;
+            cursor: pointer;
+            border-radius: 50%;
+            color: var(--blanco);
+            line-height: 1;
+            transition: background 160ms ease;
+        }
+
+        .admin-modal-close:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .admin-modal-body {
+            padding: 22px;
+            overflow-y: auto;
+        }
+
+        .admin-section {
+            margin-bottom: 26px;
+        }
+
+        .admin-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .admin-section-title {
+            margin: 0 0 14px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--negro);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .admin-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .admin-field > span {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--negro);
+        }
+
+        .admin-field input[type="text"],
+        .admin-field input[type="file"] {
+            padding: 10px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.18);
+            border-radius: 6px;
+            font-size: 0.94rem;
+            font-family: var(--fuente);
+            background: var(--blanco);
+        }
+
+        .admin-field input[type="text"]:focus {
+            outline: none;
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.18);
+        }
+
+        .admin-submit {
+            align-self: flex-start;
+            padding: 11px 26px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--verde);
+            color: var(--blanco);
+            font-size: 0.9rem;
+            font-weight: 800;
+            font-family: var(--fuente);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .admin-submit:hover:not(:disabled) {
+            background: var(--verde-oscuro);
+            transform: translateY(-1px);
+        }
+
+        .admin-submit:disabled {
+            background: #9a9a9a;
+            cursor: not-allowed;
+        }
+
+        .admin-status {
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.86rem;
+            font-weight: 500;
+        }
+
+        .admin-status[hidden] {
+            display: none;
+        }
+
+        .admin-status--info {
+            background: rgba(21, 153, 71, 0.1);
+            color: var(--verde-oscuro);
+        }
+
+        .admin-status--success {
+            background: rgba(21, 153, 71, 0.18);
+            color: var(--verde-oscuro);
+            font-weight: 700;
+        }
+
+        .admin-status--error {
+            background: rgba(218, 37, 29, 0.1);
+            color: var(--rojo);
+            font-weight: 700;
+        }
+
+        .admin-doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .admin-doc-empty {
+            margin: 0;
+            padding: 18px;
+            text-align: center;
+            color: #555;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 6px;
+        }
+
+        .admin-doc-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 6px;
+            transition: background 160ms ease;
+        }
+
+        .admin-doc-row:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .admin-doc-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .admin-doc-info strong {
+            font-size: 0.92rem;
+            color: var(--negro);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-doc-info span {
+            font-size: 0.78rem;
+            color: #555;
+        }
+
+        .admin-doc-delete {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--rojo);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 160ms ease;
+        }
+
+        .admin-doc-delete:hover {
+            background: rgba(218, 37, 29, 0.14);
+        }
+
         .logout-button {
             width: 100%;
             min-height: 38px;
@@ -5779,6 +6060,13 @@
                 <span class="user-rol-chip-popover" id="userRolChipPopover" hidden>Modo Admin</span>
             </div>
         </div>
+        <button class="admin-button" type="button" id="adminButton" hidden>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+            </svg>
+            Administrar
+        </button>
         <button class="logout-button" type="button" id="logoutButton">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -5790,6 +6078,43 @@
     </div>
 
     <div class="menu-overlay" id="menuOverlay" aria-hidden="true"></div>
+
+    <div class="admin-modal" id="adminModal" hidden>
+        <div class="admin-modal-overlay" id="adminModalOverlay"></div>
+        <div class="admin-modal-box" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+            <div class="admin-modal-header">
+                <h2 class="admin-modal-title" id="adminModalTitle">Administrar documentos</h2>
+                <button class="admin-modal-close" type="button" id="adminModalClose" aria-label="Cerrar panel admin">×</button>
+            </div>
+            <div class="admin-modal-body">
+                <section class="admin-section">
+                    <h3 class="admin-section-title">Subir documento nuevo</h3>
+                    <form class="admin-form" id="adminUploadForm" autocomplete="off">
+                        <label class="admin-field">
+                            <span>Título</span>
+                            <input type="text" id="adminTitulo" required maxlength="120" placeholder="Ej: Tren retráctil 1° tramo bitren">
+                        </label>
+                        <label class="admin-field">
+                            <span>Categoría</span>
+                            <input type="text" id="adminCategoria" required maxlength="60" placeholder="Ej: Tren rodante">
+                        </label>
+                        <label class="admin-field">
+                            <span>Archivo PDF (máx 10 MB)</span>
+                            <input type="file" id="adminArchivo" accept="application/pdf" required>
+                        </label>
+                        <button class="admin-submit" type="submit" id="adminSubmit">
+                            <span class="admin-submit-label">Subir documento</span>
+                        </button>
+                        <div class="admin-status" id="adminUploadStatus" hidden></div>
+                    </form>
+                </section>
+                <section class="admin-section">
+                    <h3 class="admin-section-title">Documentos existentes</h3>
+                    <div class="admin-doc-list" id="adminDocList"></div>
+                </section>
+            </div>
+        </div>
+    </div>
 
     <div class="search-modal" id="searchModal" hidden aria-label="Buscar unidad">
         <div class="search-modal-header">
@@ -7707,6 +8032,173 @@
             sincronizarDocumentosEnBusqueda();
             if (document.getElementById("docsGrid")) renderDocumentosRecursos();
         }
+
+        // ===== Panel admin: subir/borrar documentos =====
+        // Reusa CLOUDINARY_CLOUD definido más arriba para el catálogo de fotos.
+        const CLOUDINARY_PRESET = "panel_admin_lambert";
+        const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
+        const MAX_PDF_MB = 10;
+
+        function abrirAdminModal() {
+            if (rolUsuario !== "admin") return;
+            const modal = document.getElementById("adminModal");
+            if (!modal) return;
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            const popover = document.getElementById("userAvatarPopover");
+            const popBtn = document.getElementById("userAvatarBtn");
+            if (popover) popover.classList.remove("open");
+            if (popBtn) popBtn.setAttribute("aria-expanded", "false");
+            renderAdminDocList();
+        }
+
+        function cerrarAdminModal() {
+            const modal = document.getElementById("adminModal");
+            if (!modal) return;
+            modal.hidden = true;
+            document.body.style.overflow = "";
+            const form = document.getElementById("adminUploadForm");
+            if (form) form.reset();
+            setAdminUploadStatus(null);
+        }
+
+        function setAdminUploadStatus(state, message) {
+            const status = document.getElementById("adminUploadStatus");
+            if (!status) return;
+            if (state === null) {
+                status.hidden = true;
+                status.className = "admin-status";
+                status.textContent = "";
+                return;
+            }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        function renderAdminDocList() {
+            const cont = document.getElementById("adminDocList");
+            if (!cont) return;
+            if (estadoDocumentos === "cargando") {
+                cont.innerHTML = `<p class="admin-doc-empty">Cargando documentos...</p>`;
+                return;
+            }
+            if (estadoDocumentos === "error") {
+                cont.innerHTML = `<p class="admin-doc-empty">Error cargando documentos.</p>`;
+                return;
+            }
+            if (documentosCargados.length === 0) {
+                cont.innerHTML = `<p class="admin-doc-empty">Todavía no hay documentos cargados.</p>`;
+                return;
+            }
+            cont.innerHTML = documentosCargados.map((d) => {
+                const tituloEsc = d.titulo.replace(/"/g, "&quot;");
+                return `
+                <div class="admin-doc-row">
+                    <div class="admin-doc-info">
+                        <strong>${d.titulo}</strong>
+                        <span>${d.categoria}</span>
+                    </div>
+                    <button class="admin-doc-delete" type="button" data-id="${d.id}" data-titulo="${tituloEsc}" aria-label="Eliminar ${tituloEsc}">×</button>
+                </div>`;
+            }).join("");
+            cont.querySelectorAll(".admin-doc-delete").forEach((btn) => {
+                btn.addEventListener("click", () => borrarDocumento(btn.dataset.id, btn.dataset.titulo));
+            });
+        }
+
+        async function subirDocumentoHandler(event) {
+            event.preventDefault();
+            const titulo = document.getElementById("adminTitulo").value.trim();
+            const categoria = document.getElementById("adminCategoria").value.trim();
+            const archivoInput = document.getElementById("adminArchivo");
+            const archivo = archivoInput.files[0];
+
+            if (!titulo || !categoria || !archivo) {
+                setAdminUploadStatus("error", "Completá todos los campos.");
+                return;
+            }
+            if (archivo.type !== "application/pdf") {
+                setAdminUploadStatus("error", "El archivo debe ser un PDF.");
+                return;
+            }
+            const sizeMB = archivo.size / (1024 * 1024);
+            if (sizeMB > MAX_PDF_MB) {
+                setAdminUploadStatus("error", `El PDF pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_PDF_MB} MB. Comprimilo en ilovepdf.com/comprimir_pdf y volvé a probar.`);
+                return;
+            }
+
+            const submitBtn = document.getElementById("adminSubmit");
+            const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            submitBtn.disabled = true;
+            submitLabel.textContent = "Subiendo...";
+            setAdminUploadStatus("info", "Subiendo archivo a Cloudinary...");
+
+            try {
+                const baseName = crearSlug(titulo);
+                const stamp = Date.now();
+                const uniqueName = `${baseName}-${stamp}.pdf`;
+                const renamedFile = new File([archivo], uniqueName, { type: archivo.type });
+
+                const formData = new FormData();
+                formData.append("file", renamedFile);
+                formData.append("upload_preset", CLOUDINARY_PRESET);
+                formData.append("folder", "documentos");
+
+                const resp = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
+                const data = await resp.json();
+                if (!resp.ok || !data.secure_url) {
+                    throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+                }
+
+                setAdminUploadStatus("info", "Guardando en base de datos...");
+                await db.collection("documentos").add({
+                    titulo,
+                    categoria,
+                    url: data.secure_url,
+                    creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                setAdminUploadStatus("success", `"${titulo}" subido correctamente.`);
+                document.getElementById("adminUploadForm").reset();
+                await cargarDocumentos();
+                renderAdminDocList();
+            } catch (e) {
+                console.error(e);
+                setAdminUploadStatus("error", "No se pudo subir: " + (e.message || "error desconocido"));
+            } finally {
+                submitBtn.disabled = false;
+                submitLabel.textContent = "Subir documento";
+            }
+        }
+
+        async function borrarDocumento(id, titulo) {
+            if (!confirm(`¿Eliminar el documento "${titulo}"?\n\nEsta acción no se puede deshacer.`)) return;
+            try {
+                await db.collection("documentos").doc(id).delete();
+                await cargarDocumentos();
+                renderAdminDocList();
+            } catch (e) {
+                alert("No se pudo eliminar el documento.\n" + (e.message || ""));
+            }
+        }
+
+        function inicializarAdminListeners() {
+            const adminBtn = document.getElementById("adminButton");
+            if (adminBtn) adminBtn.addEventListener("click", abrirAdminModal);
+            const closeBtn = document.getElementById("adminModalClose");
+            if (closeBtn) closeBtn.addEventListener("click", cerrarAdminModal);
+            const overlay = document.getElementById("adminModalOverlay");
+            if (overlay) overlay.addEventListener("click", cerrarAdminModal);
+            const form = document.getElementById("adminUploadForm");
+            if (form) form.addEventListener("submit", subirDocumentoHandler);
+            document.addEventListener("keydown", (e) => {
+                if (e.key !== "Escape") return;
+                const modal = document.getElementById("adminModal");
+                if (modal && !modal.hidden) cerrarAdminModal();
+            });
+        }
+        inicializarAdminListeners();
 
         function sincronizarDocumentosEnBusqueda() {
             for (let i = itemsBusqueda.length - 1; i >= 0; i--) {
@@ -10204,6 +10696,8 @@
     if (chip) chip.hidden = rol !== "admin";
     const chipPopover = document.getElementById("userRolChipPopover");
     if (chipPopover) chipPopover.hidden = rol !== "admin";
+    const adminBtn = document.getElementById("adminButton");
+    if (adminBtn) adminBtn.hidden = rol !== "admin";
   }
 
   const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
