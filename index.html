@@ -703,11 +703,38 @@
             right: auto;
         }
 
+        .doc-card .favorito-toggle {
+            top: 44px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+        }
+
+        .doc-card .favorito-toggle svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .faq-item .favorito-toggle {
+            position: relative;
+            top: auto;
+            right: auto;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            margin-right: 4px;
+        }
+
+        .faq-item .favorito-toggle svg {
+            width: 15px;
+            height: 15px;
+        }
+
         /* En tarjetas de Fichas técnicas dejamos margen al título para que no se cruce con la estrella.
            En las fotos no hace falta porque la estrella va sobre la imagen y el título está debajo. */
         .product-card-wrap > .product-card:not(.foto-card) .product-name,
         .product-card-wrap > article.product-card .product-name {
-            padding-right: 46px;
+            padding-right: 60px;
         }
 
         /* ===== Bloque "Mis favoritos" en el Inicio ===== */
@@ -791,6 +818,7 @@
             letter-spacing: 0.14em;
             text-transform: uppercase;
             color: var(--verde);
+            padding-right: 30px;
         }
 
         .favorito-titulo {
@@ -798,6 +826,7 @@
             font-weight: 800;
             color: var(--negro);
             line-height: 1.25;
+            padding-right: 30px;
         }
 
         .favorito-meta {
@@ -1106,23 +1135,37 @@
         }
 
         .site-footer-inner {
-            width: min(1280px, calc(100% - 112px));
+            width: min(1280px, calc(100% - 80px));
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1.4fr;
-            gap: 40px;
-            align-items: start;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 32px;
+            flex-wrap: wrap;
         }
 
         .site-footer-col {
             display: flex;
             flex-direction: column;
             gap: 14px;
+            min-width: 180px;
         }
 
         .site-footer-marca {
-            justify-content: flex-start;
-            align-self: center;
+            flex: 0 0 auto;
+            justify-content: center;
+            align-self: stretch;
+            min-width: auto;
+        }
+
+        .site-footer-col-nav {
+            flex: 1 1 320px;
+            max-width: 420px;
+        }
+
+        .site-footer-col-soporte {
+            flex: 1 1 280px;
+            max-width: 360px;
         }
 
         .site-footer-logo {
@@ -1154,9 +1197,11 @@
             list-style: none;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(3, auto);
+            grid-auto-flow: column;
+            gap: 6px 28px;
         }
 
         .site-footer-link {
@@ -1247,12 +1292,12 @@
 
         @media (max-width: 900px) {
             .site-footer-inner {
-                grid-template-columns: 1fr 1fr;
-                gap: 32px;
+                gap: 28px;
             }
 
             .site-footer-marca {
-                grid-column: 1 / -1;
+                flex: 1 1 100%;
+                align-items: center;
             }
         }
 
@@ -1262,12 +1307,17 @@
             }
 
             .site-footer-inner {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: center;
                 gap: 28px;
                 text-align: center;
             }
 
-            .site-footer-marca {
+            .site-footer-col,
+            .site-footer-col-nav,
+            .site-footer-col-soporte {
+                max-width: 100%;
+                min-width: 0;
                 align-items: center;
             }
 
@@ -1277,7 +1327,10 @@
             }
 
             .site-footer-menu {
-                align-items: center;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                grid-auto-flow: row;
+                justify-items: center;
             }
 
             .site-footer-link:hover {
@@ -1311,7 +1364,9 @@
             }
 
             .hero-fichas .hero-plano,
-            .hero-adicionales .hero-iconos-adicionales {
+            .hero-adicionales .hero-iconos-adicionales,
+            .hero-recursos-documentos .hero-ilustracion-documentos,
+            .hero-recursos-preguntas .hero-ilustracion-preguntas {
                 display: none;
             }
 
@@ -1384,11 +1439,14 @@
         .product-name {
             margin: 0 0 11px;
             color: var(--negro);
-            font-size: clamp(1rem, 1.55vw, 1.28rem);
+            font-size: clamp(0.88rem, 1.2vw, 1.08rem);
             font-weight: 900;
             font-style: italic;
             text-transform: uppercase;
-            line-height: 1.08;
+            line-height: 1.12;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         .product-description {
@@ -1613,27 +1671,14 @@
                 padding: 0;
             }
 
-            .top-nav .user-bar {
+            .top-nav .user-avatar-wrap {
                 order: 4;
-                display: flex;
-                align-items: center;
                 margin: 0;
-                padding: 0;
-                border: 0;
-                gap: 12px;
-            }
-
-            .top-nav .user-email {
-                max-width: 290px;
             }
 
             @media (max-width: 1320px) {
                 .search-bar {
                     width: 190px;
-                }
-
-                .top-nav .user-email {
-                    max-width: 210px;
                 }
             }
 
@@ -2521,6 +2566,9 @@
             text-transform: uppercase;
             line-height: 1.2;
             min-height: calc(1.05rem * 1.2 * 3);
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         .adicional-ubicacion {
@@ -3208,52 +3256,165 @@
             }
         }
 
-        .user-bar {
+        /* ===== Avatar de usuario con popover ===== */
+        .user-avatar-wrap {
+            position: relative;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            gap: 14px;
-            margin-bottom: 14px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            border-radius: 50%;
+            color: var(--blanco);
+            background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+            font-size: 0.95rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+            transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .user-avatar:hover {
+                transform: scale(1.06);
+                border-color: rgba(255, 255, 255, 0.42);
+                box-shadow: 0 4px 14px rgba(21, 153, 71, 0.45);
+            }
+        }
+
+        .user-avatar:focus-visible {
+            outline: 3px solid rgba(21, 153, 71, 0.45);
+            outline-offset: 3px;
+        }
+
+        .user-avatar-popover {
+            position: fixed;
+            top: 0;
+            right: 0;
+            min-width: 260px;
+            max-width: 320px;
+            padding: 16px;
+            background: var(--blanco);
+            color: var(--negro);
+            border-radius: 6px;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32), 0 2px 6px rgba(0, 0, 0, 0.18);
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            z-index: 1000;
+        }
+
+        .user-avatar-popover.open {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .user-avatar-popover::before {
+            content: "";
+            position: absolute;
+            top: -7px;
+            right: 14px;
+            width: 14px;
+            height: 14px;
+            background: var(--blanco);
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-avatar-encabezado {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .user-avatar-encabezado-avatar {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+            color: var(--blanco);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .user-avatar-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .user-avatar-nombre {
+            margin: 0 0 2px;
+            font-size: 0.95rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            color: var(--negro);
+            line-height: 1.15;
+        }
 
         .user-email {
-            color: rgba(255, 255, 255, 0.72);
-            font-size: 0.78rem;
+            display: block;
+            color: var(--gris-texto);
+            font-size: 0.76rem;
             font-weight: 500;
-            max-width: 60vw;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            word-break: break-all;
+            line-height: 1.3;
         }
 
         .logout-button {
-            min-height: 30px;
-            padding: 0 12px;
-            border: 1px solid rgba(255, 255, 255, 0.28);
+            width: 100%;
+            min-height: 38px;
+            padding: 8px 14px;
+            border: 1px solid rgba(218, 37, 29, 0.4);
             border-radius: var(--radio);
-            color: rgba(255, 255, 255, 0.78);
-            background: rgba(255, 255, 255, 0.04);
-            font-size: 0.7rem;
+            color: var(--rojo);
+            background: rgba(218, 37, 29, 0.06);
+            font-size: 0.74rem;
             font-weight: 900;
             font-style: italic;
             text-transform: uppercase;
             letter-spacing: 0.04em;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
         }
 
         .logout-button:hover {
             color: var(--blanco);
             border-color: var(--rojo);
-            background: rgba(218, 37, 29, 0.22);
+            background: var(--rojo);
         }
 
         .logout-button:focus-visible {
             outline: 3px solid rgba(218, 37, 29, 0.38);
             outline-offset: 3px;
+        }
+
+        .logout-button svg {
+            flex-shrink: 0;
         }
 
         .scroll-bar {
@@ -3406,6 +3567,447 @@
         .back-to-top:hover {
             filter: brightness(1.05);
             box-shadow: 0 10px 22px rgba(21, 153, 71, 0.32);
+        }
+
+        /* ===== Submenú Recursos ===== */
+        .menu-item-recursos {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .menu-button.has-arrow::after {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            margin-left: 7px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: translateY(-2px) rotate(45deg);
+            transition: transform 200ms ease;
+        }
+
+        .menu-item-recursos.open .menu-button.has-arrow::after {
+            transform: translateY(1px) rotate(-135deg);
+        }
+
+        .recursos-submenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 230px;
+            background: var(--blanco);
+            color: var(--negro);
+            border-radius: var(--radio);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32), 0 2px 6px rgba(0, 0, 0, 0.18);
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .menu-item-recursos.open .recursos-submenu {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .recursos-submenu::before {
+            content: "";
+            position: absolute;
+            top: -7px;
+            left: 24px;
+            width: 14px;
+            height: 14px;
+            background: var(--blanco);
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .recursos-submenu-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 18px;
+            width: 100%;
+            background: transparent;
+            border: 0;
+            font: inherit;
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            text-align: left;
+            color: var(--negro);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            transition: background 140ms ease, color 140ms ease;
+        }
+
+        .recursos-submenu-item:last-child {
+            border-bottom: 0;
+        }
+
+        @media (hover: hover) {
+            .recursos-submenu-item:hover {
+                background: rgba(21, 153, 71, 0.10);
+                color: var(--verde-oscuro);
+            }
+        }
+
+        .recursos-submenu-item.active {
+            background: rgba(21, 153, 71, 0.16);
+            color: var(--verde-oscuro);
+        }
+
+        .recursos-submenu-item svg {
+            flex-shrink: 0;
+        }
+
+        /* ===== Sección Recursos (intro común) ===== */
+        .recursos-intro {
+            margin: 4px 0 28px;
+            color: var(--gris-texto);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 760px;
+        }
+
+        /* ===== Ilustraciones del hero para Recursos ===== */
+        .hero-ilustracion-documentos,
+        .hero-ilustracion-preguntas {
+            display: none;
+        }
+
+        .hero-recursos-documentos .hero-ilustracion-documentos,
+        .hero-recursos-preguntas .hero-ilustracion-preguntas {
+            display: block;
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: min(24%, 280px);
+            height: auto;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+            color: var(--blanco);
+            -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%);
+            mask-image: linear-gradient(to left, #000 40%, transparent 100%);
+        }
+
+        /* ===== Sección Documentos ===== */
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 22px;
+            margin-top: 28px;
+        }
+
+        .doc-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: var(--blanco);
+            border-radius: var(--radio);
+            box-shadow: var(--sombra-card);
+            border-left: 5px solid var(--verde);
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 180ms ease, box-shadow 180ms ease;
+        }
+
+        @media (hover: hover) {
+            .doc-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 22px rgba(38, 38, 38, 0.22);
+            }
+        }
+
+        .doc-categoria-franja {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            padding: 5px 12px;
+            background: rgba(21, 153, 71, 0.10);
+            color: var(--verde-oscuro);
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+        }
+
+        .doc-body {
+            padding: 22px 18px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .doc-icon {
+            position: relative;
+            width: 46px;
+            height: 54px;
+            background: linear-gradient(180deg, #f6f6f6, #e8e8e8);
+            border-radius: 3px;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 7px;
+        }
+
+        .doc-icon::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            background: var(--blanco);
+            box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.08);
+            clip-path: polygon(0 0, 100% 100%, 100% 0);
+        }
+
+        .doc-icon span {
+            font-size: 0.55rem;
+            font-weight: 900;
+            color: var(--rojo);
+            letter-spacing: 0.04em;
+        }
+
+        .doc-titulo {
+            margin: 0;
+            font-size: 1.02rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.2;
+            color: var(--negro);
+            min-height: calc(1.02rem * 1.2 * 2);
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+            padding-right: 46px;
+        }
+
+        .doc-footer {
+            margin-top: auto;
+            padding: 11px 16px;
+            background: rgba(21, 153, 71, 0.06);
+            border-top: 1px solid rgba(21, 153, 71, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--verde-oscuro);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: background 160ms ease, color 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .doc-card:hover .doc-footer {
+                background: var(--verde);
+                color: var(--blanco);
+            }
+        }
+
+        .doc-footer svg {
+            flex-shrink: 0;
+            transition: transform 200ms ease;
+        }
+
+        @media (hover: hover) {
+            .doc-card:hover .doc-footer svg {
+                transform: translateX(3px);
+            }
+        }
+
+        /* ===== Sección Preguntas frecuentes ===== */
+        .faq-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin: 28px 0 24px;
+        }
+
+        .faq-chip {
+            padding: 8px 14px;
+            background: var(--blanco);
+            border: 1.5px solid rgba(21, 153, 71, 0.32);
+            border-radius: 999px;
+            color: var(--verde-oscuro);
+            font: inherit;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease;
+        }
+
+        @media (hover: hover) {
+            .faq-chip:hover {
+                transform: translateY(-1px);
+            }
+        }
+
+        .faq-chip.active {
+            background: var(--verde);
+            color: var(--blanco);
+            border-color: var(--verde);
+        }
+
+        .faq-chip.faq-chip--todas.active {
+            background: var(--negro);
+            border-color: var(--negro);
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .faq-item {
+            background: var(--blanco);
+            border-radius: var(--radio);
+            box-shadow: var(--sombra-card);
+            border-left: 4px solid var(--verde);
+            overflow: hidden;
+            transition: box-shadow 160ms ease;
+        }
+
+        .faq-item.open {
+            box-shadow: 0 10px 22px rgba(38, 38, 38, 0.18);
+        }
+
+        .faq-pregunta {
+            width: 100%;
+            padding: 18px 22px;
+            background: transparent;
+            border: 0;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--negro);
+            font-size: 0.98rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.35;
+            transition: background 140ms ease;
+        }
+
+        @media (hover: hover) {
+            .faq-pregunta:hover {
+                background: rgba(21, 153, 71, 0.04);
+            }
+        }
+
+        .faq-pregunta-texto {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .faq-pregunta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .faq-pregunta-tag {
+            font-size: 0.58rem;
+            font-weight: 700;
+            background: rgba(21, 153, 71, 0.12);
+            color: var(--verde-oscuro);
+            padding: 2px 7px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-style: normal;
+        }
+
+        .faq-chevron {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(21, 153, 71, 0.12);
+            color: var(--verde-oscuro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 220ms ease, background 160ms ease, color 160ms ease;
+        }
+
+        .faq-item.open .faq-chevron {
+            transform: rotate(180deg);
+            background: var(--verde);
+            color: var(--blanco);
+        }
+
+        .faq-respuesta {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 320ms ease;
+        }
+
+        .faq-respuesta-inner {
+            padding: 4px 22px 22px;
+            color: var(--gris-texto);
+            font-size: 0.94rem;
+            line-height: 1.6;
+            border-top: 1px dashed rgba(21, 153, 71, 0.25);
+            margin-top: 0;
+        }
+
+        .faq-respuesta-inner > *:first-child {
+            margin-top: 14px;
+        }
+
+        .faq-respuesta-inner p {
+            margin: 0 0 10px;
+        }
+
+        .faq-respuesta-inner p:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--gris-texto);
+            background: var(--blanco);
+            border-radius: var(--radio);
+            border: 2px dashed rgba(21, 153, 71, 0.3);
+        }
+
+        .faq-empty strong {
+            display: block;
+            font-size: 1.05rem;
+            color: var(--negro);
+            font-style: italic;
+            text-transform: uppercase;
+            margin-bottom: 6px;
         }
 
         /* ===== Botón "?" para repetir el tour ===== */
@@ -3668,7 +4270,7 @@
         }
 
         @media (max-width: 720px) {
-            .user-bar {
+            .user-avatar-wrap {
                 display: none;
             }
 
@@ -3791,6 +4393,56 @@
 
             .menu-indicator {
                 display: none;
+            }
+
+            /* Submenú Recursos en modo drawer (mobile) */
+            .menu-item-recursos {
+                display: block;
+                width: 100%;
+            }
+
+            .menu-item-recursos .menu-button.has-arrow::after {
+                margin-left: 8px;
+                width: 7px;
+                height: 7px;
+            }
+
+            .recursos-submenu {
+                position: static;
+                opacity: 1;
+                transform: none;
+                pointer-events: auto;
+                background: rgba(255, 255, 255, 0.06);
+                box-shadow: none;
+                border-radius: 0;
+                margin-top: 6px;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 260ms ease;
+            }
+
+            .menu-item-recursos.open .recursos-submenu {
+                max-height: 200px;
+            }
+
+            .recursos-submenu::before {
+                display: none;
+            }
+
+            .recursos-submenu-item {
+                color: rgba(255, 255, 255, 0.88);
+                background: transparent;
+                min-height: 50px;
+                padding: 14px 22px;
+                font-size: 0.85rem;
+                text-align: center;
+                justify-content: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .recursos-submenu-item.active {
+                background: rgba(21, 153, 71, 0.28);
+                color: var(--blanco);
             }
 
             .drawer-close {
@@ -4953,6 +5605,38 @@
     <header class="hero">
         <img class="hero-plano" src="plano.png" alt="" aria-hidden="true">
         <img class="hero-iconos-adicionales" src="adicionales-hero.svg" alt="" aria-hidden="true">
+        <svg class="hero-ilustracion-documentos" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+                <g transform="rotate(-9 200 230)" opacity="0.65">
+                    <path d="M120 110 L235 110 L290 165 L290 360 Q290 380 270 380 L120 380 Q100 380 100 360 L100 130 Q100 110 120 110 Z"/>
+                    <path d="M235 110 L235 165 L290 165"/>
+                    <line x1="130" y1="210" x2="260" y2="210"/>
+                    <line x1="130" y1="250" x2="260" y2="250"/>
+                    <line x1="130" y1="290" x2="235" y2="290"/>
+                    <line x1="130" y1="330" x2="260" y2="330"/>
+                </g>
+                <g transform="rotate(6 290 270)" opacity="0.85">
+                    <path d="M195 150 L310 150 L365 205 L365 405 Q365 425 345 425 L195 425 Q175 425 175 405 L195 170 Q175 150 195 150 Z"/>
+                    <path d="M310 150 L310 205 L365 205"/>
+                </g>
+                <path d="M170 210 L310 210 L370 270 L370 450 Q370 470 350 470 L170 470 Q150 470 150 450 L150 230 Q150 210 170 210 Z"/>
+                <path d="M310 210 L310 270 L370 270"/>
+                <line x1="185" y1="305" x2="335" y2="305"/>
+                <line x1="185" y1="345" x2="335" y2="345"/>
+                <line x1="185" y1="385" x2="295" y2="385"/>
+                <line x1="185" y1="425" x2="335" y2="425"/>
+            </g>
+        </svg>
+        <svg class="hero-ilustracion-preguntas" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+                <path d="M60 120 Q60 90 90 90 L320 90 Q350 90 350 120 L350 280 Q350 310 320 310 L195 310 L135 365 L135 310 L90 310 Q60 310 60 280 Z"/>
+                <path d="M165 175 Q165 145 200 145 Q235 145 235 175 Q235 195 215 210 Q200 220 200 245" stroke-width="14"/>
+                <circle cx="200" cy="280" r="8" fill="currentColor" stroke="none"/>
+                <path d="M240 345 Q240 325 260 325 L400 325 Q420 325 420 345 L420 430 Q420 450 400 450 L320 450 L285 485 L285 450 L260 450 Q240 450 240 430 Z" opacity="0.7"/>
+                <path d="M310 370 Q310 355 325 355 Q340 355 340 370 Q340 380 330 385 Q323 390 323 400" stroke-width="10" opacity="0.85"/>
+                <circle cx="323" cy="420" r="5" fill="currentColor" stroke="none" opacity="0.85"/>
+            </g>
+        </svg>
         <div class="hero-inner">
             <div class="top-nav">
                 <nav class="site-menu" id="siteMenu" aria-label="Secciones principales">
@@ -4963,6 +5647,19 @@
                     <button class="menu-button" type="button" data-section="fichas">Fichas técnicas</button>
                     <button class="menu-button" type="button" data-section="fotos">Fotos</button>
                     <button class="menu-button" type="button" data-section="adicionales">Adicionales</button>
+                    <div class="menu-item-recursos" id="recursosMenuItem">
+                        <button class="menu-button has-arrow" type="button" id="recursosMenuButton" aria-haspopup="true" aria-expanded="false">Recursos</button>
+                        <div class="recursos-submenu" id="recursosSubmenu" role="menu">
+                            <button class="recursos-submenu-item" type="button" role="menuitem" data-recurso="documentos">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                Documentos
+                            </button>
+                            <button class="recursos-submenu-item" type="button" role="menuitem" data-recurso="preguntas">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/><path d="M9.7 10a2.3 2.3 0 0 1 4.6 0c0 1.5-2.3 1.9-2.3 3.2"/><line x1="12" y1="16.5" x2="12.01" y2="16.5" stroke-width="2.8"/></svg>
+                                Preguntas frecuentes
+                            </button>
+                        </div>
+                    </div>
                     <div class="drawer-footer">
                         <p class="drawer-user-email" id="drawerUserEmail" aria-live="polite"></p>
                         <button class="drawer-logout" type="button" id="drawerLogout">Cerrar sesión</button>
@@ -4978,9 +5675,10 @@
                     <span></span><span></span><span></span>
                 </button>
                 <img class="logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
-                <div class="user-bar">
-                    <span class="user-email" id="userEmail" aria-live="polite"></span>
-                    <button class="logout-button" type="button" id="logoutButton">Cerrar sesión</button>
+                <div class="user-avatar-wrap" id="userAvatarWrap">
+                    <button class="user-avatar" type="button" id="userAvatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Mi perfil">
+                        <span id="userAvatarInicial">?</span>
+                    </button>
                 </div>
             </div>
 
@@ -5006,16 +5704,18 @@
             <div class="site-footer-col site-footer-marca">
                 <img class="site-footer-logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
             </div>
-            <div class="site-footer-col">
+            <div class="site-footer-col site-footer-col-nav">
                 <h4 class="site-footer-titulo">Navegación</h4>
                 <ul class="site-footer-menu">
                     <li><button class="site-footer-link" type="button" data-footer-nav="inicio">Inicio</button></li>
                     <li><button class="site-footer-link" type="button" data-footer-nav="fichas">Fichas técnicas</button></li>
                     <li><button class="site-footer-link" type="button" data-footer-nav="fotos">Fotos</button></li>
                     <li><button class="site-footer-link" type="button" data-footer-nav="adicionales">Adicionales</button></li>
+                    <li><button class="site-footer-link" type="button" data-footer-nav="recursos-documentos">Documentos</button></li>
+                    <li><button class="site-footer-link" type="button" data-footer-nav="recursos-preguntas">Preguntas frecuentes</button></li>
                 </ul>
             </div>
-            <div class="site-footer-col">
+            <div class="site-footer-col site-footer-col-soporte">
                 <h4 class="site-footer-titulo">Soporte</h4>
                 <p class="site-footer-soporte-texto">¿Encontraste algún error o tenés una sugerencia? Escribinos directamente.</p>
                 <a class="site-footer-reportar" id="footerReportar" href="#" target="_blank" rel="noopener">
@@ -5040,6 +5740,24 @@
     </button>
 
     <button class="tour-trigger" type="button" id="tourTrigger" aria-label="Ver tour de la aplicación" title="Ver tour del catálogo">?</button>
+
+    <div class="user-avatar-popover" id="userAvatarPopover" role="dialog" aria-label="Perfil del usuario">
+        <div class="user-avatar-encabezado">
+            <span class="user-avatar-encabezado-avatar" id="userAvatarInicialBig">?</span>
+            <div class="user-avatar-info">
+                <p class="user-avatar-nombre" id="userAvatarNombre">Usuario</p>
+                <span class="user-email" id="userEmail" aria-live="polite"></span>
+            </div>
+        </div>
+        <button class="logout-button" type="button" id="logoutButton">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Cerrar sesión
+        </button>
+    </div>
 
     <div class="menu-overlay" id="menuOverlay" aria-hidden="true"></div>
 
@@ -5207,8 +5925,21 @@
         const PDF_BASE = "fichas";
         const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
 
-        // Actualizar manualmente con cada cambio significativo del sistema (formato DD/MM/AAAA)
-        const ULTIMA_ACTUALIZACION_SISTEMA = "02/06/2026";
+        // Fecha de última modificación del archivo HTML: se calcula automáticamente
+        // desde document.lastModified (formato DD/MM/AAAA).
+        function calcularUltimaActualizacion() {
+            try {
+                const fecha = new Date(document.lastModified);
+                if (isNaN(fecha.getTime())) return "";
+                const dd = String(fecha.getDate()).padStart(2, "0");
+                const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+                const yyyy = fecha.getFullYear();
+                return `${dd}/${mm}/${yyyy}`;
+            } catch (e) {
+                return "";
+            }
+        }
+        const ULTIMA_ACTUALIZACION_SISTEMA = calcularUltimaActualizacion();
         const WHATSAPP_REPORTE_NUMERO = "543442624518";
         const WHATSAPP_REPORTE_MENSAJE = "Hola! Quiero reportar un problema en el catálogo: [detalle del problema]";
         const FOTO_PLACEHOLDER = "https://example.com/fotos";
@@ -5635,7 +6366,13 @@
             inicio: { titulo: "Unidades", descripcion: "Acceso rápido a la información de cada unidad" },
             fichas: { titulo: "Fichas técnicas", descripcion: "Acceso rápido y centralizado a las especificaciones técnicas de todas las unidades" },
             fotos: { titulo: "Fotos", descripcion: "Acceso rápido a las fotos de cada unidad" },
-            adicionales: { titulo: "Adicionales", descripcion: "Acceso rápido a los adicionales" }
+            adicionales: { titulo: "Adicionales", descripcion: "Acceso rápido a los adicionales" },
+            recursos: { titulo: "Centro de recursos", descripcion: "Documentación, manuales y respuestas a las preguntas más frecuentes" }
+        };
+
+        const HERO_RECURSOS_SUB = {
+            documentos: { titulo: "Documentos", descripcion: "Documentación, manuales y archivos útiles para el equipo comercial." },
+            preguntas: { titulo: "Preguntas frecuentes", descripcion: "Filtrá por categoría y hacé click para ver la respuesta." }
         };
 
         function loaderLambertHtml(texto) {
@@ -5662,9 +6399,16 @@
                 .replace(/(^-|-$)/g, "");
         }
 
-        function actualizarMenu(seccion) {
+        function actualizarMenu(seccion, subSeccionRecursos) {
             menuButtons.forEach((button) => {
                 button.classList.toggle("active", button.dataset.section === seccion);
+            });
+            const recursosBtn = document.getElementById("recursosMenuButton");
+            if (recursosBtn) {
+                recursosBtn.classList.toggle("active", seccion === "recursos");
+            }
+            document.querySelectorAll(".recursos-submenu-item").forEach((item) => {
+                item.classList.toggle("active", seccion === "recursos" && item.dataset.recurso === subSeccionRecursos);
             });
             actualizarIndicadorMenu();
         }
@@ -5682,10 +6426,12 @@
                 return;
             }
             requestAnimationFrame(() => {
-                indicador.style.left  = activo.offsetLeft + "px";
-                indicador.style.top   = activo.offsetTop  + "px";
-                indicador.style.width = activo.offsetWidth + "px";
-                indicador.style.height = activo.offsetHeight + "px";
+                const menuRect = siteMenu.getBoundingClientRect();
+                const btnRect = activo.getBoundingClientRect();
+                indicador.style.left  = (btnRect.left - menuRect.left) + "px";
+                indicador.style.top   = (btnRect.top - menuRect.top) + "px";
+                indicador.style.width = btnRect.width + "px";
+                indicador.style.height = btnRect.height + "px";
                 indicador.style.opacity = "1";
             });
         }
@@ -5693,18 +6439,28 @@
         window.addEventListener("resize", actualizarIndicadorMenu);
         window.addEventListener("load",   actualizarIndicadorMenu);
 
-        function actualizarHero(seccion) {
+        function actualizarHero(seccion, subSeccion) {
             const esInicio = seccion === "inicio";
             hero.classList.toggle("hero-inicio", esInicio);
             hero.classList.toggle("hero-fichas", seccion === "fichas");
             hero.classList.toggle("hero-fotos", seccion === "fotos");
             hero.classList.toggle("hero-adicionales", seccion === "adicionales");
+            hero.classList.toggle("hero-recursos", seccion === "recursos");
+            hero.classList.toggle("hero-recursos-documentos", seccion === "recursos" && subSeccion === "documentos");
+            hero.classList.toggle("hero-recursos-preguntas", seccion === "recursos" && subSeccion === "preguntas");
 
             if (esInicio) {
                 const linea1 = usuarioActual.nombre ? `¡Hola, ${usuarioActual.nombre}!` : "¡Hola!";
                 const linea2 = `${palabraBienvenida(usuarioActual.genero)} al catálogo`;
                 heroTitle.innerHTML = `<span class="hero-saludo-linea">${linea1}</span><span class="hero-saludo-linea hero-saludo-linea2">${linea2}</span>`;
                 heroDescription.textContent = "Todo sobre nuestras unidades: información técnica, fotos y adicionales.";
+                return;
+            }
+
+            if (seccion === "recursos" && subSeccion && HERO_RECURSOS_SUB[subSeccion]) {
+                const sub = HERO_RECURSOS_SUB[subSeccion];
+                heroTitle.textContent = sub.titulo;
+                heroDescription.textContent = sub.descripcion;
                 return;
             }
 
@@ -5778,13 +6534,22 @@
 
         function ejecutarVistaSeccion(seccion, categoriaId = "acoplados", productoSlug = "") {
             seccionActual = seccion;
-            actualizarMenu(seccion);
-            actualizarHero(seccion);
+            let subSeccionRecursos = null;
+            if (seccion === "recursos") {
+                subSeccionRecursos = (categoriaId === "preguntas") ? "preguntas" : "documentos";
+            }
+            actualizarMenu(seccion, subSeccionRecursos);
+            actualizarHero(seccion, subSeccionRecursos);
             actualizarBreadcrumb(seccion, null);
             categoryPanel.hidden = !(seccion === "fichas" || seccion === "fotos");
 
             if (seccion === "inicio") {
                 mostrarInicio();
+                return;
+            }
+
+            if (seccion === "recursos") {
+                mostrarRecursos(subSeccionRecursos, productoSlug);
                 return;
             }
 
@@ -5853,6 +6618,9 @@
         }
 
         function aplicarBienvenida() {
+            if (typeof actualizarAvatarUsuario === "function") {
+                actualizarAvatarUsuario();
+            }
             if (seccionActual === "inicio") {
                 actualizarHero("inicio");
                 // Re-renderizar el Inicio para cargar los favoritos del usuario recién logueado
@@ -5887,8 +6655,8 @@
                 id: "menu",
                 target: ".site-menu",
                 seccion: null,
-                titulo: "Las 4 secciones principales",
-                mensaje: "Estas son las 4 secciones: Inicio, Fichas técnicas, Fotos y Adicionales."
+                titulo: "Las secciones principales",
+                mensaje: "Estas son las secciones del catálogo: Inicio, Fichas técnicas, Fotos, Adicionales y Recursos."
             },
             {
                 id: "buscador",
@@ -5926,6 +6694,13 @@
                 titulo: "Tu historial",
                 mensaje: "Acá queda guardado lo último que estuviste viendo, así volvés fácil.",
                 condicion: () => leerRecientes().length > 0
+            },
+            {
+                id: "recursos",
+                target: "#recursosMenuItem",
+                seccion: "inicio",
+                titulo: "Recursos",
+                mensaje: "Dentro de Recursos vas a encontrar dos cosas: documentos (manuales y archivos de ayuda al área comercial) y respuesta a las preguntas frecuentes."
             },
             {
                 id: "cierre",
@@ -6368,13 +7143,15 @@
             if (tipo === "ficha") return "Ficha técnica";
             if (tipo === "galeria") return "Galería de fotos";
             if (tipo === "adicional") return "Adicional";
+            if (tipo === "documento") return "Documento";
+            if (tipo === "faq") return "Pregunta frecuente";
             return tipo;
         }
 
         function htmlFavoritoCard(it) {
             const cat = it.categoriaNombre || "";
             const codigo = it.codigo && !it.codigo.startsWith("SIN") ? `${it.codigo} · ` : "";
-            const slug = it.tipo === "adicional" ? it.slug : it.productoSlug;
+            const slug = it.productoSlug || it.slug || "";
             const catId = it.categoriaId || "";
             const meta = it.tipo === "adicional" ? `${codigo}${cat}` : cat;
             return `
@@ -6873,6 +7650,317 @@
                 </button>
             `;
             }).join("");
+        }
+
+        // ===== Recursos: Documentos y Preguntas frecuentes =====
+        const DOCUMENTOS_RECURSOS = [
+            { titulo: "Documento 1", categoria: "Categoría 1", url: "#" },
+            { titulo: "Documento 2", categoria: "Categoría 2", url: "#" },
+            { titulo: "Documento 3", categoria: "Categoría 1", url: "#" },
+            { titulo: "Documento 4", categoria: "Categoría 3", url: "#" },
+            { titulo: "Documento 5", categoria: "Categoría 2", url: "#" },
+            { titulo: "Documento 6", categoria: "Categoría 3", url: "#" },
+            { titulo: "Documento 7", categoria: "Categoría 1", url: "#" },
+            { titulo: "Documento 8", categoria: "Categoría 4", url: "#" }
+        ];
+
+        const FAQ_CATEGORIAS = ["Categoría 1", "Categoría 2", "Categoría 3", "Categoría 4"];
+
+        const PREGUNTAS_FRECUENTES = [
+            { pregunta: "Pregunta 1", respuesta: "<p>Respuesta 1</p>", categorias: ["Categoría 1"] },
+            { pregunta: "Pregunta 2", respuesta: "<p>Respuesta 2</p>", categorias: ["Categoría 2", "Categoría 3"] },
+            { pregunta: "Pregunta 3", respuesta: "<p>Respuesta 3</p>", categorias: ["Categoría 1"] },
+            { pregunta: "Pregunta 4", respuesta: "<p>Respuesta 4</p>", categorias: ["Categoría 1", "Categoría 4"] },
+            { pregunta: "Pregunta 5", respuesta: "<p>Respuesta 5</p>", categorias: ["Categoría 2"] },
+            { pregunta: "Pregunta 6", respuesta: "<p>Respuesta 6</p>", categorias: ["Categoría 1", "Categoría 3"] },
+            { pregunta: "Pregunta 7", respuesta: "<p>Respuesta 7</p>", categorias: ["Categoría 2", "Categoría 4"] },
+            { pregunta: "Pregunta 8", respuesta: "<p>Respuesta 8</p>", categorias: ["Categoría 3"] }
+        ];
+
+        const ICONO_DOC_FLECHA = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+        const ICONO_FAQ_CHEVRON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+        let faqCategoriasSeleccionadas = new Set();
+
+        function mostrarRecursos(subSeccion, slugDestacado) {
+            const sub = subSeccion === "preguntas" ? "preguntas" : "documentos";
+            if (sub === "documentos") {
+                catalogView.innerHTML = `
+                    <p class="recursos-intro">Hacé click sobre cualquier tarjeta para abrir el PDF en una pestaña nueva.</p>
+                    <div class="docs-grid" id="docsGrid"></div>
+                `;
+                renderDocumentosRecursos();
+            } else {
+                catalogView.innerHTML = `
+                    <p class="recursos-intro">Filtrá por una o varias categorías. Hacé click en una pregunta para ver la respuesta.</p>
+                    <div class="faq-chips" id="faqChips"></div>
+                    <div class="faq-list" id="faqList"></div>
+                `;
+                renderFaqChips();
+                renderFaqList();
+                if (slugDestacado) {
+                    requestAnimationFrame(() => {
+                        const item = document.querySelector(`.faq-item[data-faq-slug="${slugDestacado}"]`);
+                        if (!item) return;
+                        const btn = item.querySelector(".faq-pregunta");
+                        const resp = item.querySelector(".faq-respuesta");
+                        item.classList.add("open");
+                        if (btn) btn.setAttribute("aria-expanded", "true");
+                        if (resp) resp.style.maxHeight = resp.scrollHeight + "px";
+                        setTimeout(() => {
+                            item.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }, 80);
+                    });
+                }
+            }
+            const hash = sub === "preguntas" ? "#recursos/preguntas" : "#recursos/documentos";
+            history.replaceState(null, "", hash);
+        }
+
+        function renderDocumentosRecursos() {
+            const grid = document.getElementById("docsGrid");
+            if (!grid) return;
+            grid.innerHTML = DOCUMENTOS_RECURSOS.map((d) => {
+                const slug = crearSlug(d.titulo);
+                const fav = {
+                    clave: `documento:${slug}`,
+                    tipo: "documento",
+                    slug,
+                    nombre: d.titulo,
+                    titulo: d.titulo,
+                    categoriaNombre: d.categoria,
+                    url: d.url
+                };
+                return `
+                <a class="doc-card" href="${d.url}" target="_blank" rel="noopener">
+                    <div class="doc-categoria-franja">${d.categoria}</div>
+                    ${botonFavoritoHtml(fav)}
+                    <div class="doc-body">
+                        <h3 class="doc-titulo">${d.titulo}</h3>
+                    </div>
+                    <div class="doc-footer">
+                        <span>Hacé click para ver</span>
+                        ${ICONO_DOC_FLECHA}
+                    </div>
+                </a>
+            `;
+            }).join("");
+        }
+
+        function renderFaqChips() {
+            const cont = document.getElementById("faqChips");
+            if (!cont) return;
+            const todasActiva = faqCategoriasSeleccionadas.size === 0;
+            cont.innerHTML = `
+                <button class="faq-chip faq-chip--todas ${todasActiva ? "active" : ""}" type="button" data-cat="__todas">Todas</button>
+                ${FAQ_CATEGORIAS.map((c) =>
+                    `<button class="faq-chip ${faqCategoriasSeleccionadas.has(c) ? "active" : ""}" type="button" data-cat="${c}">${c}</button>`
+                ).join("")}
+            `;
+            cont.querySelectorAll(".faq-chip").forEach((b) => {
+                b.addEventListener("click", (evento) => {
+                    const cat = b.dataset.cat;
+                    if (cat === "__todas") {
+                        faqCategoriasSeleccionadas.clear();
+                    } else {
+                        if (faqCategoriasSeleccionadas.has(cat)) faqCategoriasSeleccionadas.delete(cat);
+                        else faqCategoriasSeleccionadas.add(cat);
+                    }
+                    crearRippleEnChip(b, evento);
+                    renderFaqChips();
+                    renderFaqList();
+                });
+            });
+        }
+
+        function renderFaqList() {
+            const lista = document.getElementById("faqList");
+            if (!lista) return;
+            const items = PREGUNTAS_FRECUENTES.filter((p) => {
+                if (faqCategoriasSeleccionadas.size === 0) return true;
+                return p.categorias.some((c) => faqCategoriasSeleccionadas.has(c));
+            });
+            if (items.length === 0) {
+                lista.innerHTML = `<div class="faq-empty"><strong>No hay preguntas</strong>Probá con otra categoría o sacá los filtros.</div>`;
+                return;
+            }
+            lista.innerHTML = items.map((p, idx) => {
+                const slug = crearSlug(p.pregunta);
+                const fav = {
+                    clave: `faq:${slug}`,
+                    tipo: "faq",
+                    slug,
+                    nombre: p.pregunta,
+                    titulo: p.pregunta,
+                    categoriaNombre: p.categorias.join(" · ")
+                };
+                return `
+                <div class="faq-item" data-idx="${idx}" data-faq-slug="${slug}">
+                    <button class="faq-pregunta" type="button" aria-expanded="false">
+                        <div class="faq-pregunta-texto">
+                            <span>${p.pregunta}</span>
+                            <div class="faq-pregunta-tags">
+                                ${p.categorias.map((c) => `<span class="faq-pregunta-tag">${c}</span>`).join("")}
+                            </div>
+                        </div>
+                        ${botonFavoritoHtml(fav)}
+                        <span class="faq-chevron">${ICONO_FAQ_CHEVRON}</span>
+                    </button>
+                    <div class="faq-respuesta">
+                        <div class="faq-respuesta-inner">${p.respuesta}</div>
+                    </div>
+                </div>
+            `;
+            }).join("");
+            lista.querySelectorAll(".faq-item").forEach((item) => {
+                const btn = item.querySelector(".faq-pregunta");
+                const resp = item.querySelector(".faq-respuesta");
+                btn.addEventListener("click", (e) => {
+                    if (e.target.closest("[data-favorito-clave]")) return;
+                    const abierta = item.classList.toggle("open");
+                    btn.setAttribute("aria-expanded", abierta ? "true" : "false");
+                    if (abierta) {
+                        resp.style.maxHeight = resp.scrollHeight + "px";
+                    } else {
+                        resp.style.maxHeight = "0px";
+                    }
+                });
+            });
+        }
+
+        // ===== Avatar de usuario (popover) =====
+        function configurarAvatarUsuario() {
+            const wrap = document.getElementById("userAvatarWrap");
+            const btn = document.getElementById("userAvatarBtn");
+            const popover = document.getElementById("userAvatarPopover");
+            if (!wrap || !btn || !popover) return;
+
+            function posicionarPopover() {
+                const rect = btn.getBoundingClientRect();
+                const distanciaDerecha = Math.max(12, window.innerWidth - rect.right);
+                popover.style.top = (rect.bottom + 10) + "px";
+                popover.style.right = distanciaDerecha + "px";
+                popover.style.left = "auto";
+            }
+
+            function abrir() {
+                posicionarPopover();
+                popover.classList.add("open");
+                btn.setAttribute("aria-expanded", "true");
+            }
+            function cerrar() {
+                popover.classList.remove("open");
+                btn.setAttribute("aria-expanded", "false");
+            }
+
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (popover.classList.contains("open")) cerrar();
+                else abrir();
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!popover.contains(e.target) && !btn.contains(e.target)) cerrar();
+            });
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && popover.classList.contains("open")) cerrar();
+            });
+            window.addEventListener("resize", () => {
+                if (popover.classList.contains("open")) posicionarPopover();
+            });
+            window.addEventListener("scroll", () => {
+                if (popover.classList.contains("open")) cerrar();
+            }, { passive: true });
+        }
+
+        function actualizarAvatarUsuario() {
+            const inicialChica = document.getElementById("userAvatarInicial");
+            const inicialGrande = document.getElementById("userAvatarInicialBig");
+            const nombreEl = document.getElementById("userAvatarNombre");
+            if (!inicialChica) return;
+            const nombre = (usuarioActual?.nombre || "").trim();
+            const email = (usuarioActual?.email || "").trim();
+            const baseTexto = nombre || email || "?";
+            const inicial = baseTexto.charAt(0).toUpperCase() || "?";
+            inicialChica.textContent = inicial;
+            if (inicialGrande) inicialGrande.textContent = inicial;
+            if (nombreEl) {
+                if (nombre) {
+                    nombreEl.textContent = nombre;
+                    nombreEl.style.display = "";
+                } else {
+                    nombreEl.style.display = "none";
+                }
+            }
+        }
+
+        // ===== Submenú Recursos (apertura / cierre) =====
+        function configurarSubmenuRecursos() {
+            const item = document.getElementById("recursosMenuItem");
+            const btn = document.getElementById("recursosMenuButton");
+            if (!item || !btn) return;
+            const submenu = document.getElementById("recursosSubmenu");
+
+            function esDrawerMobile() {
+                return window.matchMedia("(max-width: 720px)").matches;
+            }
+
+            function posicionarSubmenu() {
+                if (esDrawerMobile()) {
+                    // En mobile el submenú vuelve al flujo inline del drawer
+                    submenu.style.position = "";
+                    submenu.style.top = "";
+                    submenu.style.left = "";
+                    return;
+                }
+                submenu.style.position = "fixed";
+                const rect = btn.getBoundingClientRect();
+                submenu.style.top = (rect.bottom + 8) + "px";
+                submenu.style.left = rect.left + "px";
+            }
+
+            function abrir() {
+                posicionarSubmenu();
+                item.classList.add("open");
+                btn.setAttribute("aria-expanded", "true");
+            }
+            function cerrar() {
+                item.classList.remove("open");
+                btn.setAttribute("aria-expanded", "false");
+            }
+
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (item.classList.contains("open")) cerrar();
+                else abrir();
+            });
+
+            document.querySelectorAll(".recursos-submenu-item").forEach((sub) => {
+                sub.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const recurso = sub.dataset.recurso;
+                    cerrar();
+                    toggleDrawer(false);
+                    mostrarSeccion("recursos", recurso);
+                    window.scrollTo({ top: 0, behavior: "auto" });
+                });
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!item.contains(e.target) && !submenu.contains(e.target)) cerrar();
+            });
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && item.classList.contains("open")) cerrar();
+            });
+            window.addEventListener("resize", () => {
+                if (item.classList.contains("open")) posicionarSubmenu();
+            });
+            window.addEventListener("scroll", () => {
+                if (item.classList.contains("open")) cerrar();
+            }, { passive: true });
         }
 
         // Ripple feedback al hacer click en un chip
@@ -7838,9 +8926,9 @@
         const scrollBarSearchToggle = document.querySelector("#scrollBarSearchToggle");
         const searchBar = document.querySelector("#searchBar");
         const topNav = document.querySelector(".top-nav");
-        const userBar = document.querySelector(".user-bar");
-        if (topNav && userBar && searchBar && searchBar.parentElement !== topNav) {
-            topNav.insertBefore(searchBar, userBar);
+        const userAvatarWrapEl = document.querySelector("#userAvatarWrap");
+        if (topNav && userAvatarWrapEl && searchBar && searchBar.parentElement !== topNav) {
+            topNav.insertBefore(searchBar, userAvatarWrapEl);
         }
 
         function normalizar(texto) {
@@ -7898,6 +8986,36 @@
                 descripcion: adicional.descripcion,
                 tieneOpciones: false,
                 searchHaystack: normalizar(`${adicional.nombre} ${adicional.descripcion} ${adicional.ubicacion} ${adicional.categoriaNombre} ${adicional.codigo} adicionales`)
+            });
+        });
+
+        DOCUMENTOS_RECURSOS.forEach((doc) => {
+            itemsBusqueda.push({
+                tipo: "recurso-documento",
+                seccion: "recursos",
+                seccionLabel: "Documentos",
+                categoriaId: "documentos",
+                categoriaNombre: doc.categoria,
+                productoNombre: doc.titulo,
+                productoSlug: "",
+                descripcion: "",
+                tieneOpciones: false,
+                searchHaystack: normalizar(`${doc.titulo} ${doc.categoria} documento documentos recursos pdf`)
+            });
+        });
+
+        PREGUNTAS_FRECUENTES.forEach((p) => {
+            itemsBusqueda.push({
+                tipo: "recurso-faq",
+                seccion: "recursos",
+                seccionLabel: "Preguntas frecuentes",
+                categoriaId: "preguntas",
+                categoriaNombre: p.categorias.join(", "),
+                productoNombre: p.pregunta,
+                productoSlug: "",
+                descripcion: p.respuesta.replace(/<[^>]+>/g, ""),
+                tieneOpciones: false,
+                searchHaystack: normalizar(`${p.pregunta} ${p.respuesta.replace(/<[^>]+>/g, "")} ${p.categorias.join(" ")} preguntas frecuentes faq recursos`)
             });
         });
 
@@ -8160,7 +9278,15 @@
             const tieneOpciones = item.dataset.searchTieneopciones === "true";
 
             if (tipo === "seccion") {
-                mostrarSeccion(seccion);
+                if (seccion === "recursos") {
+                    mostrarSeccion("recursos", "documentos");
+                } else {
+                    mostrarSeccion(seccion);
+                }
+            } else if (tipo === "recurso-documento") {
+                mostrarSeccion("recursos", "documentos");
+            } else if (tipo === "recurso-faq") {
+                mostrarSeccion("recursos", "preguntas");
             } else if (tipo === "adicional") {
                 mostrarSeccion("adicionales", categoriaId);
                 requestAnimationFrame(() => abrirAdicionalDetalle(productoSlug));
@@ -8660,6 +9786,17 @@
                 } else if (tipo === "galeria") {
                     mostrarSeccion("fotos", favCardItem.dataset.favCat, favCardItem.dataset.favSlug);
                     window.scrollTo({ top: 0, behavior: "smooth" });
+                } else if (tipo === "documento") {
+                    const fav = leerFavoritos().find((f) => f.clave === `documento:${favCardItem.dataset.favSlug}`);
+                    if (fav && fav.url && fav.url !== "#") {
+                        window.open(fav.url, "_blank", "noopener");
+                    } else {
+                        mostrarSeccion("recursos", "documentos");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                } else if (tipo === "faq") {
+                    mostrarSeccion("recursos", "preguntas", favCardItem.dataset.favSlug);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                 }
                 return;
             }
@@ -8813,7 +9950,16 @@
 
         function inicializarFooter() {
             const fechaSpan = document.getElementById("footerUltimaActualizacion");
-            if (fechaSpan) fechaSpan.textContent = ULTIMA_ACTUALIZACION_SISTEMA;
+            if (fechaSpan) {
+                if (ULTIMA_ACTUALIZACION_SISTEMA) {
+                    fechaSpan.textContent = ULTIMA_ACTUALIZACION_SISTEMA;
+                } else {
+                    const cont = fechaSpan.closest(".site-footer-version");
+                    const sep = cont?.previousElementSibling;
+                    if (cont) cont.hidden = true;
+                    if (sep && sep.classList.contains("site-footer-sep")) sep.hidden = true;
+                }
+            }
             const reportarLink = document.getElementById("footerReportar");
             if (reportarLink) {
                 reportarLink.href = `https://wa.me/${WHATSAPP_REPORTE_NUMERO}?text=${encodeURIComponent(WHATSAPP_REPORTE_MENSAJE)}`;
@@ -8821,7 +9967,11 @@
             document.querySelectorAll("[data-footer-nav]").forEach((link) => {
                 link.addEventListener("click", () => {
                     const seccion = link.dataset.footerNav;
-                    if (seccion === "fichas" || seccion === "fotos") {
+                    if (seccion === "recursos-documentos") {
+                        mostrarSeccion("recursos", "documentos");
+                    } else if (seccion === "recursos-preguntas") {
+                        mostrarSeccion("recursos", "preguntas");
+                    } else if (seccion === "fichas" || seccion === "fotos") {
                         mostrarSeccion(seccion, "acoplados");
                     } else {
                         mostrarSeccion(seccion);
@@ -8895,6 +10045,8 @@
             inicializarFooter();
             inicializarTiltCards();
             inicializarTourTrigger();
+            configurarSubmenuRecursos();
+            configurarAvatarUsuario();
             crearBotonesCategoria();
             saltarTransicionSeccion = true;
             try {
@@ -8914,6 +10066,12 @@
 
             if (categorias.some((categoria) => categoria.id === partes[0])) {
                 mostrarSeccion("fichas", partes[0], partes[1] || "");
+                return;
+            }
+
+            if (partes[0] === "recursos") {
+                const sub = partes[1] === "preguntas" ? "preguntas" : "documentos";
+                mostrarSeccion("recursos", sub);
                 return;
             }
 
