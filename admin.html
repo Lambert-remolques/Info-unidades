@@ -2347,7 +2347,7 @@
                             </label>
                             <label class="admin-field admin-field--inline">
                                 <span>Buscar</span>
-                                <input type="search" class="admin-select" id="actividadFiltroBuscar" placeholder="Nombre o palabra…" autocomplete="off">
+                                <input type="search" class="admin-select" id="actividadFiltroBuscar" placeholder="Buscar..." autocomplete="off">
                             </label>
                         </div>
 
@@ -5253,6 +5253,7 @@
             const fEntidad = document.getElementById("actividadFiltroEntidad")?.value || "";
             const fTexto = (document.getElementById("actividadFiltroBuscar")?.value || "").trim().toLowerCase();
 
+            const hayFiltros = !!(fUsuario || fAccion || fEntidad || fTexto);
             let lista = [...actividadCache];
             if (fUsuario) lista = lista.filter((a) => a.email === fUsuario);
             if (fAccion) lista = lista.filter((a) => a.accionTipo === fAccion);
@@ -5260,14 +5261,18 @@
             if (fTexto) lista = lista.filter((a) => (`${a.detalle} ${a.entidadNombre} ${a.contexto} ${a.email}`).toLowerCase().includes(fTexto));
 
             if (lista.length === 0) {
-                cont.innerHTML = `<p class="actividad-vacia">Todavía no hay actividad registrada${actividadCache.length > 0 ? " que coincida con el filtro" : ""}.</p>`;
+                cont.innerHTML = hayFiltros
+                    ? `<p class="actividad-vacia">No hay actividad que coincida con el filtro.</p>`
+                    : `<p class="actividad-vacia">Todavía no hay actividad registrada.</p>`;
             } else {
                 cont.innerHTML = lista.map((a) => {
                     const tipo = a.accionTipo || "editar";
                     const icono = ACTIVIDAD_ICONOS[tipo] || ACTIVIDAD_ICONOS.editar;
                     const fechaTxt = formatearFechaActividad(a.fechaHora);
                     const usuarioTxt = a.nombre || a.email || "Usuario";
-                    const detalle = (a.detalle || `${a.accion} en ${a.entidadNombre || ""}`).replace(/</g, "&lt;");
+                    const detalle = (a.detalle || `${a.accion} en ${a.entidadNombre || ""}`)
+                        .replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                        .replace(/&lt;strong&gt;/g, "<strong>").replace(/&lt;\/strong&gt;/g, "</strong>");
                     const hayCambios = Array.isArray(a.cambios) && a.cambios.length > 0;
                     return `
                         <div class="actividad-item" data-act-id="${a.id}">
@@ -5286,10 +5291,19 @@
                 });
             }
 
-            if (btnMas) btnMas.hidden = !actividadHayMas;
+            // "Cargar más" solo aplica cuando NO hay filtros, porque los filtros
+            // son client-side y solo afectan a lo ya cargado.
+            if (btnMas) btnMas.hidden = !actividadHayMas || hayFiltros;
             if (info) {
-                if (actividadHayMas) info.textContent = `Mostrando ${lista.length} de ${actividadCache.length}+ entradas`;
-                else info.textContent = `${actividadCache.length} entrada${actividadCache.length === 1 ? "" : "s"} totales`;
+                if (lista.length === 0) {
+                    info.textContent = "";
+                } else if (hayFiltros) {
+                    info.textContent = `${lista.length} entrada${lista.length === 1 ? "" : "s"} con los filtros aplicados`;
+                } else if (actividadHayMas) {
+                    info.textContent = `Mostrando ${lista.length} de ${actividadCache.length}+ entradas`;
+                } else {
+                    info.textContent = `${actividadCache.length} entrada${actividadCache.length === 1 ? "" : "s"} totales`;
+                }
             }
         }
 
