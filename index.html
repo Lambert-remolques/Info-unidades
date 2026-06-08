@@ -8247,9 +8247,33 @@
             `;
             verificarFichasVisibles(catalogView);
             verificarFotosVisibles(catalogView);
+            igualarAlturaTarjetas(catalogView);
 
             history.replaceState(null, "", `#${seccion}/${categoria.id}`);
         }
+
+        // Iguala la altura de todas las tarjetas dentro de cada .products-grid
+        // a la altura de la mas alta, para que ninguna fila quede mas baja que
+        // otra cuando las descripciones tienen largos distintos.
+        function igualarAlturaTarjetas(scope) {
+            const raiz = scope || document;
+            raiz.querySelectorAll(".products-grid").forEach((grid) => {
+                const cards = grid.querySelectorAll(".product-card");
+                if (cards.length < 2) return;
+                cards.forEach((c) => { c.style.minHeight = ""; });
+                requestAnimationFrame(() => {
+                    let maxH = 0;
+                    cards.forEach((c) => { if (c.offsetHeight > maxH) maxH = c.offsetHeight; });
+                    if (maxH > 0) cards.forEach((c) => { c.style.minHeight = `${maxH}px`; });
+                });
+            });
+        }
+
+        let igualarAlturaTimer = null;
+        window.addEventListener("resize", () => {
+            if (igualarAlturaTimer) clearTimeout(igualarAlturaTimer);
+            igualarAlturaTimer = setTimeout(() => igualarAlturaTarjetas(), 150);
+        });
 
         const COVER_TX = "c_fit,w_640,h_440,q_auto,f_auto";
         const ICONO_CAMARA_OFF = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path><circle cx="12" cy="13" r="3.6"></circle><path d="m3 3 18 18"></path></svg>`;
