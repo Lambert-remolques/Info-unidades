@@ -926,6 +926,167 @@
             gap: 14px;
             margin-bottom: 14px;
         }
+        .actividad-filtros {
+            grid-template-columns: repeat(4, minmax(160px, 1fr));
+        }
+        @media (max-width: 900px) {
+            .actividad-filtros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 540px) {
+            .actividad-filtros { grid-template-columns: 1fr; }
+        }
+        .actividad-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .actividad-item {
+            display: grid;
+            grid-template-columns: 38px 1fr auto;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #fafafa;
+            border: 1px solid var(--gris);
+            border-radius: 8px;
+        }
+        .actividad-item-icono {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--pend-accent-bg, #ebfaf0);
+            color: var(--pend-accent, #159947);
+            flex-shrink: 0;
+        }
+        .actividad-item-icono[data-accion-tipo="eliminar"] {
+            background: rgba(218, 37, 29, 0.08);
+            color: #b81e16;
+        }
+        .actividad-item-icono[data-accion-tipo="editar"] {
+            background: rgba(245, 158, 11, 0.12);
+            color: #b45309;
+        }
+        .actividad-item-info {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .actividad-item-detalle {
+            font-size: 0.92rem;
+            color: var(--negro);
+            line-height: 1.4;
+        }
+        .actividad-item-detalle strong {
+            font-weight: 700;
+        }
+        .actividad-item-meta {
+            font-size: 0.78rem;
+            color: var(--gris-texto);
+        }
+        .actividad-item-acciones {
+            display: flex;
+            align-items: center;
+        }
+        .actividad-item-ver {
+            background: transparent;
+            border: 1px solid var(--gris);
+            color: var(--negro);
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 160ms ease;
+            font-family: inherit;
+        }
+        .actividad-item-ver:hover {
+            background: #efefef;
+        }
+        .actividad-paginacion {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .actividad-paginacion-info {
+            font-size: 0.82rem;
+            color: var(--gris-texto);
+        }
+        .actividad-vacia {
+            margin: 18px 4px;
+            color: var(--gris-texto);
+            font-size: 0.88rem;
+        }
+
+        /* Detalle del cambio en modal */
+        .detalle-actividad-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+            border-bottom: 1px dashed var(--gris);
+        }
+        .detalle-actividad-meta-label {
+            font-size: 0.76rem;
+            color: var(--gris-texto);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .detalle-cambios-titulo {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin: 12px 0 8px;
+            color: var(--negro);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .detalle-cambio-campo {
+            background: #fafafa;
+            border: 1px solid var(--gris);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+        .detalle-cambio-nombre {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--negro);
+            text-transform: capitalize;
+            margin-bottom: 6px;
+        }
+        .detalle-cambio-valor {
+            font-size: 0.86rem;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .detalle-cambio-antes {
+            color: #b81e16;
+            background: rgba(218, 37, 29, 0.06);
+            padding: 6px 8px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+        .detalle-cambio-antes::before { content: "Antes: "; font-weight: 700; }
+        .detalle-cambio-despues {
+            color: #15803d;
+            background: rgba(21, 153, 71, 0.08);
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+        .detalle-cambio-despues::before { content: "Después: "; font-weight: 700; }
+        .modal-detalle-actividad-vacio {
+            font-style: italic;
+            color: var(--gris-texto);
+            font-size: 0.88rem;
+        }
         .unidad-row {
             gap: 14px;
             align-items: flex-start;
@@ -1727,6 +1888,12 @@
                         </svg>
                         Métricas
                     </button>
+                    <button class="sidebar-item" type="button" data-section="actividad">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>
+                        </svg>
+                        Actividad
+                    </button>
                 </div>
             </div>
             <div class="sidebar-spacer"></div>
@@ -2142,7 +2309,68 @@
                     <div class="construccion-desc">Sub-etapa 4.6 — métricas y estadísticas del catálogo.</div>
                 </div>
             </section>
+
+            <section class="panel-section" data-section="actividad">
+                <h1 class="page-title">Actividad</h1>
+                <p class="page-subtitle">Bitácora de cambios hechos desde el panel admin. Cada entrada queda registrada con fecha, usuario y detalle.</p>
+
+                <div class="admin-cards">
+                    <div class="admin-card">
+                        <div class="adicionales-filtros actividad-filtros">
+                            <label class="admin-field admin-field--inline">
+                                <span>Usuario</span>
+                                <select class="admin-select" id="actividadFiltroUsuario">
+                                    <option value="">Todos los usuarios</option>
+                                </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Tipo de acción</span>
+                                <select class="admin-select" id="actividadFiltroAccion">
+                                    <option value="">Todas las acciones</option>
+                                    <option value="crear">Crear</option>
+                                    <option value="editar">Editar</option>
+                                    <option value="eliminar">Eliminar</option>
+                                    <option value="subir">Subir / Reemplazar</option>
+                                </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Entidad</span>
+                                <select class="admin-select" id="actividadFiltroEntidad">
+                                    <option value="">Todas</option>
+                                    <option value="unidad">Unidades</option>
+                                    <option value="ficha">Fichas técnicas</option>
+                                    <option value="foto_unidad">Fotos de unidades</option>
+                                    <option value="adicional">Adicionales</option>
+                                    <option value="foto_adicional">Fotos de adicionales</option>
+                                    <option value="documento">Documentos</option>
+                                </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Buscar</span>
+                                <input type="search" class="admin-select" id="actividadFiltroBuscar" placeholder="Nombre o palabra…" autocomplete="off">
+                            </label>
+                        </div>
+
+                        <div class="actividad-lista" id="actividadLista"></div>
+                        <div class="actividad-paginacion">
+                            <button class="btn-crear" type="button" id="btnActividadCargarMas" hidden>Cargar más</button>
+                            <span class="actividad-paginacion-info" id="actividadPaginacionInfo"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
+
+        <div class="modal-form" id="modalDetalleActividad" hidden>
+            <div class="modal-form-overlay" id="modalDetalleActividadOverlay"></div>
+            <div class="modal-form-box" role="dialog" aria-modal="true" aria-labelledby="modalDetalleActividadTitle">
+                <div class="modal-form-header">
+                    <h3 class="modal-form-title" id="modalDetalleActividadTitle">Detalle del cambio</h3>
+                    <button class="modal-form-close" type="button" id="modalDetalleActividadClose" aria-label="Cerrar">×</button>
+                </div>
+                <div class="modal-form-body" id="modalDetalleActividadBody"></div>
+            </div>
+        </div>
 
         <div class="modal-form" id="modalCrearAdicional" hidden>
             <div class="modal-form-overlay" id="modalCrearAdicionalOverlay"></div>
@@ -2242,7 +2470,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "unidades", "adicionales", "usuarios", "metricas"];
+        const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "unidades", "adicionales", "usuarios", "metricas", "actividad"];
         const CLOUDINARY_CLOUD = "lambert-remolques";
         const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
         const CLOUDINARY_PRESET = "panel_admin_lambert";
@@ -4619,6 +4847,9 @@
             if (nombre === "inicio" && typeof renderBloquePendientes === "function") {
                 renderBloquePendientes();
             }
+            if (nombre === "actividad" && typeof cargarActividad === "function") {
+                cargarActividad({ inicial: true });
+            }
             // Reset de scrolls al cambiar de sección
             window.scrollTo({ top: 0, left: 0, behavior: "auto" });
             const main = document.querySelector(".main") || document.querySelector("main") || document.querySelector(".panel-main");
@@ -4642,6 +4873,11 @@
                 if (filtroCat) filtroCat.value = "";
                 if (filtroTxt) filtroTxt.value = "";
                 if (typeof renderUnidadesAdminList === "function") renderUnidadesAdminList();
+            } else if (nombre === "actividad") {
+                ["actividadFiltroUsuario", "actividadFiltroAccion", "actividadFiltroEntidad", "actividadFiltroBuscar"].forEach((id) => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = "";
+                });
             } else if (nombre === "fotos") {
                 const selCat = document.getElementById("fotosUnidadCategoria");
                 const selProd = document.getElementById("fotosUnidadProducto");
@@ -4688,12 +4924,245 @@
             document.getElementById("sidebarBackdrop").classList.remove("open");
         }
 
+        // ===================== ACTIVIDAD (BITÁCORA) =====================
+        // Colección Firestore: actividad_log
+        // Estructura: { email, nombre, accion, accionTipo, entidadTipo,
+        //               entidadNombre, contexto, cambios: [{campo, antes, despues}],
+        //               detalle, fechaHora }
+        let actividadCache = [];           // todas las cargadas hasta ahora (ordenadas desc)
+        let actividadUltimoDoc = null;     // cursor para "Cargar más"
+        let actividadHayMas = true;
+        let actividadCargando = false;
+        const ACTIVIDAD_PAGE_SIZE = 50;
+        let emailActivo = "";
+        let nombreActivo = "";
+
+        // Etiquetas legibles por entidadTipo
+        const ACTIVIDAD_ENTIDAD_LABEL = {
+            unidad: "Unidad",
+            ficha: "Ficha técnica",
+            foto_unidad: "Foto de unidad",
+            foto_portada: "Portada de unidad",
+            adicional: "Adicional",
+            foto_adicional: "Foto de adicional",
+            documento: "Documento",
+            usuario: "Usuario"
+        };
+
+        // Iconos SVG por tipo de acción
+        const ACTIVIDAD_ICONOS = {
+            crear: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+            editar: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+            eliminar: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+            subir: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`
+        };
+
+        // Helper principal: escribe una entrada de log.
+        // Se llama en cada handler relevante. Es fire-and-forget: si falla,
+        // solo loguea en consola, nunca rompe la acción de la usuaria.
+        async function loggearActividad({ accion, accionTipo, entidadTipo, entidadNombre, contexto, cambios, detalle }) {
+            try {
+                if (!emailActivo) return;
+                await db.collection("actividad_log").add({
+                    email: emailActivo,
+                    nombre: nombreActivo || emailActivo.split("@")[0],
+                    accion: accion || "",
+                    accionTipo: accionTipo || "editar",
+                    entidadTipo: entidadTipo || "",
+                    entidadNombre: entidadNombre || "",
+                    contexto: contexto || "",
+                    cambios: Array.isArray(cambios) ? cambios : [],
+                    detalle: detalle || "",
+                    fechaHora: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                // Si la sección Actividad está visible, refrescamos.
+                const seccion = document.querySelector(".panel-section.active")?.dataset.section;
+                if (seccion === "actividad") cargarActividad({ inicial: true });
+            } catch (e) {
+                console.warn("No se pudo loggear actividad:", e);
+            }
+        }
+
+        async function cargarActividad({ inicial = false } = {}) {
+            if (actividadCargando) return;
+            actividadCargando = true;
+            const btnMas = document.getElementById("btnActividadCargarMas");
+            const info = document.getElementById("actividadPaginacionInfo");
+            if (btnMas) btnMas.disabled = true;
+            if (info) info.textContent = inicial ? "Cargando…" : "Cargando más…";
+
+            try {
+                let query = db.collection("actividad_log")
+                    .orderBy("fechaHora", "desc")
+                    .limit(ACTIVIDAD_PAGE_SIZE);
+                if (!inicial && actividadUltimoDoc) {
+                    query = query.startAfter(actividadUltimoDoc);
+                }
+                const snap = await query.get();
+                if (inicial) {
+                    actividadCache = [];
+                    actividadUltimoDoc = null;
+                    actividadHayMas = true;
+                }
+                snap.docs.forEach((d) => {
+                    actividadCache.push({ id: d.id, ...d.data() });
+                });
+                if (snap.docs.length > 0) {
+                    actividadUltimoDoc = snap.docs[snap.docs.length - 1];
+                }
+                if (snap.docs.length < ACTIVIDAD_PAGE_SIZE) {
+                    actividadHayMas = false;
+                }
+                poblarFiltroUsuariosActividad();
+                renderActividad();
+            } catch (e) {
+                console.error("Error cargando actividad:", e);
+                const cont = document.getElementById("actividadLista");
+                if (cont) cont.innerHTML = `<p class="actividad-vacia">No se pudo cargar la actividad: ${e.message || e}</p>`;
+                if (info) info.textContent = "";
+            } finally {
+                actividadCargando = false;
+                if (btnMas) btnMas.disabled = false;
+            }
+        }
+
+        function poblarFiltroUsuariosActividad() {
+            const sel = document.getElementById("actividadFiltroUsuario");
+            if (!sel) return;
+            const prev = sel.value;
+            const emails = [...new Set(actividadCache.map((a) => a.email).filter(Boolean))]
+                .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+            sel.innerHTML = `<option value="">Todos los usuarios</option>`
+                + emails.map((em) => `<option value="${em}">${em}</option>`).join("");
+            if (prev && emails.includes(prev)) sel.value = prev;
+        }
+
+        function formatearFechaActividad(ts) {
+            if (!ts) return "Hace instantes";
+            const fecha = ts.toDate ? ts.toDate() : new Date(ts);
+            const ahora = new Date();
+            const diffMs = ahora - fecha;
+            const min = Math.floor(diffMs / 60000);
+            if (min < 1) return "Hace instantes";
+            if (min < 60) return `Hace ${min} min`;
+            const hs = Math.floor(min / 60);
+            if (hs < 24) return `Hace ${hs} h`;
+            const dias = Math.floor(hs / 24);
+            if (dias === 1) return "Ayer";
+            if (dias < 7) return `Hace ${dias} días`;
+            const opt = { day: "numeric", month: "short", year: fecha.getFullYear() !== ahora.getFullYear() ? "numeric" : undefined, hour: "2-digit", minute: "2-digit" };
+            return fecha.toLocaleString("es-AR", opt);
+        }
+
+        function renderActividad() {
+            const cont = document.getElementById("actividadLista");
+            const btnMas = document.getElementById("btnActividadCargarMas");
+            const info = document.getElementById("actividadPaginacionInfo");
+            if (!cont) return;
+
+            const fUsuario = document.getElementById("actividadFiltroUsuario")?.value || "";
+            const fAccion = document.getElementById("actividadFiltroAccion")?.value || "";
+            const fEntidad = document.getElementById("actividadFiltroEntidad")?.value || "";
+            const fTexto = (document.getElementById("actividadFiltroBuscar")?.value || "").trim().toLowerCase();
+
+            let lista = [...actividadCache];
+            if (fUsuario) lista = lista.filter((a) => a.email === fUsuario);
+            if (fAccion) lista = lista.filter((a) => a.accionTipo === fAccion);
+            if (fEntidad) lista = lista.filter((a) => a.entidadTipo === fEntidad);
+            if (fTexto) lista = lista.filter((a) => (`${a.detalle} ${a.entidadNombre} ${a.contexto} ${a.email}`).toLowerCase().includes(fTexto));
+
+            if (lista.length === 0) {
+                cont.innerHTML = `<p class="actividad-vacia">Todavía no hay actividad registrada${actividadCache.length > 0 ? " que coincida con el filtro" : ""}.</p>`;
+            } else {
+                cont.innerHTML = lista.map((a) => {
+                    const tipo = a.accionTipo || "editar";
+                    const icono = ACTIVIDAD_ICONOS[tipo] || ACTIVIDAD_ICONOS.editar;
+                    const fechaTxt = formatearFechaActividad(a.fechaHora);
+                    const usuarioTxt = a.nombre || a.email || "Usuario";
+                    const detalle = (a.detalle || `${a.accion} en ${a.entidadNombre || ""}`).replace(/</g, "&lt;");
+                    const hayCambios = Array.isArray(a.cambios) && a.cambios.length > 0;
+                    return `
+                        <div class="actividad-item" data-act-id="${a.id}">
+                            <span class="actividad-item-icono" data-accion-tipo="${tipo}">${icono}</span>
+                            <div class="actividad-item-info">
+                                <span class="actividad-item-detalle">${detalle}</span>
+                                <span class="actividad-item-meta">${fechaTxt} · ${usuarioTxt}</span>
+                            </div>
+                            <div class="actividad-item-acciones">
+                                ${hayCambios || tipo === "editar" ? `<button class="actividad-item-ver" type="button" data-act-id="${a.id}">Ver detalle</button>` : ""}
+                            </div>
+                        </div>`;
+                }).join("");
+                cont.querySelectorAll(".actividad-item-ver").forEach((btn) => {
+                    btn.addEventListener("click", () => abrirDetalleActividad(btn.dataset.actId));
+                });
+            }
+
+            if (btnMas) btnMas.hidden = !actividadHayMas;
+            if (info) {
+                if (actividadHayMas) info.textContent = `Mostrando ${lista.length} de ${actividadCache.length}+ entradas`;
+                else info.textContent = `${actividadCache.length} entrada${actividadCache.length === 1 ? "" : "s"} totales`;
+            }
+        }
+
+        function abrirDetalleActividad(id) {
+            const a = actividadCache.find((x) => x.id === id);
+            if (!a) return;
+            const body = document.getElementById("modalDetalleActividadBody");
+            const fechaCompleta = a.fechaHora && a.fechaHora.toDate
+                ? a.fechaHora.toDate().toLocaleString("es-AR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                : "Sin fecha";
+            const entidadLabel = ACTIVIDAD_ENTIDAD_LABEL[a.entidadTipo] || a.entidadTipo || "—";
+            const cambiosHtml = (Array.isArray(a.cambios) && a.cambios.length > 0)
+                ? a.cambios.map((c) => `
+                    <div class="detalle-cambio-campo">
+                        <div class="detalle-cambio-nombre">${(c.campo || "campo").replace(/_/g, " ")}</div>
+                        ${c.antes !== undefined && c.antes !== "" ? `<div class="detalle-cambio-valor detalle-cambio-antes">${String(c.antes).replace(/</g, "&lt;")}</div>` : ""}
+                        ${c.despues !== undefined ? `<div class="detalle-cambio-valor detalle-cambio-despues">${String(c.despues).replace(/</g, "&lt;")}</div>` : ""}
+                    </div>`).join("")
+                : `<p class="modal-detalle-actividad-vacio">Esta acción no tiene cambios específicos registrados.</p>`;
+            body.innerHTML = `
+                <div class="detalle-actividad-meta">
+                    <span class="detalle-actividad-meta-label">Fecha</span>
+                    <span>${fechaCompleta}</span>
+                </div>
+                <div class="detalle-actividad-meta">
+                    <span class="detalle-actividad-meta-label">Usuario</span>
+                    <span>${(a.nombre || "").replace(/</g, "&lt;")} (${(a.email || "").replace(/</g, "&lt;")})</span>
+                </div>
+                <div class="detalle-actividad-meta">
+                    <span class="detalle-actividad-meta-label">Acción</span>
+                    <span>${(a.accion || "—").replace(/</g, "&lt;")}${a.entidadNombre ? ` — <strong>${a.entidadNombre.replace(/</g, "&lt;")}</strong>` : ""}${a.contexto ? ` <em>(${a.contexto.replace(/</g, "&lt;")})</em>` : ""}</span>
+                </div>
+                <div class="detalle-actividad-meta">
+                    <span class="detalle-actividad-meta-label">Tipo</span>
+                    <span>${entidadLabel}</span>
+                </div>
+                <h4 class="detalle-cambios-titulo">Cambios</h4>
+                ${cambiosHtml}
+            `;
+            const modal = document.getElementById("modalDetalleActividad");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            body.scrollTop = 0;
+            requestAnimationFrame(() => { body.scrollTop = 0; });
+        }
+
+        function cerrarDetalleActividad() {
+            const modal = document.getElementById("modalDetalleActividad");
+            if (!modal) return;
+            modal.hidden = true;
+            document.body.style.overflow = "";
+        }
+
         function inicializar(email) {
+            emailActivo = email;
             const sidebarEmail = document.getElementById("sidebarEmail");
             sidebarEmail.textContent = email;
             sidebarEmail.title = email;
             const usuario = obtenerUsuario(email);
             const nombreMostrado = usuario.nombre || email.split("@")[0];
+            nombreActivo = nombreMostrado;
             document.getElementById("welcomeName").textContent = nombreMostrado;
             const subtitle = document.getElementById("welcomeSubtitle");
             if (subtitle) {
@@ -4721,6 +5190,25 @@
             if (drawerOverlay) drawerOverlay.addEventListener("click", cerrarDrawerPendientes);
             document.addEventListener("keydown", (e) => {
                 if (e.key === "Escape") cerrarDrawerPendientes();
+            });
+
+            // Actividad: listeners
+            ["actividadFiltroUsuario", "actividadFiltroAccion", "actividadFiltroEntidad"].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener("change", renderActividad);
+            });
+            const filtroBuscarAct = document.getElementById("actividadFiltroBuscar");
+            if (filtroBuscarAct) filtroBuscarAct.addEventListener("input", renderActividad);
+            const btnCargarMasAct = document.getElementById("btnActividadCargarMas");
+            if (btnCargarMasAct) btnCargarMasAct.addEventListener("click", () => cargarActividad({ inicial: false }));
+            const detalleClose = document.getElementById("modalDetalleActividadClose");
+            if (detalleClose) detalleClose.addEventListener("click", cerrarDetalleActividad);
+            const detalleOverlay = document.getElementById("modalDetalleActividadOverlay");
+            if (detalleOverlay) detalleOverlay.addEventListener("click", cerrarDetalleActividad);
+            document.addEventListener("keydown", (e) => {
+                if (e.key !== "Escape") return;
+                const m = document.getElementById("modalDetalleActividad");
+                if (m && !m.hidden) cerrarDetalleActividad();
             });
 
             const form = document.getElementById("adminUploadForm");
