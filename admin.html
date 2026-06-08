@@ -976,6 +976,105 @@
             overflow-y: auto;
         }
 
+        .modal-fotos-section {
+            margin-top: 6px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--gris);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .modal-fotos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .modal-fotos-title {
+            font-size: 0.94rem;
+            font-weight: 600;
+            color: var(--negro);
+        }
+        .modal-fotos-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 1px solid var(--verde);
+            background: var(--blanco);
+            color: var(--verde);
+            border-radius: var(--radio);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease;
+        }
+        .modal-fotos-add:hover {
+            background: var(--verde);
+            color: var(--blanco);
+        }
+        .modal-fotos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+        }
+        .modal-fotos-grid:empty {
+            display: none;
+        }
+        .modal-foto-card {
+            position: relative;
+            aspect-ratio: 4 / 3;
+            border-radius: var(--radio);
+            overflow: hidden;
+            background: #f1f1f1;
+            border: 1px solid var(--gris);
+        }
+        .modal-foto-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: zoom-in;
+            display: block;
+        }
+        .modal-foto-card .foto-borrar {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-foto-card .foto-borrar:hover {
+            background: #c62828;
+        }
+        .modal-foto-card.modal-foto-card--pendiente::after {
+            content: "Pendiente";
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(245, 158, 11, 0.92);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .modal-fotos-hint {
+            font-size: 0.82rem;
+            color: var(--gris-texto, #666);
+            margin: 0;
+            font-style: italic;
+        }
+
         .admin-field textarea {
             padding: 10px 12px;
             border: 1px solid var(--gris);
@@ -1520,6 +1619,21 @@
                         <span>Ubicación</span>
                         <textarea id="formAdUbicacion" required rows="2" maxlength="250"></textarea>
                     </label>
+                    <div class="modal-fotos-section">
+                        <div class="modal-fotos-header">
+                            <span class="modal-fotos-title">Fotos del adicional</span>
+                            <label class="modal-fotos-add" for="formAdFotosInput">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Agregar foto
+                            </label>
+                            <input type="file" id="formAdFotosInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                        </div>
+                        <div class="modal-fotos-grid" id="formAdFotosGrid"></div>
+                        <p class="modal-fotos-hint" id="formAdFotosHint" hidden></p>
+                        <div class="admin-status" id="formAdFotosStatus" hidden></div>
+                    </div>
                     <button class="admin-submit" type="submit" id="btnCrearAdicionalSubmit">
                         <span class="admin-submit-label">Crear adicional</span>
                     </button>
@@ -2629,8 +2743,210 @@
             }
         }
 
+        // ===== Fotos dentro del modal de Crear/Editar adicional =====
+        // En modo Crear las fotos quedan "pendientes" (sólo en memoria) hasta
+        // que se guarda el adicional; recién ahí se suben a Cloudinary con el
+        // slug correcto. En modo Editar se suben y borran en el momento.
+        let fotosPendientes = [];
+
+        function setModalAdFotosStatus(state, message) {
+            const status = document.getElementById("formAdFotosStatus");
+            if (!status) return;
+            if (state === null) {
+                status.hidden = true;
+                status.className = "admin-status";
+                status.textContent = "";
+                return;
+            }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        function limpiarFotosPendientes() {
+            fotosPendientes.forEach((p) => { try { URL.revokeObjectURL(p.previewUrl); } catch {} });
+            fotosPendientes = [];
+        }
+
+        function renderModalAdFotos() {
+            const grid = document.getElementById("formAdFotosGrid");
+            const hint = document.getElementById("formAdFotosHint");
+            if (!grid || !hint) return;
+
+            if (editingAdicionalId) {
+                const adicional = adicionalesExtra.find((a) => a.id === editingAdicionalId);
+                if (!adicional) {
+                    grid.innerHTML = "";
+                    hint.hidden = false;
+                    hint.textContent = "No se pudo cargar el adicional.";
+                    return;
+                }
+                const adicionalSlug = crearSlug(adicional.nombre);
+                const clave = fotosClaveAdicional(adicional.categoriaId, adicionalSlug);
+                const fotos = fotosVisibles(clave);
+                if (fotos.length === 0) {
+                    grid.innerHTML = "";
+                    hint.hidden = false;
+                    hint.textContent = "Sin fotos cargadas todavía. Apretá “Agregar foto” para subir.";
+                } else {
+                    hint.hidden = true;
+                    grid.innerHTML = fotos.map((f) => `
+                        <div class="modal-foto-card" data-public-id="${f.publicId}" data-formato="${f.formato || "jpg"}" data-version="${f.version || ""}" data-numero="${f.numero}">
+                            <img src="${urlThumbFoto(f.publicId, f.formato, f.version)}" alt="Foto ${f.numero}" loading="lazy">
+                            <button class="foto-borrar" type="button" data-public-id="${f.publicId}" aria-label="Eliminar foto">×</button>
+                        </div>`).join("");
+                    grid.querySelectorAll(".foto-borrar").forEach((btn) => {
+                        btn.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            borrarFotoDesdeModalAdicional(btn.dataset.publicId);
+                        });
+                    });
+                    grid.querySelectorAll(".modal-foto-card img").forEach((img) => {
+                        img.addEventListener("click", () => {
+                            const card = img.closest(".modal-foto-card");
+                            abrirLightbox({
+                                publicId: card.dataset.publicId,
+                                formato: card.dataset.formato,
+                                version: card.dataset.version,
+                                numero: card.dataset.numero
+                            });
+                        });
+                    });
+                }
+                return;
+            }
+
+            // Modo Crear: fotos pendientes
+            if (fotosPendientes.length === 0) {
+                grid.innerHTML = "";
+                hint.hidden = false;
+                hint.textContent = "Las fotos se suben al guardar el adicional. Si cancelás, no se guardan.";
+                return;
+            }
+            hint.hidden = true;
+            grid.innerHTML = fotosPendientes.map((p) => `
+                <div class="modal-foto-card modal-foto-card--pendiente" data-pendiente-id="${p.id}">
+                    <img src="${p.previewUrl}" alt="${p.file.name}">
+                    <button class="foto-borrar" type="button" data-pendiente-id="${p.id}" aria-label="Quitar foto">×</button>
+                </div>`).join("");
+            grid.querySelectorAll(".foto-borrar").forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.pendienteId;
+                    const idx = fotosPendientes.findIndex((p) => p.id === id);
+                    if (idx >= 0) {
+                        try { URL.revokeObjectURL(fotosPendientes[idx].previewUrl); } catch {}
+                        fotosPendientes.splice(idx, 1);
+                        renderModalAdFotos();
+                    }
+                });
+            });
+        }
+
+        function onFormAdFotosInputChange(event) {
+            const files = Array.from(event.target.files || []);
+            event.target.value = "";
+            if (files.length === 0) return;
+            setModalAdFotosStatus(null);
+
+            if (editingAdicionalId) {
+                subirFotosModoEditar(files);
+            } else {
+                files.forEach((file) => {
+                    if (!file.type.startsWith("image/")) {
+                        setModalAdFotosStatus("error", `"${file.name}" no es una imagen.`);
+                        return;
+                    }
+                    const sizeMB = file.size / (1024 * 1024);
+                    if (sizeMB > MAX_FOTO_MB) {
+                        setModalAdFotosStatus("error", `"${file.name}" pesa ${sizeMB.toFixed(1)} MB (máx ${MAX_FOTO_MB} MB).`);
+                        return;
+                    }
+                    fotosPendientes.push({
+                        id: `pend_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                        file,
+                        previewUrl: URL.createObjectURL(file)
+                    });
+                });
+                renderModalAdFotos();
+            }
+        }
+
+        async function subirFotosModoEditar(files) {
+            const adicional = adicionalesExtra.find((a) => a.id === editingAdicionalId);
+            if (!adicional) return;
+            const categoriaId = adicional.categoriaId;
+            const adicionalSlug = crearSlug(adicional.nombre);
+
+            let subidas = 0, errores = 0;
+            for (const file of files) {
+                if (!file.type.startsWith("image/")) {
+                    setModalAdFotosStatus("error", `"${file.name}" no es una imagen.`); errores++; continue;
+                }
+                const sizeMB = file.size / (1024 * 1024);
+                if (sizeMB > MAX_FOTO_MB) {
+                    setModalAdFotosStatus("error", `"${file.name}" pesa ${sizeMB.toFixed(1)} MB (máx ${MAX_FOTO_MB} MB).`); errores++; continue;
+                }
+                setModalAdFotosStatus("info", `Subiendo ${file.name}…`);
+                try {
+                    await subirFotoAdicionalACloudinary(file, categoriaId, adicionalSlug);
+                    subidas++;
+                } catch (e) {
+                    console.error(e);
+                    setModalAdFotosStatus("error", `Falló "${file.name}": ${e.message || "error"}`);
+                    errores++;
+                }
+            }
+
+            if (subidas > 0) {
+                await cargarFotos();
+                renderModalAdFotos();
+                setModalAdFotosStatus("success", `${subidas} foto${subidas === 1 ? "" : "s"} subida${subidas === 1 ? "" : "s"}.${errores ? ` ${errores} con error.` : ""}`);
+            }
+        }
+
+        async function subirFotoAdicionalACloudinary(file, categoriaId, adicionalSlug) {
+            const numero = Date.now() + Math.floor(Math.random() * 1000);
+            const publicId = `adicionales/${categoriaId}/${adicionalSlug}/foto-${numero}`;
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", CLOUDINARY_PRESET);
+            formData.append("public_id", publicId);
+            formData.append("tags", "catalogo");
+            const resp = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: "POST", body: formData });
+            const data = await resp.json();
+            if (!resp.ok || !data.secure_url) {
+                throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+            }
+            return data;
+        }
+
+        async function borrarFotoDesdeModalAdicional(publicId) {
+            const ok = await mostrarConfirmacion({
+                titulo: "Eliminar foto",
+                mensaje: `¿Querés eliminar esta foto?<br><br>La foto va a desaparecer del catálogo. Si querés recuperar el espacio en Cloudinary, también tenés que borrarla desde su dashboard.`,
+                etiquetaConfirmar: "Eliminar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("fotos_borradas").add({
+                    publicId,
+                    borradoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                fotosBorradas.add(publicId);
+                actualizarMetricaFotos();
+                renderModalAdFotos();
+                renderFotosAdicionalGaleria();
+                setModalAdFotosStatus("success", "Foto eliminada.");
+            } catch (e) {
+                console.error(e);
+                setModalAdFotosStatus("error", "No se pudo eliminar: " + (e.message || "error"));
+            }
+        }
+
         function abrirCrearAdicionalModal() {
             editingAdicionalId = null;
+            limpiarFotosPendientes();
             document.getElementById("modalCrearAdicionalTitle").textContent = "Crear adicional nuevo";
             const submitLabelEl = document.getElementById("btnCrearAdicionalSubmit").querySelector(".admin-submit-label");
             submitLabelEl.textContent = "Crear adicional";
@@ -2653,6 +2969,8 @@
             modal.hidden = false;
             document.body.style.overflow = "hidden";
             setCrearAdicionalStatus(null);
+            setModalAdFotosStatus(null);
+            renderModalAdFotos();
             setTimeout(() => document.getElementById("formAdNombre")?.focus(), 30);
         }
 
@@ -2682,6 +3000,9 @@
             modal.hidden = false;
             document.body.style.overflow = "hidden";
             setCrearAdicionalStatus(null);
+            setModalAdFotosStatus(null);
+            limpiarFotosPendientes();
+            renderModalAdFotos();
             setTimeout(() => document.getElementById("formAdNombre")?.focus(), 30);
         }
 
@@ -2700,6 +3021,10 @@
             document.body.style.overflow = "";
             document.getElementById("formCrearAdicional")?.reset();
             setCrearAdicionalStatus(null);
+            setModalAdFotosStatus(null);
+            limpiarFotosPendientes();
+            const grid = document.getElementById("formAdFotosGrid");
+            if (grid) grid.innerHTML = "";
         }
 
         function setCrearAdicionalStatus(state, message) {
@@ -2802,14 +3127,33 @@
                 await cargarAdicionalesExtra();
                 poblarSelectsFotos();
                 renderAdicionalesAdminList();
-                setCrearAdicionalStatus("success", esEdicion ? `Cambios guardados.` : `"${nombre}" creado correctamente.`);
+
+                let mensajeOk = esEdicion ? "Cambios guardados." : `"${nombre}" creado correctamente.`;
+                if (!esEdicion && fotosPendientes.length > 0) {
+                    setCrearAdicionalStatus("info", `Subiendo ${fotosPendientes.length} foto${fotosPendientes.length === 1 ? "" : "s"}...`);
+                    const adicionalSlug = crearSlug(nombre);
+                    let subidas = 0, errores = 0;
+                    for (const p of fotosPendientes) {
+                        try {
+                            await subirFotoAdicionalACloudinary(p.file, categoriaId, adicionalSlug);
+                            subidas++;
+                        } catch (err) {
+                            console.error("Error subiendo foto pendiente:", err);
+                            errores++;
+                        }
+                    }
+                    if (subidas > 0) await cargarFotos();
+                    mensajeOk = `"${nombre}" creado. ${subidas} foto${subidas === 1 ? "" : "s"} subida${subidas === 1 ? "" : "s"}${errores ? `, ${errores} con error.` : "."}`;
+                }
+
+                setCrearAdicionalStatus("success", mensajeOk);
                 setTimeout(() => {
                     cerrarCrearAdicionalModal();
                     const filtroActual = document.getElementById("fotosAdicionalCategoria").value;
                     if (filtroActual === categoriaId || filtroActual === seleccionCat) {
                         onFotosAdicionalCategoriaChange();
                     }
-                }, 800);
+                }, 1000);
             } catch (e) {
                 console.error(e);
                 setCrearAdicionalStatus("error", "No se pudo guardar: " + (e.message || "error desconocido"));
@@ -3193,6 +3537,8 @@
             if (formAd) formAd.addEventListener("submit", crearAdicionalHandler);
             const selAdCat = document.getElementById("formAdCategoria");
             if (selAdCat) selAdCat.addEventListener("change", onFormAdCategoriaChange);
+            const inputAdFotos = document.getElementById("formAdFotosInput");
+            if (inputAdFotos) inputAdFotos.addEventListener("change", onFormAdFotosInputChange);
             document.addEventListener("keydown", (e) => {
                 if (e.key !== "Escape") return;
                 const m = document.getElementById("modalCrearAdicional");
