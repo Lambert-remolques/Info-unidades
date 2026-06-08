@@ -1854,48 +1854,67 @@
 
                 <div class="admin-cards">
                     <div class="admin-card">
-                        <h2 class="admin-card-title">Subir documento nuevo</h2>
-                        <form class="admin-form" id="adminUploadForm" autocomplete="off">
-                            <label class="admin-field">
-                                <span>Título</span>
-                                <input type="text" id="adminTitulo" required maxlength="120">
-                            </label>
-                            <label class="admin-field">
-                                <span>Categoría</span>
-                                <select class="admin-select" id="adminCategoria" required>
-                                    <option value="">Seleccionar categoría...</option>
-                                    <option value="__nueva__">+ Crear nueva categoría</option>
-                                </select>
-                            </label>
-                            <label class="admin-field" id="adminCategoriaNuevaWrap" hidden>
-                                <span>Nombre de la nueva categoría</span>
-                                <input type="text" id="adminCategoriaNueva" maxlength="60">
-                            </label>
-                            <label class="admin-field">
-                                <span>Archivo PDF (máx 10 MB)</span>
-                                <input type="file" id="adminArchivo" accept="application/pdf" required>
-                            </label>
-                            <button class="admin-submit" type="submit" id="adminSubmit">
-                                <span class="admin-submit-label">Subir documento</span>
-                            </button>
-                            <div class="admin-status" id="adminUploadStatus" hidden></div>
-                        </form>
-                    </div>
-
-                    <div class="admin-card">
                         <div class="admin-card-header">
-                            <h2 class="admin-card-title">Documentos existentes</h2>
-                            <label class="admin-filter">
-                                <span>Filtrar por categoría:</span>
-                                <select class="admin-select admin-select--compact" id="adminFiltroCategoria">
+                            <h2 class="admin-card-title">Documentos cargados</h2>
+                            <button class="btn-crear" type="button" id="btnCrearDocumentoDesdeLista">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Crear documento
+                            </button>
+                        </div>
+                        <div class="adicionales-filtros">
+                            <label class="admin-field admin-field--inline">
+                                <span>Filtrar por categoría</span>
+                                <select class="admin-select" id="adminFiltroCategoria">
                                     <option value="">Todas las categorías</option>
                                 </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Buscar</span>
+                                <input type="search" class="admin-select" id="adminFiltroBuscar" placeholder="Título del documento…" autocomplete="off">
                             </label>
                         </div>
                         <div class="admin-doc-list" id="adminDocList"></div>
                     </div>
                 </div>
             </section>
+
+            <div class="modal-form" id="modalCrearDocumento" hidden>
+                <div class="modal-form-overlay" id="modalCrearDocumentoOverlay"></div>
+                <div class="modal-form-box" role="dialog" aria-modal="true" aria-labelledby="modalCrearDocumentoTitle">
+                    <div class="modal-form-header">
+                        <h3 class="modal-form-title" id="modalCrearDocumentoTitle">Crear documento</h3>
+                        <button class="modal-form-close" type="button" id="modalCrearDocumentoClose" aria-label="Cerrar">×</button>
+                    </div>
+                    <form class="admin-form modal-form-body" id="formCrearDocumento" autocomplete="off">
+                        <label class="admin-field">
+                            <span>Título</span>
+                            <input type="text" id="formDocTitulo" required maxlength="120">
+                        </label>
+                        <label class="admin-field">
+                            <span>Categoría</span>
+                            <select class="admin-select" id="formDocCategoria" required>
+                                <option value="">Seleccionar categoría...</option>
+                                <option value="__nueva__">+ Crear nueva categoría</option>
+                            </select>
+                        </label>
+                        <label class="admin-field" id="formDocCategoriaNuevaWrap" hidden>
+                            <span>Nombre de la nueva categoría</span>
+                            <input type="text" id="formDocCategoriaNueva" maxlength="60">
+                        </label>
+                        <label class="admin-field">
+                            <span id="formDocArchivoLabel">Archivo PDF (máx 10 MB)</span>
+                            <input type="file" id="formDocArchivo" accept="application/pdf">
+                        </label>
+                        <p class="modal-fotos-hint" id="formDocArchivoHint" hidden></p>
+                        <button class="admin-submit" type="submit" id="btnCrearDocumentoSubmit">
+                            <span class="admin-submit-label">Crear documento</span>
+                        </button>
+                        <div class="admin-status" id="crearDocumentoStatus" hidden></div>
+                    </form>
+                </div>
+            </div>
 
             <section class="panel-section" data-section="fichas">
                 <h1 class="page-title">Fichas técnicas</h1>
@@ -2296,17 +2315,6 @@
         function actualizarSelectsDeCategoria() {
             const categorias = categoriasUnicas();
 
-            const selectForm = document.getElementById("adminCategoria");
-            if (selectForm) {
-                const valorActual = selectForm.value;
-                selectForm.innerHTML = `<option value="">Seleccionar categoría...</option>`
-                    + categorias.map((c) => `<option value="${c}">${c}</option>`).join("")
-                    + `<option value="__nueva__">+ Crear nueva categoría</option>`;
-                if (valorActual && (categorias.includes(valorActual) || valorActual === "__nueva__")) {
-                    selectForm.value = valorActual;
-                }
-            }
-
             const selectFiltro = document.getElementById("adminFiltroCategoria");
             if (selectFiltro) {
                 const filtroActual = selectFiltro.value;
@@ -2315,6 +2323,19 @@
                 if (filtroActual && categorias.includes(filtroActual)) {
                     selectFiltro.value = filtroActual;
                 }
+            }
+        }
+
+        function poblarSelectCategoriaDocumentoModal() {
+            const sel = document.getElementById("formDocCategoria");
+            if (!sel) return;
+            const valorActual = sel.value;
+            const categorias = categoriasUnicas();
+            sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                + categorias.map((c) => `<option value="${c}">${c}</option>`).join("")
+                + `<option value="__nueva__">+ Crear nueva categoría</option>`;
+            if (valorActual && (categorias.includes(valorActual) || valorActual === "__nueva__")) {
+                sel.value = valorActual;
             }
         }
 
@@ -2351,31 +2372,39 @@
                 cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar los documentos.</p>`;
                 return;
             }
-            const filtro = document.getElementById("adminFiltroCategoria")?.value || "";
-            const docsAMostrar = filtro
-                ? documentosAdmin.filter((d) => d.categoria === filtro)
-                : documentosAdmin;
+            const filtroCat = document.getElementById("adminFiltroCategoria")?.value || "";
+            const filtroTxt = (document.getElementById("adminFiltroBuscar")?.value || "").trim().toLowerCase();
 
-            if (docsAMostrar.length === 0) {
-                cont.innerHTML = filtro
-                    ? `<p class="admin-doc-empty">No hay documentos en la categoría "${filtro}".</p>`
+            let lista = [...documentosAdmin];
+            if (filtroCat) lista = lista.filter((d) => d.categoria === filtroCat);
+            if (filtroTxt) lista = lista.filter((d) => (d.titulo || "").toLowerCase().includes(filtroTxt));
+            lista.sort((a, b) => (a.titulo || "").localeCompare(b.titulo || "", "es", { sensitivity: "base" }));
+
+            if (lista.length === 0) {
+                cont.innerHTML = (filtroCat || filtroTxt)
+                    ? `<p class="admin-doc-empty">No hay documentos que coincidan con el filtro.</p>`
                     : `<p class="admin-doc-empty">Todavía no hay documentos cargados.</p>`;
                 return;
             }
-            cont.innerHTML = docsAMostrar.map((d) => {
-                const tituloEsc = d.titulo.replace(/"/g, "&quot;");
+            cont.innerHTML = lista.map((d) => {
+                const tituloEsc = (d.titulo || "").replace(/"/g, "&quot;");
+                const catEsc = (d.categoria || "").replace(/"/g, "&quot;");
                 return `
                 <div class="admin-doc-row">
                     <div class="admin-doc-info">
-                        <strong>${d.titulo}</strong>
-                        <span>${d.categoria}</span>
+                        <strong>${d.titulo || ""}</strong>
+                        <span>${d.categoria || ""}</span>
                     </div>
                     <div class="admin-doc-actions">
                         <a class="admin-doc-link" href="${d.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
-                        <button class="admin-doc-delete" type="button" data-id="${d.id}" data-titulo="${tituloEsc}" aria-label="Eliminar ${tituloEsc}">×</button>
+                        <button class="admin-doc-edit" type="button" data-id="${d.id}" aria-label="Editar ${tituloEsc}" title="Editar">✎</button>
+                        <button class="admin-doc-delete" type="button" data-id="${d.id}" data-titulo="${tituloEsc}" data-categoria="${catEsc}" aria-label="Eliminar ${tituloEsc}">×</button>
                     </div>
                 </div>`;
             }).join("");
+            cont.querySelectorAll(".admin-doc-edit").forEach((btn) => {
+                btn.addEventListener("click", () => abrirEditarDocumento(btn.dataset.id));
+            });
             cont.querySelectorAll(".admin-doc-delete").forEach((btn) => {
                 btn.addEventListener("click", () => borrarDocumento(btn.dataset.id, btn.dataset.titulo));
             });
@@ -2425,106 +2454,175 @@
             });
         }
 
-        function setAdminUploadStatus(state, message) {
-            const status = document.getElementById("adminUploadStatus");
+        // ===== Modal Crear/Editar Documento =====
+        let editingDocumentoId = null;
+
+        function setCrearDocumentoStatus(state, message) {
+            const status = document.getElementById("crearDocumentoStatus");
             if (!status) return;
-            if (state === null) {
-                status.hidden = true;
-                status.className = "admin-status";
-                status.textContent = "";
-                return;
-            }
+            if (state === null) { status.hidden = true; status.className = "admin-status"; status.textContent = ""; return; }
             status.hidden = false;
             status.className = `admin-status admin-status--${state}`;
             status.textContent = message;
         }
 
-        async function subirDocumentoHandler(event) {
+        function abrirCrearDocumentoModal() {
+            editingDocumentoId = null;
+            document.getElementById("modalCrearDocumentoTitle").textContent = "Crear documento";
+            document.getElementById("btnCrearDocumentoSubmit").querySelector(".admin-submit-label").textContent = "Crear documento";
+            document.getElementById("formCrearDocumento").reset();
+            poblarSelectCategoriaDocumentoModal();
+            document.getElementById("formDocCategoriaNuevaWrap").hidden = true;
+            document.getElementById("formDocCategoriaNueva").value = "";
+            document.getElementById("formDocArchivoLabel").textContent = "Archivo PDF (máx 10 MB)";
+            document.getElementById("formDocArchivo").required = true;
+            document.getElementById("formDocArchivoHint").hidden = true;
+            setCrearDocumentoStatus(null);
+            const modal = document.getElementById("modalCrearDocumento");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            setTimeout(() => document.getElementById("formDocTitulo")?.focus(), 30);
+        }
+
+        function abrirEditarDocumento(id) {
+            const doc = documentosAdmin.find((d) => d.id === id);
+            if (!doc) return;
+            editingDocumentoId = id;
+            document.getElementById("modalCrearDocumentoTitle").textContent = "Editar documento";
+            document.getElementById("btnCrearDocumentoSubmit").querySelector(".admin-submit-label").textContent = "Guardar cambios";
+            poblarSelectCategoriaDocumentoModal();
+            document.getElementById("formDocTitulo").value = doc.titulo || "";
+            document.getElementById("formDocCategoria").value = doc.categoria || "";
+            document.getElementById("formDocCategoriaNuevaWrap").hidden = true;
+            document.getElementById("formDocCategoriaNueva").value = "";
+            document.getElementById("formDocArchivoLabel").textContent = "Reemplazar archivo PDF (opcional)";
+            document.getElementById("formDocArchivo").value = "";
+            document.getElementById("formDocArchivo").required = false;
+            const hint = document.getElementById("formDocArchivoHint");
+            hint.hidden = false;
+            hint.textContent = "Si no elegís un archivo nuevo, queda el PDF actual.";
+            setCrearDocumentoStatus(null);
+            const modal = document.getElementById("modalCrearDocumento");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            setTimeout(() => document.getElementById("formDocTitulo")?.focus(), 30);
+        }
+
+        function cerrarCrearDocumentoModal() {
+            const modal = document.getElementById("modalCrearDocumento");
+            if (!modal) return;
+            modal.hidden = true;
+            document.body.style.overflow = "";
+            document.getElementById("formCrearDocumento")?.reset();
+            setCrearDocumentoStatus(null);
+        }
+
+        function onFormDocCategoriaChange() {
+            const sel = document.getElementById("formDocCategoria");
+            const wrap = document.getElementById("formDocCategoriaNuevaWrap");
+            const esNueva = sel.value === "__nueva__";
+            wrap.hidden = !esNueva;
+            if (esNueva) setTimeout(() => document.getElementById("formDocCategoriaNueva")?.focus(), 30);
+        }
+
+        async function subirPdfDocumentoACloudinary(file, titulo) {
+            const baseName = crearSlug(titulo);
+            const stamp = Date.now();
+            const uniqueName = `${baseName}-${stamp}.pdf`;
+            const renamedFile = new File([file], uniqueName, { type: file.type });
+            const formData = new FormData();
+            formData.append("file", renamedFile);
+            formData.append("upload_preset", CLOUDINARY_PRESET);
+            formData.append("folder", "documentos");
+            const resp = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
+            const data = await resp.json();
+            if (!resp.ok || !data.secure_url) {
+                throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+            }
+            return data.secure_url;
+        }
+
+        async function crearDocumentoHandler(event) {
             event.preventDefault();
-            const titulo = document.getElementById("adminTitulo").value.trim();
-            const categoriaSeleccion = document.getElementById("adminCategoria").value;
-            const categoriaNueva = document.getElementById("adminCategoriaNueva").value.trim();
-            const archivo = document.getElementById("adminArchivo").files[0];
+            const titulo = document.getElementById("formDocTitulo").value.trim();
+            const categoriaSeleccion = document.getElementById("formDocCategoria").value;
+            const categoriaNueva = document.getElementById("formDocCategoriaNueva").value.trim();
+            const archivo = document.getElementById("formDocArchivo").files[0];
 
             let categoria;
             if (categoriaSeleccion === "__nueva__") {
-                if (!categoriaNueva) {
-                    setAdminUploadStatus("error", "Escribí el nombre de la nueva categoría.");
-                    return;
-                }
+                if (!categoriaNueva) { setCrearDocumentoStatus("error", "Escribí el nombre de la nueva categoría."); return; }
                 categoria = categoriaNueva;
             } else if (categoriaSeleccion) {
                 categoria = categoriaSeleccion;
             } else {
-                setAdminUploadStatus("error", "Seleccioná una categoría.");
+                setCrearDocumentoStatus("error", "Seleccioná una categoría.");
                 return;
             }
 
-            if (!titulo || !archivo) {
-                setAdminUploadStatus("error", "Completá todos los campos.");
+            if (!titulo) { setCrearDocumentoStatus("error", "Escribí un título."); return; }
+
+            const esEdicion = !!editingDocumentoId;
+            const subirArchivo = !!archivo;
+
+            if (!esEdicion && !archivo) {
+                setCrearDocumentoStatus("error", "Elegí un archivo PDF.");
                 return;
             }
-            if (archivo.type !== "application/pdf") {
-                setAdminUploadStatus("error", "El archivo debe ser un PDF.");
-                return;
-            }
-            const sizeMB = archivo.size / (1024 * 1024);
-            if (sizeMB > MAX_PDF_MB) {
-                setAdminUploadStatus("error", `El PDF pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_PDF_MB} MB. Comprimilo en ilovepdf.com/comprimir_pdf y volvé a probar.`);
-                return;
+            if (archivo) {
+                if (archivo.type !== "application/pdf") { setCrearDocumentoStatus("error", "El archivo debe ser un PDF."); return; }
+                const sizeMB = archivo.size / (1024 * 1024);
+                if (sizeMB > MAX_PDF_MB) { setCrearDocumentoStatus("error", `El PDF pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_PDF_MB} MB.`); return; }
             }
 
             const tituloEsc = titulo.replace(/</g, "&lt;");
             const categoriaEsc = categoria.replace(/</g, "&lt;");
             const ok = await mostrarConfirmacion({
-                titulo: "Subir documento",
-                mensaje: `¿Confirmás la subida del documento <strong>"${tituloEsc}"</strong> en la categoría <strong>"${categoriaEsc}"</strong>?`,
-                etiquetaConfirmar: "Subir",
+                titulo: esEdicion ? "Guardar cambios" : "Crear documento",
+                mensaje: esEdicion
+                    ? `¿Guardar cambios del documento <strong>"${tituloEsc}"</strong> en la categoría <strong>"${categoriaEsc}"</strong>${subirArchivo ? " (con archivo nuevo)" : ""}?`
+                    : `¿Confirmás la subida del documento <strong>"${tituloEsc}"</strong> en la categoría <strong>"${categoriaEsc}"</strong>?`,
+                etiquetaConfirmar: esEdicion ? "Guardar" : "Crear",
                 variante: "confirmar"
             });
             if (!ok) return;
 
-            const submitBtn = document.getElementById("adminSubmit");
+            const submitBtn = document.getElementById("btnCrearDocumentoSubmit");
             const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            const labelOriginal = submitLabel.textContent;
             submitBtn.disabled = true;
-            submitLabel.textContent = "Subiendo...";
-            setAdminUploadStatus("info", "Subiendo archivo...");
+            submitLabel.textContent = "Guardando...";
+            setCrearDocumentoStatus("info", "Guardando...");
 
             try {
-                const baseName = crearSlug(titulo);
-                const stamp = Date.now();
-                const uniqueName = `${baseName}-${stamp}.pdf`;
-                const renamedFile = new File([archivo], uniqueName, { type: archivo.type });
-
-                const formData = new FormData();
-                formData.append("file", renamedFile);
-                formData.append("upload_preset", CLOUDINARY_PRESET);
-                formData.append("folder", "documentos");
-
-                const resp = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
-                const data = await resp.json();
-                if (!resp.ok || !data.secure_url) {
-                    throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+                let url;
+                if (subirArchivo) {
+                    setCrearDocumentoStatus("info", "Subiendo archivo...");
+                    url = await subirPdfDocumentoACloudinary(archivo, titulo);
                 }
 
-                setAdminUploadStatus("info", "Guardando en base de datos...");
-                await db.collection("documentos").add({
-                    titulo,
-                    categoria,
-                    url: data.secure_url,
-                    creadoEn: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                if (esEdicion) {
+                    const payload = { titulo, categoria, actualizadoEn: firebase.firestore.FieldValue.serverTimestamp() };
+                    if (url) payload.url = url;
+                    await db.collection("documentos").doc(editingDocumentoId).update(payload);
+                } else {
+                    await db.collection("documentos").add({
+                        titulo,
+                        categoria,
+                        url,
+                        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
 
-                setAdminUploadStatus("success", `"${titulo}" subido correctamente.`);
-                document.getElementById("adminUploadForm").reset();
-                document.getElementById("adminCategoriaNuevaWrap").hidden = true;
+                setCrearDocumentoStatus("success", esEdicion ? "Cambios guardados." : `"${titulo}" subido correctamente.`);
                 await cargarDocumentos();
+                setTimeout(() => cerrarCrearDocumentoModal(), 800);
             } catch (e) {
                 console.error(e);
-                setAdminUploadStatus("error", "No se pudo subir: " + (e.message || "error desconocido"));
+                setCrearDocumentoStatus("error", "No se pudo guardar: " + (e.message || "error desconocido"));
             } finally {
                 submitBtn.disabled = false;
-                submitLabel.textContent = "Subir documento";
+                submitLabel.textContent = labelOriginal;
             }
         }
 
@@ -4667,13 +4765,10 @@
                 if (wrapEje) wrapEje.hidden = true;
                 if (typeof renderFotosUnidadGaleria === "function") renderFotosUnidadGaleria();
             } else if (nombre === "documentos") {
-                const form = document.getElementById("adminUploadForm");
-                if (form) form.reset();
-                const wrapNueva = document.getElementById("adminCategoriaNuevaWrap");
-                if (wrapNueva) wrapNueva.hidden = true;
-                if (typeof setAdminUploadStatus === "function") setAdminUploadStatus(null);
                 const filtroCat = document.getElementById("adminFiltroCategoria");
+                const filtroTxt = document.getElementById("adminFiltroBuscar");
                 if (filtroCat) filtroCat.value = "";
+                if (filtroTxt) filtroTxt.value = "";
                 if (typeof renderAdminDocList === "function") renderAdminDocList();
             } else if (nombre === "fichas") {
                 const selCat = document.getElementById("fichasCategoria");
@@ -4733,25 +4828,21 @@
                 if (e.key === "Escape") cerrarDrawerPendientes();
             });
 
-            const form = document.getElementById("adminUploadForm");
-            if (form) form.addEventListener("submit", subirDocumentoHandler);
-
-            const selectCategoria = document.getElementById("adminCategoria");
-            if (selectCategoria) {
-                selectCategoria.addEventListener("change", () => {
-                    const wrap = document.getElementById("adminCategoriaNuevaWrap");
-                    const esNueva = selectCategoria.value === "__nueva__";
-                    wrap.hidden = !esNueva;
-                    if (esNueva) {
-                        setTimeout(() => document.getElementById("adminCategoriaNueva").focus(), 30);
-                    }
-                });
-            }
-
+            // Documentos
+            const btnCrearDoc = document.getElementById("btnCrearDocumentoDesdeLista");
+            if (btnCrearDoc) btnCrearDoc.addEventListener("click", abrirCrearDocumentoModal);
+            const closeDoc = document.getElementById("modalCrearDocumentoClose");
+            if (closeDoc) closeDoc.addEventListener("click", cerrarCrearDocumentoModal);
+            const overlayDoc = document.getElementById("modalCrearDocumentoOverlay");
+            if (overlayDoc) overlayDoc.addEventListener("click", cerrarCrearDocumentoModal);
+            const formDoc = document.getElementById("formCrearDocumento");
+            if (formDoc) formDoc.addEventListener("submit", crearDocumentoHandler);
+            const selFormDocCat = document.getElementById("formDocCategoria");
+            if (selFormDocCat) selFormDocCat.addEventListener("change", onFormDocCategoriaChange);
             const filtroCategoria = document.getElementById("adminFiltroCategoria");
-            if (filtroCategoria) {
-                filtroCategoria.addEventListener("change", renderAdminDocList);
-            }
+            if (filtroCategoria) filtroCategoria.addEventListener("change", renderAdminDocList);
+            const filtroBuscar = document.getElementById("adminFiltroBuscar");
+            if (filtroBuscar) filtroBuscar.addEventListener("input", renderAdminDocList);
 
             // Fichas técnicas
             poblarSelectCategoriaFichas();
@@ -4818,6 +4909,8 @@
                 if (m && !m.hidden) cerrarCrearAdicionalModal();
                 const mu = document.getElementById("modalCrearUnidad");
                 if (mu && !mu.hidden) cerrarCrearUnidadModal();
+                const md = document.getElementById("modalCrearDocumento");
+                if (md && !md.hidden) cerrarCrearDocumentoModal();
             });
 
             // Unidades
