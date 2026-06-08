@@ -6491,9 +6491,10 @@
         const FLECHA_INGRESAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>`;
 
         // ===== Registro de usuarios =====
-        // Para dar de alta un usuario nuevo: agregar una línea con su mail (en minúscula),
-        // su nombre y el género ("m" muestra "Bienvenido", "f" muestra "Bienvenida").
-        // Si un usuario no está acá, se muestra el saludo genérico "Bienvenido/a".
+        // Fallback local. Los datos reales (nombre, género, rol) se administran ahora desde
+        // el panel admin → sección Usuarios y se guardan en Firestore. Cuando el usuario
+        // se loguea, se carga su doc y se guarda en `usuarioActualData`; este registro
+        // solo se usa como respaldo si el doc todavía no tiene datos cargados.
         const REGISTRO_USUARIOS = {
             "adm.ventas@lamberthermanos.com.ar": { nombre: "Nicolás", genero: "m" },
             "claudio.lambert@lamberthermanos.com.ar": { nombre: "Claudio", genero: "m" },
@@ -6502,9 +6503,19 @@
             "juan.proserpi@lamberthermanos.com.ar": { nombre: "Juan", genero: "m" }
         };
 
+        let usuarioActualData = null; // se carga en chequearEstadoSesion()
+
         function obtenerUsuario(email) {
             if (!email) return { nombre: "", genero: "" };
-            const registro = REGISTRO_USUARIOS[email.trim().toLowerCase()];
+            const lower = email.trim().toLowerCase();
+            if (usuarioActualData && (usuarioActualData.email || "").toLowerCase() === lower) {
+                const fb = REGISTRO_USUARIOS[lower] || {};
+                return {
+                    nombre: usuarioActualData.nombre || fb.nombre || "",
+                    genero: usuarioActualData.genero || fb.genero || ""
+                };
+            }
+            const registro = REGISTRO_USUARIOS[lower];
             return registro ? { nombre: registro.nombre, genero: registro.genero } : { nombre: "", genero: "" };
         }
 
@@ -10260,7 +10271,29 @@
   document.getElementById("scrollBarLogout").addEventListener("click", logout);
   document.getElementById("drawerLogout").addEventListener("click", logout);
 
-  auth.onAuthStateChanged((user) => {
+  async function chequearEstadoSesion(email) {
+    try {
+      const doc = await db.collection("usuarios").doc(email).get();
+      if (!doc.exists) return { activo: true, requiereCambio: true };
+      const data = doc.data();
+      usuarioActualData = {
+        email,
+        nombre: data.nombre || "",
+        apellido: data.apellido || "",
+        genero: data.genero || "",
+        rol: data.rol || "vendedor"
+      };
+      return {
+        activo: data.activo !== false,
+        requiereCambio: data.requiereCambioContraseña !== false
+      };
+    } catch (e) {
+      console.warn("No se pudo leer el estado del usuario:", e);
+      return { activo: true, requiereCambio: false };
+    }
+  }
+
+  auth.onAuthStateChanged(async (user) => {
     if (!user) {
       localStorage.removeItem(ACTIVITY_KEY);
       window.location.replace("login.html");
@@ -10268,6 +10301,17 @@
     }
 
     const email = user.email || "";
+    const estado = await chequearEstadoSesion(email);
+    if (!estado.activo) {
+      await auth.signOut();
+      window.location.replace("login.html");
+      return;
+    }
+    if (estado.requiereCambio) {
+      window.location.replace("login.html");
+      return;
+    }
+
     document.getElementById("userEmail").textContent = email;
     document.getElementById("scrollBarUser").textContent = email;
     document.getElementById("drawerUserEmail").textContent = email;
