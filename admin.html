@@ -1012,6 +1012,26 @@
             display: flex;
             align-items: center;
             gap: 14px;
+            flex-wrap: wrap;
+        }
+        .btn-borrar-filtros {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            background: transparent;
+            border: 1px solid var(--gris);
+            color: var(--negro);
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 160ms ease, border-color 160ms ease;
+        }
+        .btn-borrar-filtros:hover {
+            background: #f3f3f3;
+            border-color: #bbb;
         }
         .actividad-paginacion-info {
             font-size: 0.82rem;
@@ -2354,6 +2374,12 @@
                         <div class="actividad-lista" id="actividadLista"></div>
                         <div class="actividad-paginacion">
                             <button class="btn-crear" type="button" id="btnActividadCargarMas" hidden>Cargar más</button>
+                            <button class="btn-borrar-filtros" type="button" id="btnActividadBorrarFiltros" hidden>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                                Borrar filtros
+                            </button>
                             <span class="actividad-paginacion-info" id="actividadPaginacionInfo"></span>
                         </div>
                     </div>
@@ -5294,6 +5320,8 @@
             // "Cargar más" solo aplica cuando NO hay filtros, porque los filtros
             // son client-side y solo afectan a lo ya cargado.
             if (btnMas) btnMas.hidden = !actividadHayMas || hayFiltros;
+            const btnBorrarFiltros = document.getElementById("btnActividadBorrarFiltros");
+            if (btnBorrarFiltros) btnBorrarFiltros.hidden = !hayFiltros;
             if (info) {
                 if (lista.length === 0) {
                     info.textContent = "";
@@ -5403,6 +5431,14 @@
             if (filtroBuscarAct) filtroBuscarAct.addEventListener("input", renderActividad);
             const btnCargarMasAct = document.getElementById("btnActividadCargarMas");
             if (btnCargarMasAct) btnCargarMasAct.addEventListener("click", () => cargarActividad({ inicial: false }));
+            const btnBorrarFiltrosAct = document.getElementById("btnActividadBorrarFiltros");
+            if (btnBorrarFiltrosAct) btnBorrarFiltrosAct.addEventListener("click", () => {
+                ["actividadFiltroUsuario", "actividadFiltroAccion", "actividadFiltroEntidad", "actividadFiltroBuscar"].forEach((id) => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = "";
+                });
+                renderActividad();
+            });
             const detalleClose = document.getElementById("modalDetalleActividadClose");
             if (detalleClose) detalleClose.addEventListener("click", cerrarDetalleActividad);
             const detalleOverlay = document.getElementById("modalDetalleActividadOverlay");
