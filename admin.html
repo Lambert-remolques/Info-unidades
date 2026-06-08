@@ -1452,6 +1452,14 @@
                         <div class="admin-doc-list" id="adicionalesLista"></div>
                         <p class="adicionales-nota">Solo se listan los adicionales creados desde este panel. Los adicionales precargados originalmente en el catálogo no se editan ni se borran desde acá (requiere tocar el código).</p>
                     </div>
+                    <div class="admin-card" id="cardMigracionAdicionales">
+                        <div class="admin-card-header">
+                            <h2 class="admin-card-title">Migración única (temporal)</h2>
+                        </div>
+                        <p class="adicionales-nota" style="margin-top:0;">Apretá este botón <strong>una sola vez</strong> para copiar todos los adicionales precargados originalmente en el catálogo a Firestore, así quedan editables desde acá. Es seguro apretarlo varias veces: no duplica los que ya existen.</p>
+                        <button class="btn-crear" type="button" id="btnMigrarAdicionales" style="margin-top:12px;">Migrar adicionales precargados</button>
+                        <p id="migracionAdicionalesEstado" class="adicionales-nota" style="margin-top:10px; display:none;"></p>
+                    </div>
                 </div>
             </section>
 
@@ -1605,6 +1613,100 @@
             { id: "puertas-tapas", nombre: "Puertas, tapas y accesos", items: ["Puerta guillotina interior", "Puerta simbra interior", "Puerta trasera con camello para caballo", "Tapa fácil (para un 9,30 m)", "Tapas laterales para convertir en MIXTO un BV"] }
         ];
 
+        // ===== Migración única: datos completos de los adicionales precargados =====
+        // Se usa SOLO para copiar a Firestore. Después de la migración esta constante
+        // y su botón asociado se eliminan del archivo.
+        const ADICIONALES_MIGRACION_DATA = [
+            { id: "acople-conexion", nombre: "Acople y conexión", items: [
+                { codigo: "AD001", nombre: "Acople Frenos", descripcion: "Dispositivo que actúa como punto de conexión entre el vehículo tractor y el sistema de frenado del remolque. Transforma la acción de frenado del coche en una acción de frenado proporcional en el remolque.", ubicacion: "En la parte delantera del remolque." },
+                { codigo: "AD002", nombre: "Acople Luces", descripcion: "Componente encargado de transmitir la energía eléctrica y las señales luminosas desde el vehículo tractor hacia el remolque.", ubicacion: "En la parte trasera del vehículo y en el remolque." },
+                { codigo: "SIN CÓDIGO", nombre: "Brida adicional", descripcion: "La brida es el conjunto de piezas que sujeta el perno al chasis del semirremolque.", ubicacion: "En la parte inferior delantera del semirremolque (plato de enganche), donde acopla la rueda del camión." },
+                { codigo: "AD017", nombre: "Enganche instalado", descripcion: "Dispositivo mecánico para acoplar un segundo remolque.", ubicacion: "Parte central del paragolpe trasero." }
+            ]},
+            { id: "aumento-carga", nombre: "Aumento de carga", items: [
+                { codigo: "AD003", nombre: "Alargue de arco sobre baranda", descripcion: "Extensión de los arcos que sostienen la lona para ganar altura de carga.", ubicacion: "En la parte superior de la caja de carga." },
+                { codigo: "AD049", nombre: "Sobre baranda para batea", descripcion: "Dispositivos extra para aumentar la altura de la caja volcadora.", ubicacion: "Sobre las paredes laterales de la batea." },
+                { codigo: "AD040", nombre: "Sobre baranda chipera", descripcion: "Dispositivos extra para aumentar la altura de la caja chipera.", ubicacion: "Sobre los laterales del equipo." }
+            ]},
+            { id: "amarre-sujecion", nombre: "Amarre y sujeción de carga", items: [
+                { codigo: "AD004", nombre: "Amarre embutido tipo Masisa", descripcion: "Amarres embutidos en el piso fabricados por Lambert (no homologados). Diseñados para fajas de pallets, evitando amarrar al bandón.", ubicacion: "Distribuidos en el piso o laterales internos." },
+                { codigo: "AD005", nombre: "Anilla para amarre (tipo ACINDAR)", descripcion: "Amarre homologado, resistente, especialmente utilizado para cargas pesadas como bobinas de acero, hierro, chapa, entre otros.", ubicacion: "Distribuidos en el piso o laterales internos." },
+                { codigo: "AD024", nombre: "Malacates", descripcion: "Tensores mecánicos para ajustar las sogas de la lona o sujetar carga.", ubicacion: "Laterales del chasis o barandas." },
+                { codigo: "AD026", nombre: "Pasamanos (cumbrera/marco superior) y Alfajías", descripcion: "Marco superior de contención (cumbrera o marco superior) y maderas de separación.", ubicacion: "Perímetro superior y laterales de la caja de carga." },
+                { codigo: "AD032", nombre: "Portauxilio malacate", descripcion: "Accesorio de servicio y mantenimiento. Soporte estructural que incluye un mecanismo de izaje (cable de acero y engranaje).", ubicacion: "Debajo del chasis." },
+                { codigo: "AD045 / AD046", nombre: "Trabas porta contenedor", descripcion: "Dispositivos mecánicos de fijación para asegurar contenedores al chasis.", ubicacion: "Distribuidos en el chasis." }
+            ]},
+            { id: "piso-superficie", nombre: "Piso y superficie de carga", items: [
+                { codigo: "AD006", nombre: "Bocas de descarga", descripcion: "Aberturas con cierre deslizante para descargar cereales por gravedad.", ubicacion: "En la parte inferior del remolque, en el chasis." },
+                { codigo: "AD013", nombre: "Diferencia de piso 1/8 a 4 mm", descripcion: "Cambio del espesor de la chapa del piso para mayor resistencia a impactos o carga pesada.", ubicacion: "Piso de la unidad." },
+                { codigo: "AD014", nombre: "Diferencia de piso liso a semillado", descripcion: "Cambio de textura de la chapa por una con relieve antideslizante.", ubicacion: "Piso de la unidad." },
+                { codigo: "AD029", nombre: "Piso chapa 1/8\" semillado", descripcion: "Configuración estándar de piso con relieve antideslizante de espesor 3,2 mm.", ubicacion: "Toda la superficie de carga." },
+                { codigo: "AD058", nombre: "Protección de carga para piso de aluminio acanalado", descripcion: "Revestimiento o sistema protector adicional que evita daños en el piso de aluminio durante la carga y descarga.", ubicacion: "Sobre el piso del furgón." },
+                { codigo: "AD039", nombre: "Rejas para piso", descripcion: "Rejillas metálicas para drenaje o agarre adicional.", ubicacion: "Sobre el piso de carga." },
+                { codigo: "AD031", nombre: "Tinteros", descripcion: "Orificios o receptáculos para insertar estacas o postes.", ubicacion: "Embutidos en el piso de la unidad." }
+            ]},
+            { id: "estructura", nombre: "Estructura", items: [
+                { codigo: "AD007", nombre: "Caballete para siders", descripcion: "Estructura de soporte interna diseñada para transportar cargas específicas.", ubicacion: "En el interior de la unidad, sobre el piso." },
+                { codigo: "AD051", nombre: "Carrozado en chapa Domex y piso", descripcion: "Fabricación de la carrocería utilizando acero de alta resistencia Domex, incluyendo también el piso para mayor durabilidad estructural.", ubicacion: "Estructura general de la carrocería." },
+                { codigo: "AD053", nombre: "Cuello deprimido", descripcion: "Diseño del chasis con una sección rebajada en la zona delantera para disminuir la altura de carga y mejorar estabilidad.", ubicacion: "Parte delantera del semirremolque." },
+                { codigo: "AD015", nombre: "Diferencia por lanza extensible", descripcion: "Mecanismo que permite alargar o acortar la lanza de tiro según la carga.", ubicacion: "Parte frontal de acoplados." },
+                { codigo: "AD020", nombre: "Frente Completo", descripcion: "Panel frontal (pecho) de diferentes alturas según necesidad del cliente.", ubicacion: "Parte delantera de la carrocería." },
+                { codigo: "AD030", nombre: "Plataforma trasera rebatible tipo Baloni (Paquetero)", descripcion: "Elevador hidráulico trasero para carga y descarga de mercadería pesada. Pensado para paquetero.", ubicacion: "Paragolpe trasero." },
+                { codigo: "AD041", nombre: "Soporte de estacas sobre carrocería (Pecho con frente)", descripcion: "Apoyos para estacas integrados en el panel delantero.", ubicacion: "Pecho de la unidad." },
+                { codigo: "AD042", nombre: "Soporte de estacas sobre carrocería (Playo sin frente)", descripcion: "Soportes para estacas en unidades totalmente planas.", ubicacion: "Distribuidos en el perímetro del piso." },
+                { codigo: "AD052", nombre: "Unidad completa en Domex", descripcion: "Construcción integral de la unidad (chasis y carrocería) en acero Domex, logrando menor peso y mayor resistencia.", ubicacion: "Toda la unidad." }
+            ]},
+            { id: "cajon-compartimiento", nombre: "Cajón y compartimiento", items: [
+                { codigo: "AD008", nombre: "Cajón cocina - nuevo modelo 2026", descripcion: "Gabinete diseñado para guardar anafe, alimentos y utensilios. Medidas: 1170 × 500 × 540 mm. Modelo 2026.", ubicacion: "En el chasis de la unidad." },
+                { codigo: "AD009", nombre: "Cajón de herramientas chico (carrocería)", descripcion: "Compartimento metálico o plástico para herramientas menores. Medidas: 650 × 460 × 540 mm. Para carrocerías.", ubicacion: "En el chasis de la unidad." },
+                { codigo: "AD010", nombre: "Cajón de herramientas grande (semirremolque)", descripcion: "Compartimento metálico o plástico de mayor capacidad que el cajón chico. Medidas: 1170 × 500 × 540 mm. Para semirremolques.", ubicacion: "En el chasis de la unidad." },
+                { codigo: "AD011", nombre: "Cajón para alfajías", descripcion: "Estructura alargada para almacenar las alfajías.", ubicacion: "En el chasis de la unidad." },
+                { codigo: "AD012", nombre: "Cajón porta estacas", descripcion: "Compartimento específico para guardar los postes verticales de contención.", ubicacion: "En el chasis de la unidad." },
+                { codigo: "AD063", nombre: "Depósito de aceite en batea", descripcion: "Tanque destinado al almacenamiento de aceite hidráulico necesario para el sistema de vuelco.", ubicacion: "Sobre o debajo de la batea, integrado al sistema hidráulico." }
+            ]},
+            { id: "furgon-termico", nombre: "Furgón térmico", items: [
+                { codigo: "SIN CÓDIGO", nombre: "Cambio de paneles a 100 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 100 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." },
+                { codigo: "SIN CÓDIGO", nombre: "Cambio de paneles a 75 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 75 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." },
+                { codigo: "AD028", nombre: "Divisorio desplazable", descripcion: "Panel móvil que permite crear dos cámaras de temperatura distintas.", ubicacion: "Interior del furgón térmico." },
+                { codigo: "AD021", nombre: "Gancheras para furgón carnicero", descripcion: "Rieles con ganchos para el transporte de carne colgada.", ubicacion: "Sujetas al techo interno del furgón." },
+                { codigo: "SIN CÓDIGO", nombre: "Piso de aluminio", descripcion: "Superficie de carga liviana y apta para alimentos, usualmente acanalada.", ubicacion: "Interior de furgones." },
+                { codigo: "AD033", nombre: "Protección interior de equipo de frío", descripcion: "Reja metálica para evitar que la carga golpee el motor de refrigeración.", ubicacion: "Pecho interno del furgón." },
+                { codigo: "AD036", nombre: "Puerta lateral adicional térmica", descripcion: "Puerta extra para carga lateral manteniendo la aislación.", ubicacion: "Uno de los costados del furgón térmico." },
+                { codigo: "AD048", nombre: "Tronera", descripcion: "Abertura controlada que permite la circulación de aire entre compartimentos o mejora la ventilación interna sin perder eficiencia térmica.", ubicacion: "Paneles internos del furgón térmico." },
+                { codigo: "AD050", nombre: "Ventiletes", descripcion: "Dispositivos de ventilación regulables que permiten el ingreso y egreso de aire para evitar condensación o acumulación de humedad.", ubicacion: "Laterales o parte trasera de la unidad." }
+            ]},
+            { id: "tren-rodante", nombre: "Tren rodante", items: [
+                { codigo: "AD054", nombre: "Cambio a suspensión neumática", descripcion: "Sustitución del sistema de suspensión mecánica convencional por uno neumático independiente por eje, mejorando confort, estabilidad y cuidado de la carga.", ubicacion: "En cada eje de la unidad." },
+                { codigo: "SIN CÓDIGO", nombre: "Colocación de tercer eje común en camión", descripcion: "Incorporación de un eje adicional común para aumentar la capacidad de carga y distribuir mejor el peso.", ubicacion: "En camión." },
+                { codigo: "SIN CÓDIGO", nombre: "Colocación de tercer eje curvo en camión", descripcion: "Instalación de un eje adicional con diseño curvo que mejora la maniobrabilidad en giros y reduce el desgaste de neumáticos.", ubicacion: "En camión." },
+                { codigo: "AD016", nombre: "Ejes con freno a disco", descripcion: "Sustitución de los frenos de tambor por discos para mayor potencia de frenado.", ubicacion: "En el extremo de cada eje de la unidad." },
+                { codigo: "AD057", nombre: "Equipo EBS y control de peso", descripcion: "Sistema electrónico de frenos (EBS) combinado con monitoreo de carga y telemetría (Infocentre), para configuraciones con suspensión neumática. Permite controlar peso, rendimiento y comportamiento de la suspensión.", ubicacion: "Integrado al sistema de frenos y suspensión de la unidad." },
+                { codigo: "AD062", nombre: "Frenos disco marca GEC", descripcion: "Sistema de frenos a disco provisto por la marca GEC, que ofrece mayor eficiencia de frenado y menor mantenimiento.", ubicacion: "En los ejes de la unidad." },
+                { codigo: "AD023", nombre: "Levanta eje neumático", descripcion: "Pulmón de aire que levanta un eje para evitar el desgaste de cubiertas en vacío.", ubicacion: "En el chasis, sobre el eje que se desea levantar." },
+                { codigo: "AD047", nombre: "Tren delantero completo con llantas", descripcion: "Conjunto estructural que incluye eje delantero, suspensión, mazas y llantas, listo para montaje.", ubicacion: "Parte delantera del acoplado o unidad." },
+                { codigo: "AD060", nombre: "Tren retráctil en el 1° tramo del bitren", descripcion: "Sistema de ejes que puede retraerse en el primer módulo del bitren para optimizar maniobrabilidad y reducir desgaste en vacío.", ubicacion: "Primer tramo del bitren." }
+            ]},
+            { id: "equipamiento-hidraulico", nombre: "Equipamiento hidráulico", items: [
+                { codigo: "AD018", nombre: "Equipo hidráulico para batea (en camión)", descripcion: "Kit de bomba, toma de fuerza y mandos para poder elevar el volcador.", ubicacion: "Se instala en el chasis del camión tractor." },
+                { codigo: "AD019", nombre: "Equipo hidráulico para volcadora", descripcion: "Cilindro y conexiones necesarias para el vuelco de la caja.", ubicacion: "Bajo la caja de carga o en el frente de la misma." },
+                { codigo: "AD022", nombre: "Instalación hidráulica para conectar acoplado", descripcion: "Mangueras y acoples para pasar la presión hidráulica hacia atrás.", ubicacion: "Recorre el chasis hasta la cola de la unidad." }
+            ]},
+            { id: "proteccion", nombre: "Protección", items: [
+                { codigo: "AD059", nombre: "Inclinómetro", descripcion: "Dispositivo que mide el ángulo de inclinación de la unidad para prevenir vuelcos durante operaciones de descarga o circulación en terrenos irregulares.", ubicacion: "Cabina o chasis, visible para el operador." },
+                { codigo: "AD025", nombre: "Paragolpe para carrocería", descripcion: "Estructura de protección trasera contra impactos.", ubicacion: "Parte posterior inferior del chasis." },
+                { codigo: "AD027", nombre: "Patines para balsa", descripcion: "Dispositivo que actúa como elemento de protección ante desniveles del terreno.", ubicacion: "Colocado antes del paragolpe." },
+                { codigo: "AD034", nombre: "Protección lateral", descripcion: "Barras de seguridad para evitar que vehículos menores se metan debajo del remolque.", ubicacion: "Entre los ejes y las patas de apoyo." },
+                { codigo: "AD061", nombre: "Zócalo de refuerzo en el pecho del sider", descripcion: "Refuerzo estructural inferior en el panel frontal del sider para resistir impactos de carga.", ubicacion: "Pecho del sider." }
+            ]},
+            { id: "puertas-tapas", nombre: "Puertas, tapas y accesos", items: [
+                { codigo: "AD035", nombre: "Puerta guillotina interior", descripcion: "Puerta de apertura vertical para acceso rápido o compartimentado.", ubicacion: "Interior del furgón." },
+                { codigo: "AD037", nombre: "Puerta simbra interior", descripcion: "Puerta batiente de rejilla para ventilación o separación interna.", ubicacion: "Interior de la unidad de carga." },
+                { codigo: "AD038", nombre: "Puerta trasera con camello para caballo", descripcion: "Puerta trasera con una elevación superior para permitir el paso de la cabeza del animal.", ubicacion: "Trasera del transporte de ganado." },
+                { codigo: "AD043", nombre: "Tapa fácil (para un 9,30 m)", descripcion: "Sistema de cobertura superior de apertura y cierre rápido mediante lona corrediza o enrollable, que facilita la carga y descarga sin necesidad de desatar manualmente.", ubicacion: "Parte superior de la caja de carga." },
+                { codigo: "AD044", nombre: "Tapas laterales para convertir en MIXTO un BV", descripcion: "Paneles laterales desmontables que permiten transformar un BV en una configuración mixta apta para distintos tipos de carga.", ubicacion: "Laterales de la unidad." }
+            ]}
+        ];
+
         const MAX_FOTO_MB = 10;
         const FOTOS_LIST_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/catalogo.json`;
 
@@ -1751,7 +1853,7 @@
         const ICONO_MODAL_PELIGRO = `<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
         const ICONO_MODAL_SUBIDA = `<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`;
 
-        function mostrarConfirmacion({ titulo, mensaje, etiquetaConfirmar = "Confirmar", variante = "peligro" }) {
+        function mostrarConfirmacion({ titulo, mensaje, etiquetaConfirmar = "Confirmar", variante = "peligro", soloConfirmar = false }) {
             return new Promise((resolve) => {
                 const modal = document.getElementById("modalConfirm");
                 const okBtn = document.getElementById("modalConfirmOk");
@@ -1761,6 +1863,7 @@
                 document.getElementById("modalConfirmTitle").textContent = titulo;
                 document.getElementById("modalConfirmMessage").innerHTML = mensaje;
                 okBtn.textContent = etiquetaConfirmar;
+                cancelBtn.hidden = !!soloConfirmar;
                 modal.classList.remove("modal-confirm--peligro", "modal-confirm--confirmar");
                 modal.classList.add(`modal-confirm--${variante}`);
                 iconWrap.innerHTML = variante === "confirmar" ? ICONO_MODAL_SUBIDA : ICONO_MODAL_PELIGRO;
@@ -2777,6 +2880,95 @@
             });
         }
 
+        // ===== Migración única de los adicionales precargados a Firestore =====
+        // Lee ADICIONALES_MIGRACION_DATA y agrega cada item como un doc en
+        // adicionales_extra. Idempotente: salta los que ya existen (match por
+        // categoriaId + nombre normalizado).
+        async function migrarAdicionalesPrecargados() {
+            const btn = document.getElementById("btnMigrarAdicionales");
+            const estado = document.getElementById("migracionAdicionalesEstado");
+            if (!btn || !estado) return;
+
+            const total = ADICIONALES_MIGRACION_DATA.reduce((acc, c) => acc + c.items.length, 0);
+            const ok = await mostrarConfirmacion({
+                titulo: "Migrar adicionales precargados",
+                mensaje: `Se van a copiar <strong>${total} adicionales</strong> precargados al Firestore para que queden editables desde el panel.<br><br>Es seguro: si alguno ya existe, no se duplica. ¿Continuar?`,
+                etiquetaConfirmar: "Migrar",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            btn.disabled = true;
+            estado.style.display = "block";
+            estado.textContent = "Leyendo adicionales existentes…";
+
+            try {
+                await cargarAdicionalesExtra();
+                const existentes = new Set(
+                    adicionalesExtra
+                        .filter((a) => a.categoriaId && a.nombre)
+                        .map((a) => `${a.categoriaId}::${a.nombre.toLowerCase().trim()}`)
+                );
+
+                let migrados = 0;
+                let saltados = 0;
+                let errores = 0;
+                let i = 0;
+                for (const cat of ADICIONALES_MIGRACION_DATA) {
+                    for (const item of cat.items) {
+                        i++;
+                        const clave = `${cat.id}::${item.nombre.toLowerCase().trim()}`;
+                        if (existentes.has(clave)) {
+                            saltados++;
+                            estado.textContent = `(${i}/${total}) Ya existe: ${item.nombre} — salteado`;
+                            continue;
+                        }
+                        try {
+                            await db.collection("adicionales_extra").add({
+                                categoriaId: cat.id,
+                                categoriaNombre: cat.nombre,
+                                nombre: item.nombre,
+                                codigo: item.codigo || "SIN CÓDIGO",
+                                descripcion: item.descripcion || "",
+                                ubicacion: item.ubicacion || "",
+                                creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+                                migrado: true
+                            });
+                            migrados++;
+                            estado.textContent = `(${i}/${total}) Migrado: ${item.nombre}`;
+                            existentes.add(clave);
+                        } catch (e) {
+                            console.error("Error migrando", item.nombre, e);
+                            errores++;
+                        }
+                    }
+                }
+
+                await cargarAdicionalesExtra();
+                renderAdicionalesAdminList();
+
+                estado.innerHTML = `<strong>Listo.</strong> Migrados: ${migrados} · Ya existían: ${saltados}${errores ? ` · Errores: ${errores}` : ""}.`;
+                await mostrarConfirmacion({
+                    titulo: "Migración terminada",
+                    mensaje: `<strong>${migrados}</strong> adicionales nuevos copiados a Firestore.<br>${saltados ? `<strong>${saltados}</strong> ya existían (no se duplicaron).<br>` : ""}${errores ? `<strong>${errores}</strong> con error (revisá la consola).<br>` : ""}<br>Ya podés editarlos o borrarlos desde la lista de arriba.`,
+                    etiquetaConfirmar: "Entendido",
+                    soloConfirmar: true,
+                    variante: "confirmar"
+                });
+            } catch (e) {
+                console.error("Migración falló:", e);
+                estado.textContent = `Error: ${e.message || e}`;
+                await mostrarConfirmacion({
+                    titulo: "No se pudo migrar",
+                    mensaje: `Algo falló durante la migración:<br><br><code>${e.message || e}</code><br><br>Podés volver a intentarlo (no duplica lo que ya se haya copiado).`,
+                    etiquetaConfirmar: "Cerrar",
+                    soloConfirmar: true
+                });
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
         async function borrarFoto(publicId, tipo) {
             const ok = await mostrarConfirmacion({
                 titulo: "Eliminar foto",
@@ -2991,6 +3183,8 @@
             if (btnCrearAd) btnCrearAd.addEventListener("click", abrirCrearAdicionalModal);
             const btnCrearAd2 = document.getElementById("btnCrearAdicionalDesdeLista");
             if (btnCrearAd2) btnCrearAd2.addEventListener("click", abrirCrearAdicionalModal);
+            const btnMigrarAd = document.getElementById("btnMigrarAdicionales");
+            if (btnMigrarAd) btnMigrarAd.addEventListener("click", migrarAdicionalesPrecargados);
             const closeAd = document.getElementById("modalCrearAdicionalClose");
             if (closeAd) closeAd.addEventListener("click", cerrarCrearAdicionalModal);
             const overlayAd = document.getElementById("modalCrearAdicionalOverlay");
