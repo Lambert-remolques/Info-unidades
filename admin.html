@@ -715,6 +715,69 @@
             font-style: italic;
         }
 
+        /* ===== Galería de fotos en el panel admin ===== */
+        .fotos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .fotos-grid--vacia {
+            grid-template-columns: 1fr;
+        }
+
+        .foto-card {
+            position: relative;
+            border-radius: var(--radio);
+            overflow: hidden;
+            background: var(--gris-bg);
+            aspect-ratio: 4 / 3;
+            box-shadow: var(--sombra-card);
+            transition: transform 160ms ease;
+        }
+
+        .foto-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .foto-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .foto-borrar {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 30px;
+            height: 30px;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(218, 37, 29, 0.92);
+            color: var(--blanco);
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .foto-borrar:hover {
+            background: var(--rojo);
+            transform: scale(1.06);
+        }
+
+        .foto-upload-form {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--gris);
+        }
+
         /* ===== Modal de confirmación ===== */
         .modal-confirm {
             position: fixed;
@@ -1097,13 +1160,46 @@
 
             <section class="panel-section" data-section="fotos">
                 <h1 class="page-title">Fotos</h1>
-                <p class="page-subtitle">Subí o reemplazá fotos de cualquier unidad o adicional del catálogo.</p>
-                <div class="construccion">
-                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
-                    </svg>
-                    <div class="construccion-title">Sección en construcción</div>
-                    <div class="construccion-desc">Sub-etapa 4.4 — gestión de fotos por unidad y adicional.</div>
+                <p class="page-subtitle">Subí o borrá fotos de cualquier unidad o adicional del catálogo.</p>
+
+                <div class="admin-cards">
+                    <div class="admin-card">
+                        <h2 class="admin-card-title">Fotos de unidades</h2>
+                        <div class="admin-form">
+                            <div class="admin-field-row">
+                                <label class="admin-field">
+                                    <span>Categoría</span>
+                                    <select class="admin-select" id="fotosUnidadCategoria"></select>
+                                </label>
+                                <label class="admin-field">
+                                    <span>Unidad</span>
+                                    <select class="admin-select" id="fotosUnidadProducto" disabled></select>
+                                </label>
+                                <label class="admin-field" id="fotosUnidadEjeWrap" hidden>
+                                    <span>Configuración</span>
+                                    <select class="admin-select" id="fotosUnidadEje" disabled></select>
+                                </label>
+                            </div>
+                            <div id="fotosUnidadGaleria"></div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <h2 class="admin-card-title">Fotos de adicionales</h2>
+                        <div class="admin-form">
+                            <div class="admin-field-row">
+                                <label class="admin-field">
+                                    <span>Categoría</span>
+                                    <select class="admin-select" id="fotosAdicionalCategoria"></select>
+                                </label>
+                                <label class="admin-field">
+                                    <span>Adicional</span>
+                                    <select class="admin-select" id="fotosAdicionalItem" disabled></select>
+                                </label>
+                            </div>
+                            <div id="fotosAdicionalGaleria"></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -1183,19 +1279,42 @@
         }
 
         // Estructura del catálogo (espejo de index.html, solo lo necesario para
-        // armar los dropdowns de fichas técnicas). TODO: mover a Firestore para
-        // tener un solo source.
+        // armar los dropdowns). Acoplados y Semirremolques tienen configuraciones
+        // de ejes (las fotos se agrupan por eje); Carrocerías y Bitrenes no.
+        // TODO: mover a Firestore para tener un solo source.
         const FICHAS_CATALOGO = [
-            { id: "acoplados", nombre: "Acoplados", productos: ["Baranda volcable", "Curtain sider", "Playo", "Paquetero", "Forestal", "Volcador bilateral", "Todo puertas", "Isotérmico", "Tolva descarga ventral", "Jaula simple", "Jaula doble piso", "Pollero"] },
-            { id: "semirremolques", nombre: "Semirremolques", productos: ["Playo con frente", "Curtain sider", "Baranda volcable", "Forestal", "Isotérmico", "Tolva descarga ventral", "Portacontenedor", "Jaula simple", "Jaula doble piso", "Batea", "Bivuelco bicaja"] },
-            { id: "carrocerias", nombre: "Carrocerías", productos: ["Curtain sider", "Todo puertas", "Volcadora", "Isotérmica", "Bivuelco", "Paquetera", "Curtain sider barandas volcables", "Pollera"] },
-            { id: "bitrenes", nombre: "Bitrenes", productos: ["Baranda volcable", "Isotérmico", "Portacontenedor", "Curtain sider", "Forestal"] }
+            { id: "acoplados", nombre: "Acoplados", ejes: ["2-ejes", "3-ejes", "4-ejes"], productos: ["Baranda volcable", "Curtain sider", "Playo", "Paquetero", "Forestal", "Volcador bilateral", "Todo puertas", "Isotérmico", "Tolva descarga ventral", "Jaula simple", "Jaula doble piso", "Pollero"] },
+            { id: "semirremolques", nombre: "Semirremolques", ejes: ["1-eje", "2-ejes", "3-ejes", "1-1-eje", "1-2-eje", "1-3-eje", "1-1-1-eje"], productos: ["Playo con frente", "Curtain sider", "Baranda volcable", "Forestal", "Isotérmico", "Tolva descarga ventral", "Portacontenedor", "Jaula simple", "Jaula doble piso", "Batea", "Bivuelco bicaja"] },
+            { id: "carrocerias", nombre: "Carrocerías", ejes: [], productos: ["Curtain sider", "Todo puertas", "Volcadora", "Isotérmica", "Bivuelco", "Paquetera", "Curtain sider barandas volcables", "Pollera"] },
+            { id: "bitrenes", nombre: "Bitrenes", ejes: [], productos: ["Baranda volcable", "Isotérmico", "Portacontenedor", "Curtain sider", "Forestal"] }
         ];
+
+        const ADICIONALES_CATALOGO = [
+            { id: "acople-conexion", nombre: "Acople y conexión", items: ["Acople Frenos", "Acople Luces", "Brida adicional", "Enganche instalado"] },
+            { id: "aumento-carga", nombre: "Aumento de carga", items: ["Alargue de arco sobre baranda", "Sobre baranda para batea", "Sobre baranda chipera"] },
+            { id: "amarre-sujecion", nombre: "Amarre y sujeción de carga", items: ["Amarre embutido tipo Masisa", "Anilla para amarre (tipo ACINDAR)", "Malacates", "Pasamanos (cumbrera/marco superior) y Alfajías", "Portauxilio malacate", "Trabas porta contenedor"] },
+            { id: "piso-superficie", nombre: "Piso y superficie de carga", items: ["Bocas de descarga", "Diferencia de piso 1/8 a 4 mm", "Diferencia de piso liso a semillado", "Piso chapa 1/8\" semillado", "Protección de carga para piso de aluminio acanalado", "Rejas para piso", "Tinteros"] },
+            { id: "estructura", nombre: "Estructura", items: ["Caballete para siders", "Carrozado en chapa Domex y piso", "Cuello deprimido", "Diferencia por lanza extensible", "Frente Completo", "Plataforma trasera rebatible tipo Baloni (Paquetero)", "Soporte de estacas sobre carrocería (Pecho con frente)", "Soporte de estacas sobre carrocería (Playo sin frente)", "Unidad completa en Domex"] },
+            { id: "cajon-compartimiento", nombre: "Cajón y compartimiento", items: ["Cajón cocina - nuevo modelo 2026", "Cajón de herramientas chico (carrocería)", "Cajón de herramientas grande (semirremolque)", "Cajón para alfajías", "Cajón porta estacas", "Depósito de aceite en batea"] },
+            { id: "furgon-termico", nombre: "Furgón térmico", items: ["Cambio de paneles a 100 mm", "Cambio de paneles a 75 mm", "Divisorio desplazable", "Gancheras para furgón carnicero", "Piso de aluminio", "Protección interior de equipo de frío", "Puerta lateral adicional térmica", "Tronera", "Ventiletes"] },
+            { id: "tren-rodante", nombre: "Tren rodante", items: ["Cambio a suspensión neumática", "Colocación de tercer eje común en camión", "Colocación de tercer eje curvo en camión", "Ejes con freno a disco", "Equipo EBS y control de peso", "Frenos disco marca GEC", "Levanta eje neumático", "Tren delantero completo con llantas", "Tren retráctil en el 1° tramo del bitren"] },
+            { id: "equipamiento-hidraulico", nombre: "Equipamiento hidráulico", items: ["Equipo hidráulico para batea (en camión)", "Equipo hidráulico para volcadora", "Instalación hidráulica para conectar acoplado"] },
+            { id: "proteccion", nombre: "Protección", items: ["Inclinómetro", "Paragolpe para carrocería", "Patines para balsa", "Protección lateral", "Zócalo de refuerzo en el pecho del sider"] },
+            { id: "puertas-tapas", nombre: "Puertas, tapas y accesos", items: ["Puerta guillotina interior", "Puerta simbra interior", "Puerta trasera con camello para caballo", "Tapa fácil (para un 9,30 m)", "Tapas laterales para convertir en MIXTO un BV"] }
+        ];
+
+        const MAX_FOTO_MB = 10;
+        const FOTOS_LIST_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/catalogo.json`;
 
         let documentosAdmin = [];
         let estadoDocumentosAdmin = "cargando";
         let fichasAdmin = new Map();
         let estadoFichasAdmin = "cargando";
+        // Map de fotos: clave "unidad:catId:productoSlug:eje" o "adicional:catId:slug" → array de fotos.
+        let fotosAdmin = new Map();
+        // Set de publicIds borrados (soft delete via Firestore).
+        let fotosBorradas = new Set();
+        let estadoFotosAdmin = "cargando";
 
         function categoriasUnicas() {
             return [...new Set(documentosAdmin.map((d) => d.categoria).filter(Boolean))]
@@ -1688,6 +1807,374 @@
             }
         }
 
+        // ===== Fotos (unidades + adicionales) =====
+        function normEje(eje) { return (eje || "").replace(/-ejes$/, "-eje"); }
+
+        function fotosClaveUnidad(catId, productoSlug, ejeSlug) {
+            return `unidad:${catId}:${productoSlug}:${normEje(ejeSlug || "")}`;
+        }
+
+        function fotosClaveAdicional(catId, slug) {
+            return `adicional:${catId}:${slug}`;
+        }
+
+        function publicIdFotoUnidad(catId, productoSlug, ejeSlug, numero) {
+            const ejePath = ejeSlug ? `${ejeSlug}/` : "";
+            return `unidades/${catId}/${productoSlug}/${ejePath}foto-${numero}`;
+        }
+
+        function publicIdFotoAdicional(catId, slug, numero) {
+            return `adicionales/${catId}/${slug}/foto-${numero}`;
+        }
+
+        function urlThumbFoto(publicId, formato, version) {
+            const ver = version ? `v${version}/` : "";
+            return `${CLOUDINARY_BASE}/c_fill,w_320,h_220,q_auto,f_auto/${ver}${publicId}.${formato || "jpg"}`;
+        }
+
+        async function cargarFotosBorradas() {
+            try {
+                const snap = await db.collection("fotos_borradas").get();
+                fotosBorradas = new Set();
+                snap.docs.forEach((d) => {
+                    const data = d.data();
+                    if (data.publicId) fotosBorradas.add(data.publicId);
+                });
+            } catch (e) {
+                console.warn("No se pudieron cargar fotos borradas:", e);
+            }
+        }
+
+        async function cargarFotos() {
+            estadoFotosAdmin = "cargando";
+            try {
+                await cargarFotosBorradas();
+                const resp = await fetch(FOTOS_LIST_URL, { cache: "no-store" });
+                if (!resp.ok) throw new Error("No se pudo leer la lista de fotos.");
+                const data = await resp.json();
+                fotosAdmin = new Map();
+                (data.resources || []).forEach((r) => {
+                    const partes = (r.public_id || "").split("/");
+                    const ultima = partes[partes.length - 1];
+                    const m = ultima.match(/^foto-(\d+)$/);
+                    if (!m) return;
+                    const numero = parseInt(m[1], 10);
+                    if (partes[0] === "unidades") {
+                        let catId, slug, eje;
+                        if (partes.length === 5) {
+                            catId = partes[1]; slug = partes[2]; eje = partes[3];
+                        } else if (partes.length === 4) {
+                            catId = partes[1]; slug = partes[2]; eje = "";
+                        } else { return; }
+                        const clave = fotosClaveUnidad(catId, slug, eje);
+                        if (!fotosAdmin.has(clave)) fotosAdmin.set(clave, []);
+                        fotosAdmin.get(clave).push({ numero, formato: r.format || "jpg", version: r.version, publicId: r.public_id, eje });
+                    } else if (partes[0] === "adicionales" && partes.length === 4) {
+                        const clave = fotosClaveAdicional(partes[1], partes[2]);
+                        if (!fotosAdmin.has(clave)) fotosAdmin.set(clave, []);
+                        fotosAdmin.get(clave).push({ numero, formato: r.format || "jpg", version: r.version, publicId: r.public_id });
+                    }
+                });
+                fotosAdmin.forEach((lista) => lista.sort((a, b) => a.numero - b.numero));
+                estadoFotosAdmin = "ok";
+                actualizarMetricaFotos();
+            } catch (e) {
+                console.error("Error cargando fotos:", e);
+                estadoFotosAdmin = "error";
+            }
+            renderFotosUnidadGaleria();
+            renderFotosAdicionalGaleria();
+        }
+
+        function actualizarMetricaFotos() {
+            let count = 0;
+            fotosAdmin.forEach((lista) => {
+                lista.forEach((f) => { if (!fotosBorradas.has(f.publicId)) count++; });
+            });
+            const el = document.getElementById("metricFotos");
+            if (el) el.textContent = count;
+        }
+
+        function fotosVisibles(clave) {
+            const lista = fotosAdmin.get(clave) || [];
+            return lista.filter((f) => !fotosBorradas.has(f.publicId));
+        }
+
+        function poblarSelectsFotos() {
+            const selUC = document.getElementById("fotosUnidadCategoria");
+            if (selUC) {
+                selUC.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                    + FICHAS_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            }
+            const selAC = document.getElementById("fotosAdicionalCategoria");
+            if (selAC) {
+                selAC.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                    + ADICIONALES_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            }
+        }
+
+        function onFotosUnidadCategoriaChange() {
+            const catId = document.getElementById("fotosUnidadCategoria").value;
+            const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
+            const selProd = document.getElementById("fotosUnidadProducto");
+            const selEje = document.getElementById("fotosUnidadEje");
+            const wrapEje = document.getElementById("fotosUnidadEjeWrap");
+            if (!cat) {
+                selProd.innerHTML = `<option value="">Elegí primero una categoría</option>`;
+                selProd.disabled = true;
+                selEje.innerHTML = "";
+                selEje.disabled = true;
+                wrapEje.hidden = true;
+                renderFotosUnidadGaleria();
+                return;
+            }
+            selProd.innerHTML = `<option value="">Seleccionar unidad...</option>`
+                + cat.productos.map((p) => `<option value="${p}">${p}</option>`).join("");
+            selProd.disabled = false;
+            if (cat.ejes.length > 0) {
+                selEje.innerHTML = `<option value="">Seleccionar configuración...</option>`
+                    + cat.ejes.map((e) => `<option value="${e}">${e.replace(/-/g, " ")}</option>`).join("");
+                selEje.disabled = false;
+                wrapEje.hidden = false;
+            } else {
+                selEje.innerHTML = "";
+                selEje.disabled = true;
+                wrapEje.hidden = true;
+            }
+            renderFotosUnidadGaleria();
+        }
+
+        function onFotosAdicionalCategoriaChange() {
+            const catId = document.getElementById("fotosAdicionalCategoria").value;
+            const cat = ADICIONALES_CATALOGO.find((c) => c.id === catId);
+            const selItem = document.getElementById("fotosAdicionalItem");
+            if (!cat) {
+                selItem.innerHTML = `<option value="">Elegí primero una categoría</option>`;
+                selItem.disabled = true;
+                renderFotosAdicionalGaleria();
+                return;
+            }
+            selItem.innerHTML = `<option value="">Seleccionar adicional...</option>`
+                + cat.items.map((it) => `<option value="${it}">${it}</option>`).join("");
+            selItem.disabled = false;
+            renderFotosAdicionalGaleria();
+        }
+
+        function renderFotosUnidadGaleria() {
+            const cont = document.getElementById("fotosUnidadGaleria");
+            if (!cont) return;
+            const catId = document.getElementById("fotosUnidadCategoria")?.value;
+            const productoNombre = document.getElementById("fotosUnidadProducto")?.value;
+            const ejeSlug = document.getElementById("fotosUnidadEje")?.value;
+            const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
+
+            if (!catId || !productoNombre || (cat && cat.ejes.length > 0 && !ejeSlug)) {
+                cont.innerHTML = `<p class="admin-doc-empty">Elegí una categoría${cat && cat.ejes.length > 0 ? ", una unidad y una configuración" : " y una unidad"} para ver y gestionar sus fotos.</p>`;
+                return;
+            }
+            if (estadoFotosAdmin === "cargando") {
+                cont.innerHTML = `<p class="admin-doc-empty">Cargando fotos...</p>`;
+                return;
+            }
+            if (estadoFotosAdmin === "error") {
+                cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar las fotos.</p>`;
+                return;
+            }
+
+            const productoSlug = crearSlug(productoNombre);
+            const clave = fotosClaveUnidad(catId, productoSlug, ejeSlug);
+            const fotos = fotosVisibles(clave);
+            cont.innerHTML = renderGaleriaFotos(fotos) + renderUploadFotoForm("unidad");
+            wireGaleriaFotos(cont, "unidad");
+        }
+
+        function renderFotosAdicionalGaleria() {
+            const cont = document.getElementById("fotosAdicionalGaleria");
+            if (!cont) return;
+            const catId = document.getElementById("fotosAdicionalCategoria")?.value;
+            const adicionalNombre = document.getElementById("fotosAdicionalItem")?.value;
+
+            if (!catId || !adicionalNombre) {
+                cont.innerHTML = `<p class="admin-doc-empty">Elegí una categoría y un adicional para ver y gestionar sus fotos.</p>`;
+                return;
+            }
+            if (estadoFotosAdmin === "cargando") {
+                cont.innerHTML = `<p class="admin-doc-empty">Cargando fotos...</p>`;
+                return;
+            }
+            if (estadoFotosAdmin === "error") {
+                cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar las fotos.</p>`;
+                return;
+            }
+
+            const adicionalSlug = crearSlug(adicionalNombre);
+            const clave = fotosClaveAdicional(catId, adicionalSlug);
+            const fotos = fotosVisibles(clave);
+            cont.innerHTML = renderGaleriaFotos(fotos) + renderUploadFotoForm("adicional");
+            wireGaleriaFotos(cont, "adicional");
+        }
+
+        function renderGaleriaFotos(fotos) {
+            if (fotos.length === 0) {
+                return `<div class="fotos-grid fotos-grid--vacia"><p class="admin-doc-empty">Sin fotos cargadas todavía.</p></div>`;
+            }
+            return `<div class="fotos-grid">` + fotos.map((f) => `
+                <div class="foto-card">
+                    <img src="${urlThumbFoto(f.publicId, f.formato, f.version)}" alt="Foto ${f.numero}" loading="lazy">
+                    <button class="foto-borrar" type="button" data-public-id="${f.publicId}" aria-label="Eliminar foto">×</button>
+                </div>`).join("") + `</div>`;
+        }
+
+        function renderUploadFotoForm(tipo) {
+            const idPrefix = tipo === "unidad" ? "fotosUnidad" : "fotosAdicional";
+            return `
+                <form class="admin-form admin-form--inline foto-upload-form" id="${idPrefix}SubirForm" autocomplete="off">
+                    <label class="admin-field">
+                        <span>Agregar nueva foto (JPG/PNG/WEBP, máx ${MAX_FOTO_MB} MB)</span>
+                        <input type="file" id="${idPrefix}Archivo" accept="image/jpeg,image/png,image/webp" required>
+                    </label>
+                    <button class="admin-submit" type="submit">
+                        <span class="admin-submit-label">Subir foto</span>
+                    </button>
+                    <div class="admin-status" id="${idPrefix}Status" hidden></div>
+                </form>
+            `;
+        }
+
+        function wireGaleriaFotos(cont, tipo) {
+            const idPrefix = tipo === "unidad" ? "fotosUnidad" : "fotosAdicional";
+            const form = document.getElementById(`${idPrefix}SubirForm`);
+            if (form) form.addEventListener("submit", (e) => subirFotoHandler(e, tipo));
+            cont.querySelectorAll(".foto-borrar").forEach((btn) => {
+                btn.addEventListener("click", () => borrarFoto(btn.dataset.publicId, tipo));
+            });
+        }
+
+        function setFotoStatus(tipo, state, message) {
+            const id = tipo === "unidad" ? "fotosUnidadStatus" : "fotosAdicionalStatus";
+            const status = document.getElementById(id);
+            if (!status) return;
+            if (state === null) {
+                status.hidden = true;
+                status.className = "admin-status";
+                status.textContent = "";
+                return;
+            }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        async function subirFotoHandler(event, tipo) {
+            event.preventDefault();
+            let publicIdPrefix, descripcionDestino, catId, productoSlug, ejeSlug, adicionalSlug;
+
+            if (tipo === "unidad") {
+                catId = document.getElementById("fotosUnidadCategoria").value;
+                const productoNombre = document.getElementById("fotosUnidadProducto").value;
+                ejeSlug = document.getElementById("fotosUnidadEje").value || "";
+                const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
+                if (!catId || !productoNombre || (cat && cat.ejes.length > 0 && !ejeSlug)) {
+                    setFotoStatus(tipo, "error", "Seleccioná categoría, unidad" + (cat && cat.ejes.length > 0 ? " y configuración." : "."));
+                    return;
+                }
+                productoSlug = crearSlug(productoNombre);
+                publicIdPrefix = ejeSlug
+                    ? `unidades/${catId}/${productoSlug}/${ejeSlug}`
+                    : `unidades/${catId}/${productoSlug}`;
+                descripcionDestino = `${cat.nombre} · ${productoNombre}${ejeSlug ? " · " + ejeSlug.replace(/-/g, " ") : ""}`;
+            } else {
+                catId = document.getElementById("fotosAdicionalCategoria").value;
+                const adicionalNombre = document.getElementById("fotosAdicionalItem").value;
+                if (!catId || !adicionalNombre) {
+                    setFotoStatus(tipo, "error", "Seleccioná categoría y adicional.");
+                    return;
+                }
+                adicionalSlug = crearSlug(adicionalNombre);
+                const cat = ADICIONALES_CATALOGO.find((c) => c.id === catId);
+                publicIdPrefix = `adicionales/${catId}/${adicionalSlug}`;
+                descripcionDestino = `${cat.nombre} · ${adicionalNombre}`;
+            }
+
+            const archivo = document.getElementById(tipo === "unidad" ? "fotosUnidadArchivo" : "fotosAdicionalArchivo")?.files[0];
+            if (!archivo) {
+                setFotoStatus(tipo, "error", "Elegí una foto.");
+                return;
+            }
+            if (!archivo.type.startsWith("image/")) {
+                setFotoStatus(tipo, "error", "El archivo debe ser una imagen.");
+                return;
+            }
+            const sizeMB = archivo.size / (1024 * 1024);
+            if (sizeMB > MAX_FOTO_MB) {
+                setFotoStatus(tipo, "error", `La foto pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_FOTO_MB} MB.`);
+                return;
+            }
+
+            const ok = await mostrarConfirmacion({
+                titulo: "Subir foto",
+                mensaje: `¿Confirmás la subida de una foto para <strong>${descripcionDestino}</strong>?`,
+                etiquetaConfirmar: "Subir",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            const submitBtn = event.target.querySelector(".admin-submit");
+            const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            submitBtn.disabled = true;
+            submitLabel.textContent = "Subiendo...";
+            setFotoStatus(tipo, "info", "Subiendo archivo...");
+
+            try {
+                const numero = Date.now();
+                const publicId = `${publicIdPrefix}/foto-${numero}`;
+                const formData = new FormData();
+                formData.append("file", archivo);
+                formData.append("upload_preset", CLOUDINARY_PRESET);
+                formData.append("public_id", publicId);
+                formData.append("tags", "catalogo");
+
+                const resp = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: "POST", body: formData });
+                const data = await resp.json();
+                if (!resp.ok || !data.secure_url) {
+                    throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+                }
+
+                setFotoStatus(tipo, "success", "Foto subida correctamente.");
+                await cargarFotos();
+            } catch (e) {
+                console.error(e);
+                setFotoStatus(tipo, "error", "No se pudo subir: " + (e.message || "error desconocido"));
+                submitBtn.disabled = false;
+                submitLabel.textContent = "Subir foto";
+            }
+        }
+
+        async function borrarFoto(publicId, tipo) {
+            const ok = await mostrarConfirmacion({
+                titulo: "Eliminar foto",
+                mensaje: `¿Querés eliminar esta foto?<br><br>La foto va a desaparecer del catálogo. Si querés recuperar el espacio en Cloudinary, también tenés que borrarla desde su dashboard.`,
+                etiquetaConfirmar: "Eliminar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("fotos_borradas").add({
+                    publicId,
+                    borradoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                fotosBorradas.add(publicId);
+                actualizarMetricaFotos();
+                if (tipo === "unidad") renderFotosUnidadGaleria();
+                else renderFotosAdicionalGaleria();
+            } catch (e) {
+                await mostrarConfirmacion({
+                    titulo: "No se pudo eliminar",
+                    mensaje: e.message || "Error desconocido al borrar.",
+                    etiquetaConfirmar: "Cerrar"
+                });
+            }
+        }
+
         function renderFichasGlobales() {
             const cont = document.getElementById("fichasGlobalesList");
             if (!cont) return;
@@ -1845,8 +2332,24 @@
             poblarSelectProducto("");
             renderEstadoFicha();
 
+            // Fotos
+            poblarSelectsFotos();
+            const fotosUC = document.getElementById("fotosUnidadCategoria");
+            const fotosUP = document.getElementById("fotosUnidadProducto");
+            const fotosUE = document.getElementById("fotosUnidadEje");
+            const fotosAC = document.getElementById("fotosAdicionalCategoria");
+            const fotosAI = document.getElementById("fotosAdicionalItem");
+            if (fotosUC) fotosUC.addEventListener("change", onFotosUnidadCategoriaChange);
+            if (fotosUP) fotosUP.addEventListener("change", renderFotosUnidadGaleria);
+            if (fotosUE) fotosUE.addEventListener("change", renderFotosUnidadGaleria);
+            if (fotosAC) fotosAC.addEventListener("change", onFotosAdicionalCategoriaChange);
+            if (fotosAI) fotosAI.addEventListener("change", renderFotosAdicionalGaleria);
+            renderFotosUnidadGaleria();
+            renderFotosAdicionalGaleria();
+
             cargarDocumentos();
             cargarFichas();
+            cargarFotos();
 
             const hash = (window.location.hash || "#inicio").substring(1);
             mostrarSeccion(hash);

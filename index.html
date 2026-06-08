@@ -6002,12 +6002,22 @@
             return (eje || "").replace(/-ejes$/, "-eje");
         }
 
+        // Set de publicIds borrados desde el panel admin (soft delete via Firestore).
+        // Las fotos siguen existiendo en Cloudinary pero el catálogo las ignora.
+        // La promesa la resuelve la segunda parte del script (auth handler), porque
+        // Firestore no está disponible hasta que Firebase haya inicializado.
+        let fotosBorradasSet = new Set();
+        let cargaFotosBorradasResolve;
+        const cargaFotosBorradasPromise = new Promise((res) => { cargaFotosBorradasResolve = res; });
+
         const cargaFotosPromise = (async () => {
             try {
-                const resp = await fetch(FOTOS_LIST_URL);
-                if (!resp.ok) return;
-                const data = await resp.json();
+                const fetchPromise = fetch(FOTOS_LIST_URL).then((r) => r.ok ? r.json() : null);
+                await cargaFotosBorradasPromise;
+                const data = await fetchPromise;
+                if (!data) return;
                 (data.resources || []).forEach((r) => {
+                    if (fotosBorradasSet.has(r.public_id)) return;
                     const partes = (r.public_id || "").split("/");
                     const m = partes[partes.length - 1].match(/^foto-(\d+)$/);
                     if (!m) return;
@@ -10316,6 +10326,19 @@
     obtenerRolUsuario(email).then(aplicarRolUsuario);
     if (typeof cargarDocumentos === "function") cargarDocumentos();
     if (typeof cargarFichas === "function") cargarFichas();
+
+    // Soft delete de fotos: cargar la lista y desbloquear cargaFotosPromise.
+    db.collection("fotos_borradas").get()
+      .then((snap) => {
+          snap.docs.forEach((d) => {
+              const data = d.data();
+              if (data.publicId) fotosBorradasSet.add(data.publicId);
+          });
+      })
+      .catch((e) => { console.warn("No se pudo leer fotos_borradas, se muestran todas:", e); })
+      .finally(() => {
+          if (typeof cargaFotosBorradasResolve === "function") cargaFotosBorradasResolve();
+      });
     if (typeof obtenerUsuario === "function") {
       const datos = obtenerUsuario(email);
       usuarioActual = { email, nombre: datos.nombre, genero: datos.genero };
