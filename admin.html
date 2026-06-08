@@ -649,16 +649,28 @@
             background: rgba(21, 153, 71, 0.14);
         }
 
-        .adicionales-nota {
-            margin: 16px 0 0;
-            padding: 12px 14px;
-            background: var(--gris-bg);
-            border-left: 3px solid var(--gris);
-            border-radius: var(--radio);
+        .adicionales-filtros {
+            display: grid;
+            grid-template-columns: minmax(200px, 1fr) minmax(220px, 1.5fr);
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .admin-field.admin-field--inline {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .admin-field.admin-field--inline > span {
             font-size: 0.78rem;
-            color: var(--gris-texto);
-            line-height: 1.4;
-            font-style: italic;
+            color: var(--gris-texto, #666);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        @media (max-width: 640px) {
+            .adicionales-filtros {
+                grid-template-columns: 1fr;
+            }
         }
 
         .admin-doc-delete:hover {
@@ -1398,7 +1410,7 @@
 
             <section class="panel-section" data-section="documentos">
                 <h1 class="page-title">Documentos</h1>
-                <p class="page-subtitle">Subí, listá o borrá los documentos disponibles en la sección Recursos del catálogo.</p>
+                <p class="page-subtitle">Subí, editá o borrá documentos de la sección Recursos del catálogo.</p>
 
                 <div class="admin-cards">
                     <div class="admin-card">
@@ -1482,7 +1494,7 @@
 
             <section class="panel-section" data-section="fotos">
                 <h1 class="page-title">Fotos</h1>
-                <p class="page-subtitle">Subí o borrá fotos de cualquier unidad o adicional del catálogo.</p>
+                <p class="page-subtitle">Subí o borrá fotos de las unidades del catálogo. Las fotos de adicionales se gestionan desde la sección Adicionales.</p>
 
                 <div class="admin-cards">
                     <div class="admin-card">
@@ -1505,37 +1517,12 @@
                             <div id="fotosUnidadGaleria"></div>
                         </div>
                     </div>
-
-                    <div class="admin-card">
-                        <div class="admin-card-header">
-                            <h2 class="admin-card-title">Fotos de adicionales</h2>
-                            <button class="btn-crear" type="button" id="btnCrearAdicional">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                                </svg>
-                                Crear adicional
-                            </button>
-                        </div>
-                        <div class="admin-form">
-                            <div class="admin-field-row">
-                                <label class="admin-field">
-                                    <span>Categoría</span>
-                                    <select class="admin-select" id="fotosAdicionalCategoria"></select>
-                                </label>
-                                <label class="admin-field">
-                                    <span>Adicional</span>
-                                    <select class="admin-select" id="fotosAdicionalItem" disabled></select>
-                                </label>
-                            </div>
-                            <div id="fotosAdicionalGaleria"></div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
             <section class="panel-section" data-section="adicionales">
                 <h1 class="page-title">Adicionales</h1>
-                <p class="page-subtitle">Creá, editá o eliminá los adicionales que vos diste de alta desde el panel.</p>
+                <p class="page-subtitle">Creá, editá o eliminá adicionales.</p>
 
                 <div class="admin-cards">
                     <div class="admin-card">
@@ -1548,16 +1535,19 @@
                                 Crear adicional
                             </button>
                         </div>
-                        <div class="admin-doc-list" id="adicionalesLista"></div>
-                        <p class="adicionales-nota">Solo se listan los adicionales creados desde este panel. Los adicionales precargados originalmente en el catálogo no se editan ni se borran desde acá (requiere tocar el código).</p>
-                    </div>
-                    <div class="admin-card" id="cardMigracionAdicionales">
-                        <div class="admin-card-header">
-                            <h2 class="admin-card-title">Migración única (temporal)</h2>
+                        <div class="adicionales-filtros">
+                            <label class="admin-field admin-field--inline">
+                                <span>Filtrar por categoría</span>
+                                <select class="admin-select" id="adicionalesFiltroCategoria">
+                                    <option value="">Todas las categorías</option>
+                                </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Buscar</span>
+                                <input type="search" class="admin-select" id="adicionalesFiltroBuscar" placeholder="Nombre o código…" autocomplete="off">
+                            </label>
                         </div>
-                        <p class="adicionales-nota" style="margin-top:0;">Apretá este botón <strong>una sola vez</strong> para copiar todos los adicionales precargados originalmente en el catálogo a Firestore, así quedan editables desde acá. Es seguro apretarlo varias veces: no duplica los que ya existen.</p>
-                        <button class="btn-crear" type="button" id="btnMigrarAdicionales" style="margin-top:12px;">Migrar adicionales precargados</button>
-                        <p id="migracionAdicionalesEstado" class="adicionales-nota" style="margin-top:10px; display:none;"></p>
+                        <div class="admin-doc-list" id="adicionalesLista"></div>
                     </div>
                 </div>
             </section>
@@ -1712,115 +1702,6 @@
             { id: "carrocerias", nombre: "Carrocerías", ejes: [], productos: ["Curtain sider", "Todo puertas", "Volcadora", "Isotérmica", "Bivuelco", "Paquetera", "Curtain sider barandas volcables", "Pollera"] },
             { id: "bitrenes", nombre: "Bitrenes", ejes: [], productos: ["Baranda volcable", "Isotérmico", "Portacontenedor", "Curtain sider", "Forestal"] }
         ];
-
-        const ADICIONALES_CATALOGO = [
-            { id: "acople-conexion", nombre: "Acople y conexión", items: ["Acople Frenos", "Acople Luces", "Brida adicional", "Enganche instalado"] },
-            { id: "aumento-carga", nombre: "Aumento de carga", items: ["Alargue de arco sobre baranda", "Sobre baranda para batea", "Sobre baranda chipera"] },
-            { id: "amarre-sujecion", nombre: "Amarre y sujeción de carga", items: ["Amarre embutido tipo Masisa", "Anilla para amarre (tipo ACINDAR)", "Malacates", "Pasamanos (cumbrera/marco superior) y Alfajías", "Portauxilio malacate", "Trabas porta contenedor"] },
-            { id: "piso-superficie", nombre: "Piso y superficie de carga", items: ["Bocas de descarga", "Diferencia de piso 1/8 a 4 mm", "Diferencia de piso liso a semillado", "Piso chapa 1/8\" semillado", "Protección de carga para piso de aluminio acanalado", "Rejas para piso", "Tinteros"] },
-            { id: "estructura", nombre: "Estructura", items: ["Caballete para siders", "Carrozado en chapa Domex y piso", "Cuello deprimido", "Diferencia por lanza extensible", "Frente Completo", "Plataforma trasera rebatible tipo Baloni (Paquetero)", "Soporte de estacas sobre carrocería (Pecho con frente)", "Soporte de estacas sobre carrocería (Playo sin frente)", "Unidad completa en Domex"] },
-            { id: "cajon-compartimiento", nombre: "Cajón y compartimiento", items: ["Cajón cocina - nuevo modelo 2026", "Cajón de herramientas chico (carrocería)", "Cajón de herramientas grande (semirremolque)", "Cajón para alfajías", "Cajón porta estacas", "Depósito de aceite en batea"] },
-            { id: "furgon-termico", nombre: "Furgón térmico", items: ["Cambio de paneles a 100 mm", "Cambio de paneles a 75 mm", "Divisorio desplazable", "Gancheras para furgón carnicero", "Piso de aluminio", "Protección interior de equipo de frío", "Puerta lateral adicional térmica", "Tronera", "Ventiletes"] },
-            { id: "tren-rodante", nombre: "Tren rodante", items: ["Cambio a suspensión neumática", "Colocación de tercer eje común en camión", "Colocación de tercer eje curvo en camión", "Ejes con freno a disco", "Equipo EBS y control de peso", "Frenos disco marca GEC", "Levanta eje neumático", "Tren delantero completo con llantas", "Tren retráctil en el 1° tramo del bitren"] },
-            { id: "equipamiento-hidraulico", nombre: "Equipamiento hidráulico", items: ["Equipo hidráulico para batea (en camión)", "Equipo hidráulico para volcadora", "Instalación hidráulica para conectar acoplado"] },
-            { id: "proteccion", nombre: "Protección", items: ["Inclinómetro", "Paragolpe para carrocería", "Patines para balsa", "Protección lateral", "Zócalo de refuerzo en el pecho del sider"] },
-            { id: "puertas-tapas", nombre: "Puertas, tapas y accesos", items: ["Puerta guillotina interior", "Puerta simbra interior", "Puerta trasera con camello para caballo", "Tapa fácil (para un 9,30 m)", "Tapas laterales para convertir en MIXTO un BV"] }
-        ];
-
-        // ===== Migración única: datos completos de los adicionales precargados =====
-        // Se usa SOLO para copiar a Firestore. Después de la migración esta constante
-        // y su botón asociado se eliminan del archivo.
-        const ADICIONALES_MIGRACION_DATA = [
-            { id: "acople-conexion", nombre: "Acople y conexión", items: [
-                { codigo: "AD001", nombre: "Acople Frenos", descripcion: "Dispositivo que actúa como punto de conexión entre el vehículo tractor y el sistema de frenado del remolque. Transforma la acción de frenado del coche en una acción de frenado proporcional en el remolque.", ubicacion: "En la parte delantera del remolque." },
-                { codigo: "AD002", nombre: "Acople Luces", descripcion: "Componente encargado de transmitir la energía eléctrica y las señales luminosas desde el vehículo tractor hacia el remolque.", ubicacion: "En la parte trasera del vehículo y en el remolque." },
-                { codigo: "SIN CÓDIGO", nombre: "Brida adicional", descripcion: "La brida es el conjunto de piezas que sujeta el perno al chasis del semirremolque.", ubicacion: "En la parte inferior delantera del semirremolque (plato de enganche), donde acopla la rueda del camión." },
-                { codigo: "AD017", nombre: "Enganche instalado", descripcion: "Dispositivo mecánico para acoplar un segundo remolque.", ubicacion: "Parte central del paragolpe trasero." }
-            ]},
-            { id: "aumento-carga", nombre: "Aumento de carga", items: [
-                { codigo: "AD003", nombre: "Alargue de arco sobre baranda", descripcion: "Extensión de los arcos que sostienen la lona para ganar altura de carga.", ubicacion: "En la parte superior de la caja de carga." },
-                { codigo: "AD049", nombre: "Sobre baranda para batea", descripcion: "Dispositivos extra para aumentar la altura de la caja volcadora.", ubicacion: "Sobre las paredes laterales de la batea." },
-                { codigo: "AD040", nombre: "Sobre baranda chipera", descripcion: "Dispositivos extra para aumentar la altura de la caja chipera.", ubicacion: "Sobre los laterales del equipo." }
-            ]},
-            { id: "amarre-sujecion", nombre: "Amarre y sujeción de carga", items: [
-                { codigo: "AD004", nombre: "Amarre embutido tipo Masisa", descripcion: "Amarres embutidos en el piso fabricados por Lambert (no homologados). Diseñados para fajas de pallets, evitando amarrar al bandón.", ubicacion: "Distribuidos en el piso o laterales internos." },
-                { codigo: "AD005", nombre: "Anilla para amarre (tipo ACINDAR)", descripcion: "Amarre homologado, resistente, especialmente utilizado para cargas pesadas como bobinas de acero, hierro, chapa, entre otros.", ubicacion: "Distribuidos en el piso o laterales internos." },
-                { codigo: "AD024", nombre: "Malacates", descripcion: "Tensores mecánicos para ajustar las sogas de la lona o sujetar carga.", ubicacion: "Laterales del chasis o barandas." },
-                { codigo: "AD026", nombre: "Pasamanos (cumbrera/marco superior) y Alfajías", descripcion: "Marco superior de contención (cumbrera o marco superior) y maderas de separación.", ubicacion: "Perímetro superior y laterales de la caja de carga." },
-                { codigo: "AD032", nombre: "Portauxilio malacate", descripcion: "Accesorio de servicio y mantenimiento. Soporte estructural que incluye un mecanismo de izaje (cable de acero y engranaje).", ubicacion: "Debajo del chasis." },
-                { codigo: "AD045 / AD046", nombre: "Trabas porta contenedor", descripcion: "Dispositivos mecánicos de fijación para asegurar contenedores al chasis.", ubicacion: "Distribuidos en el chasis." }
-            ]},
-            { id: "piso-superficie", nombre: "Piso y superficie de carga", items: [
-                { codigo: "AD006", nombre: "Bocas de descarga", descripcion: "Aberturas con cierre deslizante para descargar cereales por gravedad.", ubicacion: "En la parte inferior del remolque, en el chasis." },
-                { codigo: "AD013", nombre: "Diferencia de piso 1/8 a 4 mm", descripcion: "Cambio del espesor de la chapa del piso para mayor resistencia a impactos o carga pesada.", ubicacion: "Piso de la unidad." },
-                { codigo: "AD014", nombre: "Diferencia de piso liso a semillado", descripcion: "Cambio de textura de la chapa por una con relieve antideslizante.", ubicacion: "Piso de la unidad." },
-                { codigo: "AD029", nombre: "Piso chapa 1/8\" semillado", descripcion: "Configuración estándar de piso con relieve antideslizante de espesor 3,2 mm.", ubicacion: "Toda la superficie de carga." },
-                { codigo: "AD058", nombre: "Protección de carga para piso de aluminio acanalado", descripcion: "Revestimiento o sistema protector adicional que evita daños en el piso de aluminio durante la carga y descarga.", ubicacion: "Sobre el piso del furgón." },
-                { codigo: "AD039", nombre: "Rejas para piso", descripcion: "Rejillas metálicas para drenaje o agarre adicional.", ubicacion: "Sobre el piso de carga." },
-                { codigo: "AD031", nombre: "Tinteros", descripcion: "Orificios o receptáculos para insertar estacas o postes.", ubicacion: "Embutidos en el piso de la unidad." }
-            ]},
-            { id: "estructura", nombre: "Estructura", items: [
-                { codigo: "AD007", nombre: "Caballete para siders", descripcion: "Estructura de soporte interna diseñada para transportar cargas específicas.", ubicacion: "En el interior de la unidad, sobre el piso." },
-                { codigo: "AD051", nombre: "Carrozado en chapa Domex y piso", descripcion: "Fabricación de la carrocería utilizando acero de alta resistencia Domex, incluyendo también el piso para mayor durabilidad estructural.", ubicacion: "Estructura general de la carrocería." },
-                { codigo: "AD053", nombre: "Cuello deprimido", descripcion: "Diseño del chasis con una sección rebajada en la zona delantera para disminuir la altura de carga y mejorar estabilidad.", ubicacion: "Parte delantera del semirremolque." },
-                { codigo: "AD015", nombre: "Diferencia por lanza extensible", descripcion: "Mecanismo que permite alargar o acortar la lanza de tiro según la carga.", ubicacion: "Parte frontal de acoplados." },
-                { codigo: "AD020", nombre: "Frente Completo", descripcion: "Panel frontal (pecho) de diferentes alturas según necesidad del cliente.", ubicacion: "Parte delantera de la carrocería." },
-                { codigo: "AD030", nombre: "Plataforma trasera rebatible tipo Baloni (Paquetero)", descripcion: "Elevador hidráulico trasero para carga y descarga de mercadería pesada. Pensado para paquetero.", ubicacion: "Paragolpe trasero." },
-                { codigo: "AD041", nombre: "Soporte de estacas sobre carrocería (Pecho con frente)", descripcion: "Apoyos para estacas integrados en el panel delantero.", ubicacion: "Pecho de la unidad." },
-                { codigo: "AD042", nombre: "Soporte de estacas sobre carrocería (Playo sin frente)", descripcion: "Soportes para estacas en unidades totalmente planas.", ubicacion: "Distribuidos en el perímetro del piso." },
-                { codigo: "AD052", nombre: "Unidad completa en Domex", descripcion: "Construcción integral de la unidad (chasis y carrocería) en acero Domex, logrando menor peso y mayor resistencia.", ubicacion: "Toda la unidad." }
-            ]},
-            { id: "cajon-compartimiento", nombre: "Cajón y compartimiento", items: [
-                { codigo: "AD008", nombre: "Cajón cocina - nuevo modelo 2026", descripcion: "Gabinete diseñado para guardar anafe, alimentos y utensilios. Medidas: 1170 × 500 × 540 mm. Modelo 2026.", ubicacion: "En el chasis de la unidad." },
-                { codigo: "AD009", nombre: "Cajón de herramientas chico (carrocería)", descripcion: "Compartimento metálico o plástico para herramientas menores. Medidas: 650 × 460 × 540 mm. Para carrocerías.", ubicacion: "En el chasis de la unidad." },
-                { codigo: "AD010", nombre: "Cajón de herramientas grande (semirremolque)", descripcion: "Compartimento metálico o plástico de mayor capacidad que el cajón chico. Medidas: 1170 × 500 × 540 mm. Para semirremolques.", ubicacion: "En el chasis de la unidad." },
-                { codigo: "AD011", nombre: "Cajón para alfajías", descripcion: "Estructura alargada para almacenar las alfajías.", ubicacion: "En el chasis de la unidad." },
-                { codigo: "AD012", nombre: "Cajón porta estacas", descripcion: "Compartimento específico para guardar los postes verticales de contención.", ubicacion: "En el chasis de la unidad." },
-                { codigo: "AD063", nombre: "Depósito de aceite en batea", descripcion: "Tanque destinado al almacenamiento de aceite hidráulico necesario para el sistema de vuelco.", ubicacion: "Sobre o debajo de la batea, integrado al sistema hidráulico." }
-            ]},
-            { id: "furgon-termico", nombre: "Furgón térmico", items: [
-                { codigo: "SIN CÓDIGO", nombre: "Cambio de paneles a 100 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 100 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." },
-                { codigo: "SIN CÓDIGO", nombre: "Cambio de paneles a 75 mm", descripcion: "Modificación del espesor de los paneles isotérmicos a 75 mm para mejorar el aislamiento térmico respecto a configuraciones estándar.", ubicacion: "Paredes, techo y frente del furgón." },
-                { codigo: "AD028", nombre: "Divisorio desplazable", descripcion: "Panel móvil que permite crear dos cámaras de temperatura distintas.", ubicacion: "Interior del furgón térmico." },
-                { codigo: "AD021", nombre: "Gancheras para furgón carnicero", descripcion: "Rieles con ganchos para el transporte de carne colgada.", ubicacion: "Sujetas al techo interno del furgón." },
-                { codigo: "SIN CÓDIGO", nombre: "Piso de aluminio", descripcion: "Superficie de carga liviana y apta para alimentos, usualmente acanalada.", ubicacion: "Interior de furgones." },
-                { codigo: "AD033", nombre: "Protección interior de equipo de frío", descripcion: "Reja metálica para evitar que la carga golpee el motor de refrigeración.", ubicacion: "Pecho interno del furgón." },
-                { codigo: "AD036", nombre: "Puerta lateral adicional térmica", descripcion: "Puerta extra para carga lateral manteniendo la aislación.", ubicacion: "Uno de los costados del furgón térmico." },
-                { codigo: "AD048", nombre: "Tronera", descripcion: "Abertura controlada que permite la circulación de aire entre compartimentos o mejora la ventilación interna sin perder eficiencia térmica.", ubicacion: "Paneles internos del furgón térmico." },
-                { codigo: "AD050", nombre: "Ventiletes", descripcion: "Dispositivos de ventilación regulables que permiten el ingreso y egreso de aire para evitar condensación o acumulación de humedad.", ubicacion: "Laterales o parte trasera de la unidad." }
-            ]},
-            { id: "tren-rodante", nombre: "Tren rodante", items: [
-                { codigo: "AD054", nombre: "Cambio a suspensión neumática", descripcion: "Sustitución del sistema de suspensión mecánica convencional por uno neumático independiente por eje, mejorando confort, estabilidad y cuidado de la carga.", ubicacion: "En cada eje de la unidad." },
-                { codigo: "SIN CÓDIGO", nombre: "Colocación de tercer eje común en camión", descripcion: "Incorporación de un eje adicional común para aumentar la capacidad de carga y distribuir mejor el peso.", ubicacion: "En camión." },
-                { codigo: "SIN CÓDIGO", nombre: "Colocación de tercer eje curvo en camión", descripcion: "Instalación de un eje adicional con diseño curvo que mejora la maniobrabilidad en giros y reduce el desgaste de neumáticos.", ubicacion: "En camión." },
-                { codigo: "AD016", nombre: "Ejes con freno a disco", descripcion: "Sustitución de los frenos de tambor por discos para mayor potencia de frenado.", ubicacion: "En el extremo de cada eje de la unidad." },
-                { codigo: "AD057", nombre: "Equipo EBS y control de peso", descripcion: "Sistema electrónico de frenos (EBS) combinado con monitoreo de carga y telemetría (Infocentre), para configuraciones con suspensión neumática. Permite controlar peso, rendimiento y comportamiento de la suspensión.", ubicacion: "Integrado al sistema de frenos y suspensión de la unidad." },
-                { codigo: "AD062", nombre: "Frenos disco marca GEC", descripcion: "Sistema de frenos a disco provisto por la marca GEC, que ofrece mayor eficiencia de frenado y menor mantenimiento.", ubicacion: "En los ejes de la unidad." },
-                { codigo: "AD023", nombre: "Levanta eje neumático", descripcion: "Pulmón de aire que levanta un eje para evitar el desgaste de cubiertas en vacío.", ubicacion: "En el chasis, sobre el eje que se desea levantar." },
-                { codigo: "AD047", nombre: "Tren delantero completo con llantas", descripcion: "Conjunto estructural que incluye eje delantero, suspensión, mazas y llantas, listo para montaje.", ubicacion: "Parte delantera del acoplado o unidad." },
-                { codigo: "AD060", nombre: "Tren retráctil en el 1° tramo del bitren", descripcion: "Sistema de ejes que puede retraerse en el primer módulo del bitren para optimizar maniobrabilidad y reducir desgaste en vacío.", ubicacion: "Primer tramo del bitren." }
-            ]},
-            { id: "equipamiento-hidraulico", nombre: "Equipamiento hidráulico", items: [
-                { codigo: "AD018", nombre: "Equipo hidráulico para batea (en camión)", descripcion: "Kit de bomba, toma de fuerza y mandos para poder elevar el volcador.", ubicacion: "Se instala en el chasis del camión tractor." },
-                { codigo: "AD019", nombre: "Equipo hidráulico para volcadora", descripcion: "Cilindro y conexiones necesarias para el vuelco de la caja.", ubicacion: "Bajo la caja de carga o en el frente de la misma." },
-                { codigo: "AD022", nombre: "Instalación hidráulica para conectar acoplado", descripcion: "Mangueras y acoples para pasar la presión hidráulica hacia atrás.", ubicacion: "Recorre el chasis hasta la cola de la unidad." }
-            ]},
-            { id: "proteccion", nombre: "Protección", items: [
-                { codigo: "AD059", nombre: "Inclinómetro", descripcion: "Dispositivo que mide el ángulo de inclinación de la unidad para prevenir vuelcos durante operaciones de descarga o circulación en terrenos irregulares.", ubicacion: "Cabina o chasis, visible para el operador." },
-                { codigo: "AD025", nombre: "Paragolpe para carrocería", descripcion: "Estructura de protección trasera contra impactos.", ubicacion: "Parte posterior inferior del chasis." },
-                { codigo: "AD027", nombre: "Patines para balsa", descripcion: "Dispositivo que actúa como elemento de protección ante desniveles del terreno.", ubicacion: "Colocado antes del paragolpe." },
-                { codigo: "AD034", nombre: "Protección lateral", descripcion: "Barras de seguridad para evitar que vehículos menores se metan debajo del remolque.", ubicacion: "Entre los ejes y las patas de apoyo." },
-                { codigo: "AD061", nombre: "Zócalo de refuerzo en el pecho del sider", descripcion: "Refuerzo estructural inferior en el panel frontal del sider para resistir impactos de carga.", ubicacion: "Pecho del sider." }
-            ]},
-            { id: "puertas-tapas", nombre: "Puertas, tapas y accesos", items: [
-                { codigo: "AD035", nombre: "Puerta guillotina interior", descripcion: "Puerta de apertura vertical para acceso rápido o compartimentado.", ubicacion: "Interior del furgón." },
-                { codigo: "AD037", nombre: "Puerta simbra interior", descripcion: "Puerta batiente de rejilla para ventilación o separación interna.", ubicacion: "Interior de la unidad de carga." },
-                { codigo: "AD038", nombre: "Puerta trasera con camello para caballo", descripcion: "Puerta trasera con una elevación superior para permitir el paso de la cabeza del animal.", ubicacion: "Trasera del transporte de ganado." },
-                { codigo: "AD043", nombre: "Tapa fácil (para un 9,30 m)", descripcion: "Sistema de cobertura superior de apertura y cierre rápido mediante lona corrediza o enrollable, que facilita la carga y descarga sin necesidad de desatar manualmente.", ubicacion: "Parte superior de la caja de carga." },
-                { codigo: "AD044", nombre: "Tapas laterales para convertir en MIXTO un BV", descripcion: "Paneles laterales desmontables que permiten transformar un BV en una configuración mixta apta para distintos tipos de carga.", ubicacion: "Laterales de la unidad." }
-            ]}
-        ];
-
         const MAX_FOTO_MB = 10;
         const FOTOS_LIST_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/catalogo.json`;
 
@@ -1848,27 +1729,19 @@
         }
 
         function categoriasAdicionalesCombinadas() {
-            const combined = ADICIONALES_CATALOGO.map((c) => ({ id: c.id, nombre: c.nombre, items: c.items, esNueva: false }));
-            const vistasNuevas = new Set(combined.map((c) => c.id));
+            const vistas = new Map();
             adicionalesExtra.forEach((a) => {
-                if (!a.categoriaId || vistasNuevas.has(a.categoriaId)) return;
-                vistasNuevas.add(a.categoriaId);
-                combined.push({
-                    id: a.categoriaId,
-                    nombre: a.categoriaNombre || a.categoriaId,
-                    items: [],
-                    esNueva: true
-                });
+                if (!a.categoriaId) return;
+                if (!vistas.has(a.categoriaId)) {
+                    vistas.set(a.categoriaId, {
+                        id: a.categoriaId,
+                        nombre: a.categoriaNombre || a.categoriaId,
+                        items: []
+                    });
+                }
+                vistas.get(a.categoriaId).items.push(a.nombre);
             });
-            return combined.sort((a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" }));
-        }
-
-        function adicionalesDeCategoria(catId) {
-            const hardcoded = ADICIONALES_CATALOGO.find((c) => c.id === catId);
-            const items = hardcoded ? [...hardcoded.items] : [];
-            const extras = adicionalesExtra.filter((a) => a.categoriaId === catId).map((a) => a.nombre);
-            const union = [...new Set([...items, ...extras])];
-            return union.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+            return [...vistas.values()].sort((a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" }));
         }
 
         function categoriasUnicas() {
@@ -2439,7 +2312,6 @@
                 estadoFotosAdmin = "error";
             }
             renderFotosUnidadGaleria();
-            renderFotosAdicionalGaleria();
         }
 
         function actualizarMetricaFotos() {
@@ -2461,14 +2333,6 @@
             if (selUC) {
                 selUC.innerHTML = `<option value="">Seleccionar categoría...</option>`
                     + FICHAS_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
-            }
-            const selAC = document.getElementById("fotosAdicionalCategoria");
-            if (selAC) {
-                const cats = categoriasAdicionalesCombinadas();
-                const valorActual = selAC.value;
-                selAC.innerHTML = `<option value="">Seleccionar categoría...</option>`
-                    + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
-                if (valorActual && cats.some((c) => c.id === valorActual)) selAC.value = valorActual;
             }
         }
 
@@ -2503,23 +2367,6 @@
             renderFotosUnidadGaleria();
         }
 
-        function onFotosAdicionalCategoriaChange() {
-            const catId = document.getElementById("fotosAdicionalCategoria").value;
-            const cat = ADICIONALES_CATALOGO.find((c) => c.id === catId);
-            const selItem = document.getElementById("fotosAdicionalItem");
-            if (!cat) {
-                selItem.innerHTML = `<option value="">Elegí primero una categoría</option>`;
-                selItem.disabled = true;
-                renderFotosAdicionalGaleria();
-                return;
-            }
-            const items = adicionalesDeCategoria(catId);
-            selItem.innerHTML = `<option value="">Seleccionar adicional...</option>`
-                + items.map((it) => `<option value="${it}">${it}</option>`).join("");
-            selItem.disabled = false;
-            renderFotosAdicionalGaleria();
-        }
-
         function renderFotosUnidadGaleria() {
             const cont = document.getElementById("fotosUnidadGaleria");
             if (!cont) return;
@@ -2544,34 +2391,8 @@
             const productoSlug = crearSlug(productoNombre);
             const clave = fotosClaveUnidad(catId, productoSlug, ejeSlug);
             const fotos = fotosVisibles(clave);
-            cont.innerHTML = renderGaleriaFotos(fotos) + renderUploadFotoForm("unidad");
-            wireGaleriaFotos(cont, "unidad");
-        }
-
-        function renderFotosAdicionalGaleria() {
-            const cont = document.getElementById("fotosAdicionalGaleria");
-            if (!cont) return;
-            const catId = document.getElementById("fotosAdicionalCategoria")?.value;
-            const adicionalNombre = document.getElementById("fotosAdicionalItem")?.value;
-
-            if (!catId || !adicionalNombre) {
-                cont.innerHTML = `<p class="admin-doc-empty">Elegí una categoría y un adicional para ver y gestionar sus fotos.</p>`;
-                return;
-            }
-            if (estadoFotosAdmin === "cargando") {
-                cont.innerHTML = `<p class="admin-doc-empty">Cargando fotos...</p>`;
-                return;
-            }
-            if (estadoFotosAdmin === "error") {
-                cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar las fotos.</p>`;
-                return;
-            }
-
-            const adicionalSlug = crearSlug(adicionalNombre);
-            const clave = fotosClaveAdicional(catId, adicionalSlug);
-            const fotos = fotosVisibles(clave);
-            cont.innerHTML = renderGaleriaFotos(fotos) + renderUploadFotoForm("adicional");
-            wireGaleriaFotos(cont, "adicional");
+            cont.innerHTML = renderGaleriaFotos(fotos) + renderUploadFotoForm();
+            wireGaleriaFotos(cont);
         }
 
         function renderGaleriaFotos(fotos) {
@@ -2585,30 +2406,28 @@
                 </div>`).join("") + `</div>`;
         }
 
-        function renderUploadFotoForm(tipo) {
-            const idPrefix = tipo === "unidad" ? "fotosUnidad" : "fotosAdicional";
+        function renderUploadFotoForm() {
             return `
-                <form class="admin-form admin-form--inline foto-upload-form" id="${idPrefix}SubirForm" autocomplete="off">
+                <form class="admin-form admin-form--inline foto-upload-form" id="fotosUnidadSubirForm" autocomplete="off">
                     <label class="admin-field">
                         <span>Agregar nueva foto (JPG/PNG/WEBP, máx ${MAX_FOTO_MB} MB)</span>
-                        <input type="file" id="${idPrefix}Archivo" accept="image/jpeg,image/png,image/webp" required>
+                        <input type="file" id="fotosUnidadArchivo" accept="image/jpeg,image/png,image/webp" required>
                     </label>
                     <button class="admin-submit" type="submit">
                         <span class="admin-submit-label">Subir foto</span>
                     </button>
-                    <div class="admin-status" id="${idPrefix}Status" hidden></div>
+                    <div class="admin-status" id="fotosUnidadStatus" hidden></div>
                 </form>
             `;
         }
 
-        function wireGaleriaFotos(cont, tipo) {
-            const idPrefix = tipo === "unidad" ? "fotosUnidad" : "fotosAdicional";
-            const form = document.getElementById(`${idPrefix}SubirForm`);
-            if (form) form.addEventListener("submit", (e) => subirFotoHandler(e, tipo));
+        function wireGaleriaFotos(cont) {
+            const form = document.getElementById("fotosUnidadSubirForm");
+            if (form) form.addEventListener("submit", subirFotoUnidadHandler);
             cont.querySelectorAll(".foto-borrar").forEach((btn) => {
                 btn.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    borrarFoto(btn.dataset.publicId, tipo);
+                    borrarFotoUnidad(btn.dataset.publicId);
                 });
             });
             cont.querySelectorAll(".foto-card").forEach((card) => {
@@ -2643,9 +2462,8 @@
             document.getElementById("fotoLightboxImg").src = "";
         }
 
-        function setFotoStatus(tipo, state, message) {
-            const id = tipo === "unidad" ? "fotosUnidadStatus" : "fotosAdicionalStatus";
-            const status = document.getElementById(id);
+        function setFotoUnidadStatus(state, message) {
+            const status = document.getElementById("fotosUnidadStatus");
             if (!status) return;
             if (state === null) {
                 status.hidden = true;
@@ -2658,51 +2476,27 @@
             status.textContent = message;
         }
 
-        async function subirFotoHandler(event, tipo) {
+        async function subirFotoUnidadHandler(event) {
             event.preventDefault();
-            let publicIdPrefix, descripcionDestino, catId, productoSlug, ejeSlug, adicionalSlug;
-
-            if (tipo === "unidad") {
-                catId = document.getElementById("fotosUnidadCategoria").value;
-                const productoNombre = document.getElementById("fotosUnidadProducto").value;
-                ejeSlug = document.getElementById("fotosUnidadEje").value || "";
-                const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
-                if (!catId || !productoNombre || (cat && cat.ejes.length > 0 && !ejeSlug)) {
-                    setFotoStatus(tipo, "error", "Seleccioná categoría, unidad" + (cat && cat.ejes.length > 0 ? " y configuración." : "."));
-                    return;
-                }
-                productoSlug = crearSlug(productoNombre);
-                publicIdPrefix = ejeSlug
-                    ? `unidades/${catId}/${productoSlug}/${ejeSlug}`
-                    : `unidades/${catId}/${productoSlug}`;
-                descripcionDestino = `${cat.nombre} · ${productoNombre}${ejeSlug ? " · " + ejeSlug.replace(/-/g, " ") : ""}`;
-            } else {
-                catId = document.getElementById("fotosAdicionalCategoria").value;
-                const adicionalNombre = document.getElementById("fotosAdicionalItem").value;
-                if (!catId || !adicionalNombre) {
-                    setFotoStatus(tipo, "error", "Seleccioná categoría y adicional.");
-                    return;
-                }
-                adicionalSlug = crearSlug(adicionalNombre);
-                const cat = ADICIONALES_CATALOGO.find((c) => c.id === catId);
-                publicIdPrefix = `adicionales/${catId}/${adicionalSlug}`;
-                descripcionDestino = `${cat.nombre} · ${adicionalNombre}`;
-            }
-
-            const archivo = document.getElementById(tipo === "unidad" ? "fotosUnidadArchivo" : "fotosAdicionalArchivo")?.files[0];
-            if (!archivo) {
-                setFotoStatus(tipo, "error", "Elegí una foto.");
+            const catId = document.getElementById("fotosUnidadCategoria").value;
+            const productoNombre = document.getElementById("fotosUnidadProducto").value;
+            const ejeSlug = document.getElementById("fotosUnidadEje").value || "";
+            const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
+            if (!catId || !productoNombre || (cat && cat.ejes.length > 0 && !ejeSlug)) {
+                setFotoUnidadStatus("error", "Seleccioná categoría, unidad" + (cat && cat.ejes.length > 0 ? " y configuración." : "."));
                 return;
             }
-            if (!archivo.type.startsWith("image/")) {
-                setFotoStatus(tipo, "error", "El archivo debe ser una imagen.");
-                return;
-            }
+            const productoSlug = crearSlug(productoNombre);
+            const publicIdPrefix = ejeSlug
+                ? `unidades/${catId}/${productoSlug}/${ejeSlug}`
+                : `unidades/${catId}/${productoSlug}`;
+            const descripcionDestino = `${cat.nombre} · ${productoNombre}${ejeSlug ? " · " + ejeSlug.replace(/-/g, " ") : ""}`;
+
+            const archivo = document.getElementById("fotosUnidadArchivo")?.files[0];
+            if (!archivo) { setFotoUnidadStatus("error", "Elegí una foto."); return; }
+            if (!archivo.type.startsWith("image/")) { setFotoUnidadStatus("error", "El archivo debe ser una imagen."); return; }
             const sizeMB = archivo.size / (1024 * 1024);
-            if (sizeMB > MAX_FOTO_MB) {
-                setFotoStatus(tipo, "error", `La foto pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_FOTO_MB} MB.`);
-                return;
-            }
+            if (sizeMB > MAX_FOTO_MB) { setFotoUnidadStatus("error", `La foto pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_FOTO_MB} MB.`); return; }
 
             const ok = await mostrarConfirmacion({
                 titulo: "Subir foto",
@@ -2716,7 +2510,7 @@
             const submitLabel = submitBtn.querySelector(".admin-submit-label");
             submitBtn.disabled = true;
             submitLabel.textContent = "Subiendo...";
-            setFotoStatus(tipo, "info", "Subiendo archivo...");
+            setFotoUnidadStatus("info", "Subiendo archivo...");
 
             try {
                 const numero = Date.now();
@@ -2726,18 +2520,16 @@
                 formData.append("upload_preset", CLOUDINARY_PRESET);
                 formData.append("public_id", publicId);
                 formData.append("tags", "catalogo");
-
                 const resp = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: "POST", body: formData });
                 const data = await resp.json();
                 if (!resp.ok || !data.secure_url) {
                     throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
                 }
-
-                setFotoStatus(tipo, "success", "Foto subida correctamente.");
+                setFotoUnidadStatus("success", "Foto subida correctamente.");
                 await cargarFotos();
             } catch (e) {
                 console.error(e);
-                setFotoStatus(tipo, "error", "No se pudo subir: " + (e.message || "error desconocido"));
+                setFotoUnidadStatus("error", "No se pudo subir: " + (e.message || "error desconocido"));
                 submitBtn.disabled = false;
                 submitLabel.textContent = "Subir foto";
             }
@@ -2936,7 +2728,6 @@
                 fotosBorradas.add(publicId);
                 actualizarMetricaFotos();
                 renderModalAdFotos();
-                renderFotosAdicionalGaleria();
                 setModalAdFotosStatus("success", "Foto eliminada.");
             } catch (e) {
                 console.error(e);
@@ -2958,7 +2749,7 @@
                 sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
                     + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("")
                     + `<option value="__nueva__">+ Crear nueva categoría</option>`;
-                const filtroActual = document.getElementById("fotosAdicionalCategoria")?.value;
+                const filtroActual = document.getElementById("adicionalesFiltroCategoria")?.value;
                 if (filtroActual && cats.some((c) => c.id === filtroActual)) sel.value = filtroActual;
             }
             const wrapNueva = document.getElementById("formAdCategoriaNuevaWrap");
@@ -3082,9 +2873,8 @@
                 return;
             }
 
-            const yaExisteHardcoded = (ADICIONALES_CATALOGO.find((c) => c.id === categoriaId)?.items || []).some((it) => it.toLowerCase() === nombre.toLowerCase());
-            const yaExisteExtra = adicionalesExtra.some((a) => a.categoriaId === categoriaId && a.nombre.toLowerCase() === nombre.toLowerCase() && a.id !== editingAdicionalId);
-            if (yaExisteHardcoded || yaExisteExtra) {
+            const yaExiste = adicionalesExtra.some((a) => a.categoriaId === categoriaId && a.nombre.toLowerCase() === nombre.toLowerCase() && a.id !== editingAdicionalId);
+            if (yaExiste) {
                 setCrearAdicionalStatus("error", `Ya existe un adicional "${nombre}" en ${categoriaNombre}.`);
                 return;
             }
@@ -3147,13 +2937,7 @@
                 }
 
                 setCrearAdicionalStatus("success", mensajeOk);
-                setTimeout(() => {
-                    cerrarCrearAdicionalModal();
-                    const filtroActual = document.getElementById("fotosAdicionalCategoria").value;
-                    if (filtroActual === categoriaId || filtroActual === seleccionCat) {
-                        onFotosAdicionalCategoriaChange();
-                    }
-                }, 1000);
+                setTimeout(() => { cerrarCrearAdicionalModal(); }, 1000);
             } catch (e) {
                 console.error(e);
                 setCrearAdicionalStatus("error", "No se pudo guardar: " + (e.message || "error desconocido"));
@@ -3174,10 +2958,7 @@
             try {
                 await db.collection("adicionales_extra").doc(id).delete();
                 await cargarAdicionalesExtra();
-                poblarSelectsFotos();
                 renderAdicionalesAdminList();
-                const filtroActual = document.getElementById("fotosAdicionalCategoria")?.value;
-                if (filtroActual) onFotosAdicionalCategoriaChange();
             } catch (e) {
                 await mostrarConfirmacion({
                     titulo: "No se pudo eliminar",
@@ -3187,20 +2968,46 @@
             }
         }
 
+        function poblarFiltroAdicionales() {
+            const sel = document.getElementById("adicionalesFiltroCategoria");
+            if (!sel) return;
+            const valorPrev = sel.value;
+            const cats = categoriasAdicionalesCombinadas();
+            sel.innerHTML = `<option value="">Todas las categorías</option>`
+                + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            if (valorPrev && cats.some((c) => c.id === valorPrev)) sel.value = valorPrev;
+        }
+
         function renderAdicionalesAdminList() {
             const cont = document.getElementById("adicionalesLista");
             if (!cont) return;
+            poblarFiltroAdicionales();
+
             if (adicionalesExtra.length === 0) {
-                cont.innerHTML = `<p class="admin-doc-empty">Todavía no creaste ningún adicional desde el panel.</p>`;
+                cont.innerHTML = `<p class="admin-doc-empty">Todavía no hay adicionales cargados.</p>`;
                 return;
             }
-            const ordenados = [...adicionalesExtra].sort((a, b) => {
-                const catA = a.categoriaNombre || a.categoriaId || "";
-                const catB = b.categoriaNombre || b.categoriaId || "";
-                const ord = catA.localeCompare(catB, "es", { sensitivity: "base" });
-                return ord !== 0 ? ord : (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" });
-            });
-            cont.innerHTML = ordenados.map((a) => {
+
+            const filtroCat = document.getElementById("adicionalesFiltroCategoria")?.value || "";
+            const filtroTexto = (document.getElementById("adicionalesFiltroBuscar")?.value || "").trim().toLowerCase();
+
+            let filtrados = [...adicionalesExtra];
+            if (filtroCat) filtrados = filtrados.filter((a) => a.categoriaId === filtroCat);
+            if (filtroTexto) {
+                filtrados = filtrados.filter((a) => {
+                    const t = `${a.nombre || ""} ${a.codigo || ""}`.toLowerCase();
+                    return t.includes(filtroTexto);
+                });
+            }
+
+            filtrados.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" }));
+
+            if (filtrados.length === 0) {
+                cont.innerHTML = `<p class="admin-doc-empty">No hay adicionales que coincidan con el filtro.</p>`;
+                return;
+            }
+
+            cont.innerHTML = filtrados.map((a) => {
                 const codigoExtra = (a.codigo && a.codigo !== "SIN CÓDIGO") ? ` · ${a.codigo}` : "";
                 const nombreEsc = (a.nombre || "").replace(/"/g, "&quot;");
                 const catEsc = (a.categoriaNombre || a.categoriaId || "").replace(/"/g, "&quot;");
@@ -3224,96 +3031,7 @@
             });
         }
 
-        // ===== Migración única de los adicionales precargados a Firestore =====
-        // Lee ADICIONALES_MIGRACION_DATA y agrega cada item como un doc en
-        // adicionales_extra. Idempotente: salta los que ya existen (match por
-        // categoriaId + nombre normalizado).
-        async function migrarAdicionalesPrecargados() {
-            const btn = document.getElementById("btnMigrarAdicionales");
-            const estado = document.getElementById("migracionAdicionalesEstado");
-            if (!btn || !estado) return;
-
-            const total = ADICIONALES_MIGRACION_DATA.reduce((acc, c) => acc + c.items.length, 0);
-            const ok = await mostrarConfirmacion({
-                titulo: "Migrar adicionales precargados",
-                mensaje: `Se van a copiar <strong>${total} adicionales</strong> precargados al Firestore para que queden editables desde el panel.<br><br>Es seguro: si alguno ya existe, no se duplica. ¿Continuar?`,
-                etiquetaConfirmar: "Migrar",
-                variante: "confirmar"
-            });
-            if (!ok) return;
-
-            btn.disabled = true;
-            estado.style.display = "block";
-            estado.textContent = "Leyendo adicionales existentes…";
-
-            try {
-                await cargarAdicionalesExtra();
-                const existentes = new Set(
-                    adicionalesExtra
-                        .filter((a) => a.categoriaId && a.nombre)
-                        .map((a) => `${a.categoriaId}::${a.nombre.toLowerCase().trim()}`)
-                );
-
-                let migrados = 0;
-                let saltados = 0;
-                let errores = 0;
-                let i = 0;
-                for (const cat of ADICIONALES_MIGRACION_DATA) {
-                    for (const item of cat.items) {
-                        i++;
-                        const clave = `${cat.id}::${item.nombre.toLowerCase().trim()}`;
-                        if (existentes.has(clave)) {
-                            saltados++;
-                            estado.textContent = `(${i}/${total}) Ya existe: ${item.nombre} — salteado`;
-                            continue;
-                        }
-                        try {
-                            await db.collection("adicionales_extra").add({
-                                categoriaId: cat.id,
-                                categoriaNombre: cat.nombre,
-                                nombre: item.nombre,
-                                codigo: item.codigo || "SIN CÓDIGO",
-                                descripcion: item.descripcion || "",
-                                ubicacion: item.ubicacion || "",
-                                creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
-                                migrado: true
-                            });
-                            migrados++;
-                            estado.textContent = `(${i}/${total}) Migrado: ${item.nombre}`;
-                            existentes.add(clave);
-                        } catch (e) {
-                            console.error("Error migrando", item.nombre, e);
-                            errores++;
-                        }
-                    }
-                }
-
-                await cargarAdicionalesExtra();
-                renderAdicionalesAdminList();
-
-                estado.innerHTML = `<strong>Listo.</strong> Migrados: ${migrados} · Ya existían: ${saltados}${errores ? ` · Errores: ${errores}` : ""}.`;
-                await mostrarConfirmacion({
-                    titulo: "Migración terminada",
-                    mensaje: `<strong>${migrados}</strong> adicionales nuevos copiados a Firestore.<br>${saltados ? `<strong>${saltados}</strong> ya existían (no se duplicaron).<br>` : ""}${errores ? `<strong>${errores}</strong> con error (revisá la consola).<br>` : ""}<br>Ya podés editarlos o borrarlos desde la lista de arriba.`,
-                    etiquetaConfirmar: "Entendido",
-                    soloConfirmar: true,
-                    variante: "confirmar"
-                });
-            } catch (e) {
-                console.error("Migración falló:", e);
-                estado.textContent = `Error: ${e.message || e}`;
-                await mostrarConfirmacion({
-                    titulo: "No se pudo migrar",
-                    mensaje: `Algo falló durante la migración:<br><br><code>${e.message || e}</code><br><br>Podés volver a intentarlo (no duplica lo que ya se haya copiado).`,
-                    etiquetaConfirmar: "Cerrar",
-                    soloConfirmar: true
-                });
-            } finally {
-                btn.disabled = false;
-            }
-        }
-
-        async function borrarFoto(publicId, tipo) {
+        async function borrarFotoUnidad(publicId) {
             const ok = await mostrarConfirmacion({
                 titulo: "Eliminar foto",
                 mensaje: `¿Querés eliminar esta foto?<br><br>La foto va a desaparecer del catálogo. Si querés recuperar el espacio en Cloudinary, también tenés que borrarla desde su dashboard.`,
@@ -3327,8 +3045,7 @@
                 });
                 fotosBorradas.add(publicId);
                 actualizarMetricaFotos();
-                if (tipo === "unidad") renderFotosUnidadGaleria();
-                else renderFotosAdicionalGaleria();
+                renderFotosUnidadGaleria();
             } catch (e) {
                 await mostrarConfirmacion({
                     titulo: "No se pudo eliminar",
@@ -3512,23 +3229,18 @@
             const fotosUC = document.getElementById("fotosUnidadCategoria");
             const fotosUP = document.getElementById("fotosUnidadProducto");
             const fotosUE = document.getElementById("fotosUnidadEje");
-            const fotosAC = document.getElementById("fotosAdicionalCategoria");
-            const fotosAI = document.getElementById("fotosAdicionalItem");
             if (fotosUC) fotosUC.addEventListener("change", onFotosUnidadCategoriaChange);
             if (fotosUP) fotosUP.addEventListener("change", renderFotosUnidadGaleria);
             if (fotosUE) fotosUE.addEventListener("change", renderFotosUnidadGaleria);
-            if (fotosAC) fotosAC.addEventListener("change", onFotosAdicionalCategoriaChange);
-            if (fotosAI) fotosAI.addEventListener("change", renderFotosAdicionalGaleria);
             renderFotosUnidadGaleria();
-            renderFotosAdicionalGaleria();
 
-            // Crear adicional (botones en dos lados)
-            const btnCrearAd = document.getElementById("btnCrearAdicional");
-            if (btnCrearAd) btnCrearAd.addEventListener("click", abrirCrearAdicionalModal);
+            // Crear adicional (botón en la sección Adicionales)
             const btnCrearAd2 = document.getElementById("btnCrearAdicionalDesdeLista");
             if (btnCrearAd2) btnCrearAd2.addEventListener("click", abrirCrearAdicionalModal);
-            const btnMigrarAd = document.getElementById("btnMigrarAdicionales");
-            if (btnMigrarAd) btnMigrarAd.addEventListener("click", migrarAdicionalesPrecargados);
+            const filtroCat = document.getElementById("adicionalesFiltroCategoria");
+            if (filtroCat) filtroCat.addEventListener("change", renderAdicionalesAdminList);
+            const filtroBuscar = document.getElementById("adicionalesFiltroBuscar");
+            if (filtroBuscar) filtroBuscar.addEventListener("input", renderAdicionalesAdminList);
             const closeAd = document.getElementById("modalCrearAdicionalClose");
             if (closeAd) closeAd.addEventListener("click", cerrarCrearAdicionalModal);
             const overlayAd = document.getElementById("modalCrearAdicionalOverlay");
