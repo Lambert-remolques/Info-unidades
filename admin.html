@@ -370,6 +370,395 @@
             margin: 0 auto;
         }
 
+        /* ===== Cards y formularios del admin ===== */
+        .admin-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 22px;
+        }
+
+        .admin-card {
+            background: var(--blanco);
+            border-radius: 8px;
+            padding: 26px 28px;
+            box-shadow: var(--sombra-card);
+        }
+
+        .admin-card-title {
+            margin: 0;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--negro);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .admin-card > .admin-card-title {
+            margin-bottom: 18px;
+        }
+
+        .admin-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .admin-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--gris-texto);
+            font-weight: 600;
+        }
+
+        .admin-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 10px 38px 10px 12px;
+            border: 1px solid var(--gris);
+            border-radius: var(--radio);
+            font-size: 0.94rem;
+            font-family: var(--fuente);
+            background-color: var(--blanco);
+            color: var(--negro);
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'><polyline points='1,1 7,7 13,1' fill='none' stroke='%23262626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        .admin-select:focus {
+            outline: none;
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.18);
+        }
+
+        .admin-select--compact {
+            padding: 8px 32px 8px 10px;
+            font-size: 0.84rem;
+            background-position: right 10px center;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .admin-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .admin-field[hidden] {
+            display: none;
+        }
+
+        .admin-field > span {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--negro);
+        }
+
+        .admin-field input[type="text"],
+        .admin-field input[type="file"] {
+            padding: 10px 12px;
+            border: 1px solid var(--gris);
+            border-radius: var(--radio);
+            font-size: 0.94rem;
+            font-family: var(--fuente);
+            background: var(--blanco);
+            color: var(--negro);
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        .admin-field input[type="text"]:focus {
+            outline: none;
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.18);
+        }
+
+        .admin-submit {
+            align-self: flex-start;
+            padding: 12px 28px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--verde);
+            color: var(--blanco);
+            font-size: 0.88rem;
+            font-weight: 900;
+            font-style: italic;
+            font-family: var(--fuente);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .admin-submit:hover:not(:disabled) {
+            background: var(--verde-oscuro);
+            transform: translateY(-1px);
+        }
+
+        .admin-submit:disabled {
+            background: #9a9a9a;
+            cursor: not-allowed;
+        }
+
+        .admin-status {
+            padding: 10px 14px;
+            border-radius: var(--radio);
+            font-size: 0.86rem;
+            font-weight: 500;
+        }
+
+        .admin-status[hidden] { display: none; }
+
+        .admin-status--info {
+            background: rgba(21, 153, 71, 0.1);
+            color: var(--verde-oscuro);
+        }
+
+        .admin-status--success {
+            background: rgba(21, 153, 71, 0.18);
+            color: var(--verde-oscuro);
+            font-weight: 700;
+        }
+
+        .admin-status--error {
+            background: rgba(218, 37, 29, 0.1);
+            color: var(--rojo);
+            font-weight: 700;
+        }
+
+        .admin-doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .admin-doc-empty {
+            margin: 0;
+            padding: 22px;
+            text-align: center;
+            color: var(--gris-texto);
+            font-size: 0.9rem;
+            background: var(--gris-bg);
+            border-radius: var(--radio);
+        }
+
+        .admin-doc-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--gris-bg);
+            border-radius: var(--radio);
+            transition: background 160ms ease;
+        }
+
+        .admin-doc-row:hover {
+            background: rgba(21, 153, 71, 0.07);
+        }
+
+        .admin-doc-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .admin-doc-info strong {
+            font-size: 0.92rem;
+            color: var(--negro);
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-doc-info span {
+            font-size: 0.78rem;
+            color: var(--gris-texto);
+        }
+
+        .admin-doc-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .admin-doc-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--blanco);
+            border: 1px solid var(--gris);
+            color: var(--verde-oscuro);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 160ms ease, border-color 160ms ease;
+        }
+
+        .admin-doc-link:hover {
+            background: rgba(21, 153, 71, 0.08);
+            border-color: var(--verde);
+        }
+
+        .admin-doc-delete {
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--rojo);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 160ms ease;
+        }
+
+        .admin-doc-delete:hover {
+            background: rgba(218, 37, 29, 0.14);
+        }
+
+        /* ===== Modal de confirmación ===== */
+        .modal-confirm {
+            position: fixed;
+            inset: 0;
+            z-index: 2500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-confirm[hidden] { display: none; }
+
+        .modal-confirm-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(38, 38, 38, 0.55);
+            backdrop-filter: blur(2px);
+            animation: fadeIn 200ms ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.92) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-confirm-box {
+            position: relative;
+            width: min(100%, 440px);
+            background: var(--blanco);
+            border-radius: 10px;
+            padding: 28px 28px 22px;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+            border-top: 4px solid var(--rojo);
+            animation: popIn 220ms ease;
+        }
+
+        .modal-confirm-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: rgba(218, 37, 29, 0.12);
+            color: var(--rojo);
+        }
+
+        .modal-confirm-title {
+            margin: 0 0 10px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--negro);
+        }
+
+        .modal-confirm-message {
+            margin: 0 0 22px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--gris-texto);
+        }
+
+        .modal-confirm-message strong {
+            color: var(--negro);
+            font-weight: 700;
+        }
+
+        .modal-confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-confirm-btn {
+            padding: 10px 22px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 900;
+            font-style: italic;
+            font-family: var(--fuente);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+            min-width: 110px;
+        }
+
+        .modal-confirm-btn--cancel {
+            border: 1px solid var(--gris);
+            background: var(--blanco);
+            color: var(--negro);
+        }
+
+        .modal-confirm-btn--cancel:hover {
+            background: var(--gris-bg);
+        }
+
+        .modal-confirm-btn--ok {
+            border: 0;
+            background: var(--rojo);
+            color: var(--blanco);
+        }
+
+        .modal-confirm-btn--ok:hover {
+            background: #b41e16;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 480px) {
+            .modal-confirm-box { padding: 22px 20px 18px; }
+            .modal-confirm-actions { flex-direction: column-reverse; }
+            .modal-confirm-btn { width: 100%; }
+        }
+
         /* ===== Section visibility ===== */
         .panel-section { display: none; }
         .panel-section.active { display: block; }
@@ -527,13 +916,50 @@
 
             <section class="panel-section" data-section="documentos">
                 <h1 class="page-title">Documentos</h1>
-                <p class="page-subtitle">Gestioná los documentos disponibles en la sección Recursos del catálogo.</p>
-                <div class="construccion">
-                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
-                    </svg>
-                    <div class="construccion-title">Sección en construcción</div>
-                    <div class="construccion-desc">Sub-etapa 4.2 — vamos a mover acá el admin de documentos que hoy está en el modal del catálogo.</div>
+                <p class="page-subtitle">Subí, listá o borrá los documentos disponibles en la sección Recursos del catálogo.</p>
+
+                <div class="admin-cards">
+                    <div class="admin-card">
+                        <h2 class="admin-card-title">Subir documento nuevo</h2>
+                        <form class="admin-form" id="adminUploadForm" autocomplete="off">
+                            <label class="admin-field">
+                                <span>Título</span>
+                                <input type="text" id="adminTitulo" required maxlength="120">
+                            </label>
+                            <label class="admin-field">
+                                <span>Categoría</span>
+                                <select class="admin-select" id="adminCategoria" required>
+                                    <option value="">Seleccionar categoría...</option>
+                                    <option value="__nueva__">+ Crear nueva categoría</option>
+                                </select>
+                            </label>
+                            <label class="admin-field" id="adminCategoriaNuevaWrap" hidden>
+                                <span>Nombre de la nueva categoría</span>
+                                <input type="text" id="adminCategoriaNueva" maxlength="60">
+                            </label>
+                            <label class="admin-field">
+                                <span>Archivo PDF (máx 10 MB)</span>
+                                <input type="file" id="adminArchivo" accept="application/pdf" required>
+                            </label>
+                            <button class="admin-submit" type="submit" id="adminSubmit">
+                                <span class="admin-submit-label">Subir documento</span>
+                            </button>
+                            <div class="admin-status" id="adminUploadStatus" hidden></div>
+                        </form>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h2 class="admin-card-title">Documentos existentes</h2>
+                            <label class="admin-filter">
+                                <span>Filtrar por categoría:</span>
+                                <select class="admin-select admin-select--compact" id="adminFiltroCategoria">
+                                    <option value="">Todas las categorías</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="admin-doc-list" id="adminDocList"></div>
+                    </div>
                 </div>
             </section>
 
@@ -585,6 +1011,25 @@
                 </div>
             </section>
         </main>
+
+        <div class="modal-confirm" id="modalConfirm" hidden>
+            <div class="modal-confirm-overlay" id="modalConfirmOverlay"></div>
+            <div class="modal-confirm-box" role="dialog" aria-modal="true" aria-labelledby="modalConfirmTitle">
+                <div class="modal-confirm-icon" id="modalConfirmIcon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <h3 class="modal-confirm-title" id="modalConfirmTitle">Confirmar</h3>
+                <p class="modal-confirm-message" id="modalConfirmMessage"></p>
+                <div class="modal-confirm-actions">
+                    <button class="modal-confirm-btn modal-confirm-btn--cancel" type="button" id="modalConfirmCancel">Cancelar</button>
+                    <button class="modal-confirm-btn modal-confirm-btn--ok" type="button" id="modalConfirmOk">Eliminar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -602,6 +1047,266 @@
         const db = firebase.firestore();
 
         const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "usuarios", "metricas"];
+        const CLOUDINARY_CLOUD = "lambert-remolques";
+        const CLOUDINARY_PRESET = "panel_admin_lambert";
+        const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
+        const MAX_PDF_MB = 10;
+
+        function crearSlug(texto) {
+            return (texto || "")
+                .toString()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[̀-ͯ]/g, "")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        }
+
+        let documentosAdmin = [];
+        let estadoDocumentosAdmin = "cargando";
+
+        function categoriasUnicas() {
+            return [...new Set(documentosAdmin.map((d) => d.categoria).filter(Boolean))]
+                .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+        }
+
+        function actualizarSelectsDeCategoria() {
+            const categorias = categoriasUnicas();
+
+            const selectForm = document.getElementById("adminCategoria");
+            if (selectForm) {
+                const valorActual = selectForm.value;
+                selectForm.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                    + categorias.map((c) => `<option value="${c}">${c}</option>`).join("")
+                    + `<option value="__nueva__">+ Crear nueva categoría</option>`;
+                if (valorActual && (categorias.includes(valorActual) || valorActual === "__nueva__")) {
+                    selectForm.value = valorActual;
+                }
+            }
+
+            const selectFiltro = document.getElementById("adminFiltroCategoria");
+            if (selectFiltro) {
+                const filtroActual = selectFiltro.value;
+                selectFiltro.innerHTML = `<option value="">Todas las categorías</option>`
+                    + categorias.map((c) => `<option value="${c}">${c}</option>`).join("");
+                if (filtroActual && categorias.includes(filtroActual)) {
+                    selectFiltro.value = filtroActual;
+                }
+            }
+        }
+
+        async function cargarDocumentos() {
+            estadoDocumentosAdmin = "cargando";
+            renderAdminDocList();
+            try {
+                const snap = await db.collection("documentos").orderBy("creadoEn", "desc").get();
+                documentosAdmin = snap.docs.map((doc) => ({
+                    id: doc.id,
+                    titulo: doc.data().titulo || "",
+                    categoria: doc.data().categoria || "",
+                    url: doc.data().url || ""
+                }));
+                estadoDocumentosAdmin = documentosAdmin.length === 0 ? "vacio" : "ok";
+                document.getElementById("metricDocs").textContent = documentosAdmin.length;
+            } catch (e) {
+                console.error("Error cargando documentos:", e);
+                estadoDocumentosAdmin = "error";
+                document.getElementById("metricDocs").textContent = "?";
+            }
+            actualizarSelectsDeCategoria();
+            renderAdminDocList();
+        }
+
+        function renderAdminDocList() {
+            const cont = document.getElementById("adminDocList");
+            if (!cont) return;
+            if (estadoDocumentosAdmin === "cargando") {
+                cont.innerHTML = `<p class="admin-doc-empty">Cargando documentos...</p>`;
+                return;
+            }
+            if (estadoDocumentosAdmin === "error") {
+                cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar los documentos.</p>`;
+                return;
+            }
+            const filtro = document.getElementById("adminFiltroCategoria")?.value || "";
+            const docsAMostrar = filtro
+                ? documentosAdmin.filter((d) => d.categoria === filtro)
+                : documentosAdmin;
+
+            if (docsAMostrar.length === 0) {
+                cont.innerHTML = filtro
+                    ? `<p class="admin-doc-empty">No hay documentos en la categoría "${filtro}".</p>`
+                    : `<p class="admin-doc-empty">Todavía no hay documentos cargados.</p>`;
+                return;
+            }
+            cont.innerHTML = docsAMostrar.map((d) => {
+                const tituloEsc = d.titulo.replace(/"/g, "&quot;");
+                return `
+                <div class="admin-doc-row">
+                    <div class="admin-doc-info">
+                        <strong>${d.titulo}</strong>
+                        <span>${d.categoria}</span>
+                    </div>
+                    <div class="admin-doc-actions">
+                        <a class="admin-doc-link" href="${d.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
+                        <button class="admin-doc-delete" type="button" data-id="${d.id}" data-titulo="${tituloEsc}" aria-label="Eliminar ${tituloEsc}">×</button>
+                    </div>
+                </div>`;
+            }).join("");
+            cont.querySelectorAll(".admin-doc-delete").forEach((btn) => {
+                btn.addEventListener("click", () => borrarDocumento(btn.dataset.id, btn.dataset.titulo));
+            });
+        }
+
+        function mostrarConfirmacion({ titulo, mensaje, etiquetaConfirmar = "Confirmar" }) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("modalConfirm");
+                const okBtn = document.getElementById("modalConfirmOk");
+                const cancelBtn = document.getElementById("modalConfirmCancel");
+                const overlay = document.getElementById("modalConfirmOverlay");
+                document.getElementById("modalConfirmTitle").textContent = titulo;
+                document.getElementById("modalConfirmMessage").innerHTML = mensaje;
+                okBtn.textContent = etiquetaConfirmar;
+
+                modal.hidden = false;
+                document.body.style.overflow = "hidden";
+
+                function cerrar(resultado) {
+                    modal.hidden = true;
+                    document.body.style.overflow = "";
+                    okBtn.removeEventListener("click", onOk);
+                    cancelBtn.removeEventListener("click", onCancel);
+                    overlay.removeEventListener("click", onCancel);
+                    document.removeEventListener("keydown", onKey);
+                    resolve(resultado);
+                }
+                function onOk() { cerrar(true); }
+                function onCancel() { cerrar(false); }
+                function onKey(e) {
+                    if (e.key === "Escape") cerrar(false);
+                    if (e.key === "Enter") cerrar(true);
+                }
+                okBtn.addEventListener("click", onOk);
+                cancelBtn.addEventListener("click", onCancel);
+                overlay.addEventListener("click", onCancel);
+                document.addEventListener("keydown", onKey);
+                setTimeout(() => okBtn.focus(), 30);
+            });
+        }
+
+        function setAdminUploadStatus(state, message) {
+            const status = document.getElementById("adminUploadStatus");
+            if (!status) return;
+            if (state === null) {
+                status.hidden = true;
+                status.className = "admin-status";
+                status.textContent = "";
+                return;
+            }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        async function subirDocumentoHandler(event) {
+            event.preventDefault();
+            const titulo = document.getElementById("adminTitulo").value.trim();
+            const categoriaSeleccion = document.getElementById("adminCategoria").value;
+            const categoriaNueva = document.getElementById("adminCategoriaNueva").value.trim();
+            const archivo = document.getElementById("adminArchivo").files[0];
+
+            let categoria;
+            if (categoriaSeleccion === "__nueva__") {
+                if (!categoriaNueva) {
+                    setAdminUploadStatus("error", "Escribí el nombre de la nueva categoría.");
+                    return;
+                }
+                categoria = categoriaNueva;
+            } else if (categoriaSeleccion) {
+                categoria = categoriaSeleccion;
+            } else {
+                setAdminUploadStatus("error", "Seleccioná una categoría.");
+                return;
+            }
+
+            if (!titulo || !archivo) {
+                setAdminUploadStatus("error", "Completá todos los campos.");
+                return;
+            }
+            if (archivo.type !== "application/pdf") {
+                setAdminUploadStatus("error", "El archivo debe ser un PDF.");
+                return;
+            }
+            const sizeMB = archivo.size / (1024 * 1024);
+            if (sizeMB > MAX_PDF_MB) {
+                setAdminUploadStatus("error", `El PDF pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_PDF_MB} MB. Comprimilo en ilovepdf.com/comprimir_pdf y volvé a probar.`);
+                return;
+            }
+
+            const submitBtn = document.getElementById("adminSubmit");
+            const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            submitBtn.disabled = true;
+            submitLabel.textContent = "Subiendo...";
+            setAdminUploadStatus("info", "Subiendo archivo a Cloudinary...");
+
+            try {
+                const baseName = crearSlug(titulo);
+                const stamp = Date.now();
+                const uniqueName = `${baseName}-${stamp}.pdf`;
+                const renamedFile = new File([archivo], uniqueName, { type: archivo.type });
+
+                const formData = new FormData();
+                formData.append("file", renamedFile);
+                formData.append("upload_preset", CLOUDINARY_PRESET);
+                formData.append("folder", "documentos");
+
+                const resp = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
+                const data = await resp.json();
+                if (!resp.ok || !data.secure_url) {
+                    throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+                }
+
+                setAdminUploadStatus("info", "Guardando en base de datos...");
+                await db.collection("documentos").add({
+                    titulo,
+                    categoria,
+                    url: data.secure_url,
+                    creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                setAdminUploadStatus("success", `"${titulo}" subido correctamente.`);
+                document.getElementById("adminUploadForm").reset();
+                document.getElementById("adminCategoriaNuevaWrap").hidden = true;
+                await cargarDocumentos();
+            } catch (e) {
+                console.error(e);
+                setAdminUploadStatus("error", "No se pudo subir: " + (e.message || "error desconocido"));
+            } finally {
+                submitBtn.disabled = false;
+                submitLabel.textContent = "Subir documento";
+            }
+        }
+
+        async function borrarDocumento(id, titulo) {
+            const tituloEsc = titulo.replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Eliminar documento",
+                mensaje: `¿Querés eliminar el documento <strong>"${tituloEsc}"</strong>?<br><br>Esta acción no se puede deshacer.`,
+                etiquetaConfirmar: "Eliminar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("documentos").doc(id).delete();
+                await cargarDocumentos();
+            } catch (e) {
+                await mostrarConfirmacion({
+                    titulo: "No se pudo eliminar",
+                    mensaje: e.message || "Error desconocido al borrar.",
+                    etiquetaConfirmar: "Cerrar"
+                });
+            }
+        }
+
 
         // Mismo registro que el de index.html. Si agregás un usuario nuevo,
         // hay que actualizarlo en los dos archivos (TODO: mover a Firestore).
@@ -658,15 +1363,6 @@
             document.getElementById("sidebarBackdrop").classList.remove("open");
         }
 
-        async function cargarMetricas() {
-            try {
-                const snap = await db.collection("documentos").get();
-                document.getElementById("metricDocs").textContent = snap.size;
-            } catch (e) {
-                document.getElementById("metricDocs").textContent = "?";
-            }
-        }
-
         function inicializar(email) {
             const sidebarEmail = document.getElementById("sidebarEmail");
             sidebarEmail.textContent = email;
@@ -687,7 +1383,27 @@
             document.getElementById("sidebarBackdrop").addEventListener("click", cerrarSidebarMobile);
             document.getElementById("sidebarLogout").addEventListener("click", () => auth.signOut());
 
-            cargarMetricas();
+            const form = document.getElementById("adminUploadForm");
+            if (form) form.addEventListener("submit", subirDocumentoHandler);
+
+            const selectCategoria = document.getElementById("adminCategoria");
+            if (selectCategoria) {
+                selectCategoria.addEventListener("change", () => {
+                    const wrap = document.getElementById("adminCategoriaNuevaWrap");
+                    const esNueva = selectCategoria.value === "__nueva__";
+                    wrap.hidden = !esNueva;
+                    if (esNueva) {
+                        setTimeout(() => document.getElementById("adminCategoriaNueva").focus(), 30);
+                    }
+                });
+            }
+
+            const filtroCategoria = document.getElementById("adminFiltroCategoria");
+            if (filtroCategoria) {
+                filtroCategoria.addEventListener("change", renderAdminDocList);
+            }
+
+            cargarDocumentos();
 
             const hash = (window.location.hash || "#inicio").substring(1);
             mostrarSeccion(hash);
