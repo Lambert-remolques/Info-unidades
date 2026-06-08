@@ -1991,6 +1991,137 @@
             }
             .page-title { font-size: 1.3rem; }
         }
+
+        /* ===== Overlay de cambio obligatorio de contraseña ===== */
+        .overlay-cambio-pwd[hidden] { display: none; }
+        .overlay-cambio-pwd {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: "Montserrat", Arial, sans-serif;
+        }
+        .overlay-cambio-pwd-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(16, 18, 19, 0.72);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .overlay-cambio-pwd-card {
+            position: relative;
+            width: min(440px, 100%);
+            padding: 32px 30px 28px;
+            background: #fff;
+            border-left: 5px solid var(--verde);
+            border-radius: 3px;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+        }
+        .overlay-cambio-pwd-kicker {
+            margin: 0 0 4px;
+            color: var(--verde);
+            font-size: 0.72rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .overlay-cambio-pwd-title {
+            margin: 0;
+            color: var(--negro);
+            font-size: clamp(1.4rem, 2.8vw, 1.85rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        .overlay-cambio-pwd-rule {
+            width: 60px;
+            height: 4px;
+            margin: 14px 0 18px;
+            background: var(--rojo);
+        }
+        .overlay-cambio-pwd-hint {
+            margin: 0 0 18px;
+            color: var(--gris-texto);
+            font-size: 0.86rem;
+            line-height: 1.45;
+        }
+        .overlay-cambio-pwd-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .overlay-cambio-pwd-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .overlay-cambio-pwd-field > span {
+            color: var(--grafito);
+            font-size: 0.7rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .overlay-cambio-pwd-field input {
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid rgba(38, 38, 38, 0.18);
+            border-radius: 3px;
+            background: #fafafa;
+            color: var(--negro);
+            font: inherit;
+            font-size: 0.95rem;
+            transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+        }
+        .overlay-cambio-pwd-field input:focus {
+            outline: none;
+            border-color: var(--verde);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.18);
+        }
+        .overlay-cambio-pwd-btn {
+            margin-top: 6px;
+            min-height: 46px;
+            padding: 0 18px;
+            border: 0;
+            border-radius: 3px;
+            color: #fff;
+            background: linear-gradient(180deg, var(--verde), #078334);
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.14);
+            font: inherit;
+            font-size: 0.78rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+        }
+        .overlay-cambio-pwd-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 9px 18px rgba(21, 153, 71, 0.26);
+        }
+        .overlay-cambio-pwd-error {
+            margin: 0;
+            min-height: 1.1em;
+            color: var(--rojo);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+        .overlay-cambio-pwd-info {
+            margin: 0;
+            min-height: 1.1em;
+            color: var(--gris-texto);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -1998,6 +2129,29 @@
         <div class="auth-loading-box">
             <span class="auth-spinner" aria-hidden="true"></span>
             <span>Verificando acceso...</span>
+        </div>
+    </div>
+
+    <div class="overlay-cambio-pwd" id="overlayCambioPwd" hidden>
+        <div class="overlay-cambio-pwd-backdrop"></div>
+        <div class="overlay-cambio-pwd-card" role="dialog" aria-modal="true" aria-labelledby="ovPwdTitle">
+            <p class="overlay-cambio-pwd-kicker">Primer ingreso</p>
+            <h2 class="overlay-cambio-pwd-title" id="ovPwdTitle">Cambiá tu contraseña</h2>
+            <div class="overlay-cambio-pwd-rule" aria-hidden="true"></div>
+            <p class="overlay-cambio-pwd-hint">Antes de seguir, reemplazá la contraseña inicial por una propia. Tiene que tener al menos 8 caracteres y ser distinta a la que te dieron.</p>
+            <form class="overlay-cambio-pwd-form" id="formOverlayCambioPwd" autocomplete="off">
+                <label class="overlay-cambio-pwd-field">
+                    <span>Contraseña nueva</span>
+                    <input type="password" id="ovPwdNueva" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required minlength="8">
+                </label>
+                <label class="overlay-cambio-pwd-field">
+                    <span>Repetir contraseña</span>
+                    <input type="password" id="ovPwdConfirm" autocomplete="new-password" placeholder="••••••••" required minlength="8">
+                </label>
+                <button class="overlay-cambio-pwd-btn" type="submit">Guardar y continuar</button>
+                <p class="overlay-cambio-pwd-error" id="ovPwdError" role="alert" aria-live="polite"></p>
+                <p class="overlay-cambio-pwd-info" id="ovPwdInfo" aria-live="polite"></p>
+            </form>
         </div>
     </div>
 
@@ -6330,6 +6484,58 @@
             mostrarSeccion(hash);
         }
 
+        function mostrarOverlayCambioPwd() {
+            const ov = document.getElementById("overlayCambioPwd");
+            if (!ov) return;
+            ov.hidden = false;
+            document.body.style.overflow = "hidden";
+            setTimeout(() => { const i = document.getElementById("ovPwdNueva"); if (i) i.focus(); }, 60);
+        }
+
+        async function guardarCambioPwdHandler(event) {
+            event.preventDefault();
+            const err = document.getElementById("ovPwdError");
+            const info = document.getElementById("ovPwdInfo");
+            err.textContent = "";
+            info.textContent = "";
+            const nueva = document.getElementById("ovPwdNueva").value;
+            const conf = document.getElementById("ovPwdConfirm").value;
+            if (nueva.length < 8) { err.textContent = "La contraseña debe tener al menos 8 caracteres."; return; }
+            if (nueva === "12345678") { err.textContent = "Elegí una contraseña distinta a la inicial."; return; }
+            if (nueva !== conf) { err.textContent = "Las contraseñas no coinciden."; return; }
+
+            const user = auth.currentUser;
+            if (!user) {
+                err.textContent = "La sesión expiró. Volvé a iniciar sesión.";
+                setTimeout(() => auth.signOut(), 1200);
+                return;
+            }
+            try {
+                info.textContent = "Guardando…";
+                await user.updatePassword(nueva);
+                await db.collection("usuarios").doc(user.email).set({
+                    requiereCambioContraseña: false
+                }, { merge: true });
+                info.textContent = "Listo.";
+                window.location.reload();
+            } catch (e) {
+                info.textContent = "";
+                if (e.code === "auth/weak-password") {
+                    err.textContent = "La contraseña es muy débil.";
+                } else if (e.code === "auth/requires-recent-login") {
+                    err.textContent = "Por seguridad, volvé a iniciar sesión.";
+                    setTimeout(() => auth.signOut(), 1200);
+                } else {
+                    err.textContent = "No se pudo guardar la contraseña.";
+                }
+            }
+        }
+
+        (function bindOverlayCambioPwd() {
+            const f = document.getElementById("formOverlayCambioPwd");
+            if (f) f.addEventListener("submit", guardarCambioPwdHandler);
+        })();
+
         async function chequearEstadoSesion(email) {
             try {
                 const doc = await db.collection("usuarios").doc(email).get();
@@ -6365,8 +6571,10 @@
                 return;
             }
             if (estado.requiereCambio) {
-                // Volver al login para que muestre la pantalla de cambio obligatorio.
-                window.location.replace("login.html");
+                // Mostrar overlay sobre el panel: el usuario no puede usar nada hasta cambiar.
+                const loader = document.getElementById("authLoading");
+                if (loader) { loader.classList.add("fade"); setTimeout(() => loader.remove(), 280); }
+                mostrarOverlayCambioPwd();
                 return;
             }
             const rol = await obtenerRolUsuario(email);
