@@ -1984,6 +1984,7 @@
             const productoSlug = crearSlug(productoNombre);
             const clave = fotosClaveUnidad(catId, productoSlug, ejeSlug);
             const fotos = fotosVisibles(clave);
+            console.log("[DEBUG fotos unidad]", { catId, productoNombre, productoSlug, ejeSlug, clave, encontradas: fotos.length, todasLasClavesDeEstaCategoria: [...fotosAdmin.keys()].filter(function (k) { return k.startsWith("unidad:" + catId + ":"); }) });
             cont.innerHTML = renderGaleriaFotos(fotos) + renderUploadFotoForm("unidad");
             wireGaleriaFotos(cont, "unidad");
         }
