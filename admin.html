@@ -1918,23 +1918,32 @@
 
             <section class="panel-section" data-section="fichas">
                 <h1 class="page-title">Fichas técnicas</h1>
-                <p class="page-subtitle">Mirá las fichas cargadas. Para subir una ficha nueva, andá a la unidad correspondiente en la sección Unidades (o usá el dashboard de Pendientes en el Inicio).</p>
+                <p class="page-subtitle">Subí, reemplazá o borrá las fichas técnicas de cada unidad del catálogo.</p>
 
                 <div class="admin-cards">
                     <div class="admin-card">
+                        <h2 class="admin-card-title">Gestionar ficha de una unidad</h2>
+                        <div class="admin-form">
+                            <div class="admin-field-row">
+                                <label class="admin-field">
+                                    <span>Categoría</span>
+                                    <select class="admin-select" id="fichasCategoria"></select>
+                                </label>
+                                <label class="admin-field">
+                                    <span>Unidad</span>
+                                    <select class="admin-select" id="fichasProducto" disabled></select>
+                                </label>
+                            </div>
+                            <div id="fichasEstado"></div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
                         <div class="admin-card-header">
                             <h2 class="admin-card-title">Fichas técnicas cargadas</h2>
-                        </div>
-                        <div class="adicionales-filtros">
-                            <label class="admin-field admin-field--inline">
-                                <span>Filtrar por categoría</span>
-                                <select class="admin-select" id="fichasFiltroCategoria">
-                                    <option value="">Todas las categorías</option>
-                                </select>
-                            </label>
-                            <label class="admin-field admin-field--inline">
-                                <span>Buscar</span>
-                                <input type="search" class="admin-select" id="fichasFiltroBuscar" placeholder="Nombre de la unidad…" autocomplete="off">
+                            <label class="admin-filter">
+                                <span>Filtrar por categoría:</span>
+                                <select class="admin-select admin-select--compact" id="fichasFiltroCategoria"></select>
                             </label>
                         </div>
                         <div class="admin-doc-list" id="fichasGlobalesList"></div>
@@ -2648,6 +2657,7 @@
 
         async function cargarFichas() {
             estadoFichasAdmin = "cargando";
+            renderEstadoFicha();
             renderFichasGlobales();
             try {
                 const snap = await db.collection("fichas").get();
@@ -2671,12 +2681,188 @@
                 estadoFichasAdmin = "error";
                 document.getElementById("metricFichas").textContent = "?";
             }
+            renderEstadoFicha();
             renderFichasGlobales();
             if (typeof renderBloquePendientes === "function") renderBloquePendientes();
         }
 
         function categoriasFichasOrdenadas() {
             return [...FICHAS_CATALOGO].sort((a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" }));
+        }
+
+        function poblarSelectCategoriaFichas() {
+            const sel = document.getElementById("fichasCategoria");
+            const cats = categoriasFichasOrdenadas();
+            if (!sel) return;
+            sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            const selFiltro = document.getElementById("fichasFiltroCategoria");
+            if (selFiltro) {
+                selFiltro.innerHTML = `<option value="">Todas las categorías</option>`
+                    + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            }
+        }
+
+        function poblarSelectProducto(categoriaId) {
+            const sel = document.getElementById("fichasProducto");
+            if (!sel) return;
+            const cat = categoriaPorId(categoriaId);
+            if (!cat) {
+                sel.innerHTML = `<option value="">Elegí primero una categoría</option>`;
+                sel.disabled = true;
+                return;
+            }
+            const productos = [...cat.productos].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+            sel.innerHTML = `<option value="">Seleccionar unidad...</option>`
+                + productos.map((p) => `<option value="${p}">${p}</option>`).join("");
+            sel.disabled = false;
+        }
+
+        function renderEstadoFicha() {
+            const cont = document.getElementById("fichasEstado");
+            if (!cont) return;
+            const categoriaId = document.getElementById("fichasCategoria")?.value;
+            const productoNombre = document.getElementById("fichasProducto")?.value;
+
+            if (!categoriaId || !productoNombre) {
+                cont.innerHTML = `<p class="admin-doc-empty">Elegí una categoría y una unidad para gestionar su ficha.</p>`;
+                return;
+            }
+            if (estadoFichasAdmin === "cargando") {
+                cont.innerHTML = `<p class="admin-doc-empty">Cargando fichas...</p>`;
+                return;
+            }
+
+            const productoSlug = crearSlug(productoNombre);
+            const ficha = fichasAdmin.get(claveFicha(categoriaId, productoSlug));
+            const productoEsc = productoNombre.replace(/"/g, "&quot;");
+
+            if (ficha) {
+                cont.innerHTML = `
+                    <div class="ficha-estado-card ficha-estado-card--ok">
+                        <div class="ficha-estado-header">
+                            <span class="ficha-estado-badge ficha-estado-badge--ok">Ficha cargada</span>
+                            <div class="ficha-estado-actions">
+                                <a class="admin-doc-link" href="${ficha.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
+                                <button class="admin-doc-delete" type="button" id="fichasBorrarBtn" data-id="${ficha.id}" data-producto="${productoEsc}" aria-label="Eliminar ficha">×</button>
+                            </div>
+                        </div>
+                        <p class="ficha-estado-hint">Para cambiar el archivo, eliminá la ficha actual y subí una nueva.</p>
+                    </div>
+                `;
+                const borrarBtn = document.getElementById("fichasBorrarBtn");
+                if (borrarBtn) borrarBtn.addEventListener("click", () => borrarFicha(ficha.id, productoNombre));
+            } else {
+                cont.innerHTML = `
+                    <div class="ficha-estado-card ficha-estado-card--vacio">
+                        <span class="ficha-estado-badge ficha-estado-badge--vacio">Sin ficha</span>
+                        <form class="admin-form admin-form--inline" id="fichasSubirForm" autocomplete="off">
+                            <label class="admin-field">
+                                <span>Archivo PDF (máx 10 MB)</span>
+                                <input type="file" id="fichasArchivoNuevo" accept="application/pdf" required>
+                            </label>
+                            <button class="admin-submit" type="submit">
+                                <span class="admin-submit-label">Subir ficha</span>
+                            </button>
+                            <div class="admin-status" id="fichasStatus" hidden></div>
+                        </form>
+                    </div>
+                `;
+                const subirForm = document.getElementById("fichasSubirForm");
+                if (subirForm) subirForm.addEventListener("submit", subirFichaHandler);
+            }
+        }
+
+        function setFichaStatus(state, message) {
+            const status = document.getElementById("fichasStatus");
+            if (!status) return;
+            if (state === null) {
+                status.hidden = true;
+                status.className = "admin-status";
+                status.textContent = "";
+                return;
+            }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        async function subirFichaHandler(event) {
+            event.preventDefault();
+            const categoriaId = document.getElementById("fichasCategoria").value;
+            const productoNombre = document.getElementById("fichasProducto").value;
+            if (!categoriaId || !productoNombre) {
+                setFichaStatus("error", "Seleccioná categoría y unidad.");
+                return;
+            }
+            const archivo = document.getElementById("fichasArchivoNuevo")?.files[0];
+            if (!archivo) {
+                setFichaStatus("error", "Elegí un PDF.");
+                return;
+            }
+            if (archivo.type !== "application/pdf") {
+                setFichaStatus("error", "El archivo debe ser un PDF.");
+                return;
+            }
+            const sizeMB = archivo.size / (1024 * 1024);
+            if (sizeMB > MAX_PDF_MB) {
+                setFichaStatus("error", `El PDF pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_PDF_MB} MB. Comprimilo en ilovepdf.com/comprimir_pdf y volvé a probar.`);
+                return;
+            }
+
+            const cat = categoriaPorId(categoriaId);
+            const productoEsc = productoNombre.replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Subir ficha técnica",
+                mensaje: `¿Confirmás la subida de la ficha técnica para la unidad <strong>"${productoEsc}"</strong> (${cat.nombre})?`,
+                etiquetaConfirmar: "Subir",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            const submitBtn = event.target.querySelector(".admin-submit");
+            const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            const labelOriginal = submitLabel.textContent;
+            submitBtn.disabled = true;
+            submitLabel.textContent = "Subiendo...";
+            setFichaStatus("info", "Subiendo archivo...");
+
+            try {
+                const productoSlug = crearSlug(productoNombre);
+                const stamp = Date.now();
+                const uniqueName = `${cat.id}-${productoSlug}-${stamp}.pdf`;
+                const renamedFile = new File([archivo], uniqueName, { type: archivo.type });
+
+                const formData = new FormData();
+                formData.append("file", renamedFile);
+                formData.append("upload_preset", CLOUDINARY_PRESET);
+                formData.append("folder", "fichas");
+
+                const resp = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
+                const data = await resp.json();
+                if (!resp.ok || !data.secure_url) {
+                    throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+                }
+
+                setFichaStatus("info", "Guardando en base de datos...");
+                await db.collection("fichas").add({
+                    categoriaId: cat.id,
+                    categoriaNombre: cat.nombre,
+                    productoSlug,
+                    productoNombre,
+                    url: data.secure_url,
+                    creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+                    actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                setFichaStatus("success", `Ficha de "${productoNombre}" subida correctamente.`);
+                await cargarFichas();
+            } catch (e) {
+                console.error(e);
+                setFichaStatus("error", "No se pudo subir: " + (e.message || "error desconocido"));
+                submitBtn.disabled = false;
+                submitLabel.textContent = labelOriginal;
+            }
         }
 
         async function borrarFicha(id, productoNombre) {
@@ -4218,20 +4404,9 @@
             }
         }
 
-        function poblarFiltroFichas() {
-            const sel = document.getElementById("fichasFiltroCategoria");
-            if (!sel) return;
-            const valorPrev = sel.value;
-            const cats = categoriasFichasOrdenadas();
-            sel.innerHTML = `<option value="">Todas las categorías</option>`
-                + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
-            if (valorPrev && cats.some((c) => c.id === valorPrev)) sel.value = valorPrev;
-        }
-
         function renderFichasGlobales() {
             const cont = document.getElementById("fichasGlobalesList");
             if (!cont) return;
-            poblarFiltroFichas();
             if (estadoFichasAdmin === "cargando") {
                 cont.innerHTML = `<p class="admin-doc-empty">Cargando fichas...</p>`;
                 return;
@@ -4240,46 +4415,31 @@
                 cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar las fichas.</p>`;
                 return;
             }
-            const filtroCat = document.getElementById("fichasFiltroCategoria")?.value || "";
-            const filtroTxt = (document.getElementById("fichasFiltroBuscar")?.value || "").trim().toLowerCase();
-
-            let fichas = [...fichasAdmin.values()];
-            if (filtroCat) fichas = fichas.filter((f) => f.categoriaId === filtroCat);
-            if (filtroTxt) fichas = fichas.filter((f) => (f.productoNombre || "").toLowerCase().includes(filtroTxt));
-            fichas.sort((a, b) => (a.productoNombre || "").localeCompare(b.productoNombre || "", "es", { sensitivity: "base" }));
+            const filtro = document.getElementById("fichasFiltroCategoria")?.value || "";
+            const fichas = [...fichasAdmin.values()]
+                .filter((f) => !filtro || f.categoriaId === filtro)
+                .sort((a, b) => a.productoNombre.localeCompare(b.productoNombre, "es", { sensitivity: "base" }));
 
             if (fichas.length === 0) {
-                cont.innerHTML = (filtroCat || filtroTxt)
-                    ? `<p class="admin-doc-empty">No hay fichas que coincidan con el filtro.</p>`
+                cont.innerHTML = filtro
+                    ? `<p class="admin-doc-empty">No hay fichas cargadas en esta categoría.</p>`
                     : `<p class="admin-doc-empty">Todavía no hay fichas cargadas.</p>`;
                 return;
             }
             cont.innerHTML = fichas.map((f) => {
-                const productoEsc = (f.productoNombre || "").replace(/"/g, "&quot;");
-                const unidad = unidadesExtra.find((u) =>
-                    u.categoriaId === f.categoriaId
-                    && (u.slug || crearSlug(u.nombre || "")) === f.productoSlug
-                );
-                const unidadId = unidad ? unidad.id : "";
+                const productoEsc = f.productoNombre.replace(/"/g, "&quot;");
                 return `
                 <div class="admin-doc-row">
                     <div class="admin-doc-info">
-                        <strong>${f.productoNombre || ""}</strong>
-                        <span>${f.categoriaNombre || ""}</span>
+                        <strong>${f.productoNombre}</strong>
+                        <span>${f.categoriaNombre}</span>
                     </div>
                     <div class="admin-doc-actions">
                         <a class="admin-doc-link" href="${f.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
-                        ${unidadId ? `<button class="admin-doc-edit" type="button" data-unidad="${unidadId}" aria-label="Editar unidad ${productoEsc}" title="Editar en Unidades">✎</button>` : ""}
                         <button class="admin-doc-delete" type="button" data-id="${f.id}" data-producto="${productoEsc}" aria-label="Eliminar ficha de ${productoEsc}">×</button>
                     </div>
                 </div>`;
             }).join("");
-            cont.querySelectorAll(".admin-doc-edit").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    mostrarSeccion("unidades");
-                    setTimeout(() => abrirEditarUnidad(btn.dataset.unidad), 60);
-                });
-            });
             cont.querySelectorAll(".admin-doc-delete").forEach((btn) => {
                 btn.addEventListener("click", () => borrarFicha(btn.dataset.id, btn.dataset.producto));
             });
@@ -4521,23 +4681,21 @@
         }
 
         function irAFichasUnidad(categoriaId, productoNombre) {
-            const slug = crearSlug(productoNombre);
-            const unidad = unidadesExtra.find((u) =>
-                u.categoriaId === categoriaId
-                && (u.slug || crearSlug(u.nombre || "")) === slug
-            );
-            if (unidad) {
-                mostrarSeccion("unidades");
-                setTimeout(() => abrirEditarUnidad(unidad.id), 60);
-            } else {
-                mostrarSeccion("unidades");
+            mostrarSeccion("fichas");
+            setTimeout(() => {
+                const selCat = document.getElementById("fichasCategoria");
+                if (selCat) {
+                    selCat.value = categoriaId;
+                    selCat.dispatchEvent(new Event("change"));
+                }
                 setTimeout(() => {
-                    const filtroCat = document.getElementById("unidadesFiltroCategoria");
-                    const filtroTxt = document.getElementById("unidadesFiltroBuscar");
-                    if (filtroCat) { filtroCat.value = categoriaId; filtroCat.dispatchEvent(new Event("change")); }
-                    if (filtroTxt) { filtroTxt.value = productoNombre; filtroTxt.dispatchEvent(new Event("input")); }
-                }, 50);
-            }
+                    const selProd = document.getElementById("fichasProducto");
+                    if (selProd) {
+                        selProd.value = productoNombre;
+                        selProd.dispatchEvent(new Event("change"));
+                    }
+                }, 60);
+            }, 50);
         }
 
         function irAFotosUnidad(categoriaId, productoNombre, ejeSlug) {
@@ -4613,10 +4771,14 @@
                 if (filtroTxt) filtroTxt.value = "";
                 if (typeof renderAdminDocList === "function") renderAdminDocList();
             } else if (nombre === "fichas") {
+                const selCat = document.getElementById("fichasCategoria");
+                const selProd = document.getElementById("fichasProducto");
+                if (selCat) selCat.value = "";
+                if (selProd) { selProd.innerHTML = `<option value="">Elegí primero una categoría</option>`; selProd.disabled = true; }
+                const cont = document.getElementById("fichasEstado");
+                if (cont) cont.innerHTML = "";
                 const filtroCat = document.getElementById("fichasFiltroCategoria");
-                const filtroTxt = document.getElementById("fichasFiltroBuscar");
                 if (filtroCat) filtroCat.value = "";
-                if (filtroTxt) filtroTxt.value = "";
                 if (typeof renderFichasGlobales === "function") renderFichasGlobales();
             }
         }
@@ -4682,11 +4844,25 @@
             const filtroBuscar = document.getElementById("adminFiltroBuscar");
             if (filtroBuscar) filtroBuscar.addEventListener("input", renderAdminDocList);
 
-            // Fichas técnicas (solo lista filtrable)
+            // Fichas técnicas
+            poblarSelectCategoriaFichas();
+            const fichasCat = document.getElementById("fichasCategoria");
+            const fichasProd = document.getElementById("fichasProducto");
+            if (fichasCat) {
+                fichasCat.addEventListener("change", () => {
+                    poblarSelectProducto(fichasCat.value);
+                    renderEstadoFicha();
+                });
+            }
+            if (fichasProd) {
+                fichasProd.addEventListener("change", renderEstadoFicha);
+            }
             const fichasFiltro = document.getElementById("fichasFiltroCategoria");
-            if (fichasFiltro) fichasFiltro.addEventListener("change", renderFichasGlobales);
-            const fichasFiltroBuscar = document.getElementById("fichasFiltroBuscar");
-            if (fichasFiltroBuscar) fichasFiltroBuscar.addEventListener("input", renderFichasGlobales);
+            if (fichasFiltro) {
+                fichasFiltro.addEventListener("change", renderFichasGlobales);
+            }
+            poblarSelectProducto("");
+            renderEstadoFicha();
 
             // Lightbox
             const lbClose = document.getElementById("fotoLightboxClose");
