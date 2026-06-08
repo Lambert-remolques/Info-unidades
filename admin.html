@@ -857,6 +857,53 @@
             gap: 14px;
             margin-bottom: 14px;
         }
+        .unidad-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .unidad-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .unidad-badge--falta {
+            background: rgba(218, 37, 29, 0.08);
+            color: #b81e16;
+            border: 1px solid rgba(218, 37, 29, 0.25);
+        }
+        .ficha-actual {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: #f1f8f3;
+            border: 1px solid rgba(21, 153, 71, 0.25);
+            border-radius: 8px;
+        }
+        .ficha-actual--pendiente {
+            background: rgba(245, 158, 11, 0.08);
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+        .ficha-actual-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.86rem;
+        }
+        .ficha-actual-info a {
+            color: var(--verde);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .ficha-actual-info a:hover {
+            text-decoration: underline;
+        }
         .admin-field.admin-field--inline {
             display: flex;
             flex-direction: column;
@@ -1558,6 +1605,12 @@
                         </svg>
                         Fotos
                     </button>
+                    <button class="sidebar-item" type="button" data-section="unidades">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="7" width="14" height="10" rx="1"/><path d="M16 11h4l2 3v3h-6"/><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/>
+                        </svg>
+                        Unidades
+                    </button>
                     <button class="sidebar-item" type="button" data-section="adicionales">
                         <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/>
@@ -1804,6 +1857,108 @@
                 </div>
             </section>
 
+            <section class="panel-section" data-section="unidades">
+                <h1 class="page-title">Unidades</h1>
+                <p class="page-subtitle">Creá, editá o eliminá unidades del catálogo (acoplados, semis, carrocerías y bitrenes).</p>
+
+                <div class="admin-cards">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h2 class="admin-card-title">Unidades cargadas</h2>
+                            <button class="btn-crear" type="button" id="btnCrearUnidadDesdeLista">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Crear unidad
+                            </button>
+                        </div>
+                        <div class="adicionales-filtros">
+                            <label class="admin-field admin-field--inline">
+                                <span>Filtrar por categoría</span>
+                                <select class="admin-select" id="unidadesFiltroCategoria">
+                                    <option value="">Todas las categorías</option>
+                                </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Buscar</span>
+                                <input type="search" class="admin-select" id="unidadesFiltroBuscar" placeholder="Nombre de la unidad…" autocomplete="off">
+                            </label>
+                        </div>
+                        <div class="admin-doc-list" id="unidadesLista"></div>
+                    </div>
+                    <div class="admin-card" id="cardMigracionUnidades">
+                        <div class="admin-card-header">
+                            <h2 class="admin-card-title">Migración única (temporal)</h2>
+                        </div>
+                        <p class="modal-fotos-hint" style="margin-top:0;">Apretá este botón <strong>una sola vez</strong> para copiar todas las unidades precargadas del catálogo a Firestore, así quedan editables desde acá. Es seguro apretarlo varias veces: no duplica las que ya existen.</p>
+                        <button class="btn-crear" type="button" id="btnMigrarUnidades" style="margin-top:12px;">Migrar unidades precargadas</button>
+                        <p id="migracionUnidadesEstado" class="modal-fotos-hint" style="margin-top:10px; display:none;"></p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="modal-form" id="modalCrearUnidad" hidden>
+                <div class="modal-form-overlay" id="modalCrearUnidadOverlay"></div>
+                <div class="modal-form-box" role="dialog" aria-modal="true" aria-labelledby="modalCrearUnidadTitle">
+                    <div class="modal-form-header">
+                        <h3 class="modal-form-title" id="modalCrearUnidadTitle">Crear unidad</h3>
+                        <button class="modal-form-close" type="button" id="modalCrearUnidadClose" aria-label="Cerrar">×</button>
+                    </div>
+                    <form class="admin-form modal-form-body" id="formCrearUnidad" autocomplete="off">
+                        <label class="admin-field">
+                            <span>Categoría</span>
+                            <select class="admin-select" id="formUnCategoria" required>
+                                <option value="">Seleccionar categoría...</option>
+                            </select>
+                        </label>
+                        <label class="admin-field">
+                            <span>Nombre</span>
+                            <input type="text" id="formUnNombre" required maxlength="120">
+                        </label>
+                        <label class="admin-field">
+                            <span>Descripción</span>
+                            <textarea id="formUnDescripcion" rows="3" maxlength="800"></textarea>
+                        </label>
+
+                        <div class="modal-fotos-section">
+                            <div class="modal-fotos-header">
+                                <span class="modal-fotos-title">Foto de portada</span>
+                                <label class="modal-fotos-add" for="formUnPortadaInput">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    <span id="formUnPortadaAddLabel">Subir portada</span>
+                                </label>
+                                <input type="file" id="formUnPortadaInput" accept="image/jpeg,image/png,image/webp" hidden>
+                            </div>
+                            <div class="modal-fotos-grid" id="formUnPortadaGrid"></div>
+                            <p class="modal-fotos-hint" id="formUnPortadaHint" hidden></p>
+                            <div class="admin-status" id="formUnPortadaStatus" hidden></div>
+                        </div>
+
+                        <div class="modal-fotos-section" id="formUnFichaSection">
+                            <div class="modal-fotos-header">
+                                <span class="modal-fotos-title">Ficha técnica (PDF)</span>
+                                <label class="modal-fotos-add" for="formUnFichaInput">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    <span id="formUnFichaAddLabel">Subir ficha</span>
+                                </label>
+                                <input type="file" id="formUnFichaInput" accept="application/pdf" hidden>
+                            </div>
+                            <div id="formUnFichaEstado"></div>
+                            <div class="admin-status" id="formUnFichaStatus" hidden></div>
+                        </div>
+
+                        <button class="admin-submit" type="submit" id="btnCrearUnidadSubmit">
+                            <span class="admin-submit-label">Crear unidad</span>
+                        </button>
+                        <div class="admin-status" id="crearUnidadStatus" hidden></div>
+                    </form>
+                </div>
+            </div>
+
             <section class="panel-section" data-section="adicionales">
                 <h1 class="page-title">Adicionales</h1>
                 <p class="page-subtitle">Creá, editá o eliminá adicionales.</p>
@@ -1959,7 +2114,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "adicionales", "usuarios", "metricas"];
+        const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "unidades", "adicionales", "usuarios", "metricas"];
         const CLOUDINARY_CLOUD = "lambert-remolques";
         const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
         const CLOUDINARY_PRESET = "panel_admin_lambert";
@@ -1986,6 +2141,7 @@
             { id: "carrocerias", nombre: "Carrocerías", ejes: [], productos: ["Curtain sider", "Todo puertas", "Volcadora", "Isotérmica", "Bivuelco", "Paquetera", "Curtain sider barandas volcables", "Pollera"] },
             { id: "bitrenes", nombre: "Bitrenes", ejes: [], productos: ["Baranda volcable", "Isotérmico", "Portacontenedor", "Curtain sider", "Forestal"] }
         ];
+
         const MAX_FOTO_MB = 10;
         const FOTOS_LIST_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/catalogo.json`;
 
@@ -3275,6 +3431,691 @@
             }
         }
 
+        // ===================== UNIDADES =====================
+        // Colección Firestore: "unidades" — { categoriaId, categoriaNombre,
+        // nombre, slug, descripcion, fotoPortadaPublicId, fotoPortadaFormato,
+        // fotoPortadaVersion, creadoEn, actualizadoEn }
+        let unidadesExtra = [];
+        let editingUnidadId = null;
+        let portadaPendiente = null;       // {file, previewUrl} en modo Crear
+        let fichaPendiente = null;         // {file} en modo Crear
+
+        async function cargarUnidades() {
+            try {
+                const snap = await db.collection("unidades").get();
+                unidadesExtra = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            } catch (e) {
+                console.warn("No se pudieron leer unidades:", e);
+                unidadesExtra = [];
+            }
+            if (typeof renderBloquePendientes === "function") renderBloquePendientes();
+        }
+
+        function poblarFiltroUnidades() {
+            const sel = document.getElementById("unidadesFiltroCategoria");
+            if (!sel) return;
+            const valorPrev = sel.value;
+            const cats = categoriasFichasOrdenadas();
+            sel.innerHTML = `<option value="">Todas las categorías</option>`
+                + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            if (valorPrev && cats.some((c) => c.id === valorPrev)) sel.value = valorPrev;
+        }
+
+        function poblarSelectCategoriaUnidad() {
+            const sel = document.getElementById("formUnCategoria");
+            if (!sel) return;
+            const cats = categoriasFichasOrdenadas();
+            sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+        }
+
+        function renderUnidadesAdminList() {
+            const cont = document.getElementById("unidadesLista");
+            if (!cont) return;
+            poblarFiltroUnidades();
+
+            if (unidadesExtra.length === 0) {
+                cont.innerHTML = `<p class="admin-doc-empty">Todavía no hay unidades cargadas.</p>`;
+                return;
+            }
+
+            const filtroCat = document.getElementById("unidadesFiltroCategoria")?.value || "";
+            const filtroTexto = (document.getElementById("unidadesFiltroBuscar")?.value || "").trim().toLowerCase();
+
+            let lista = [...unidadesExtra];
+            if (filtroCat) lista = lista.filter((u) => u.categoriaId === filtroCat);
+            if (filtroTexto) lista = lista.filter((u) => (u.nombre || "").toLowerCase().includes(filtroTexto));
+            lista.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" }));
+
+            if (lista.length === 0) {
+                cont.innerHTML = `<p class="admin-doc-empty">No hay unidades que coincidan con el filtro.</p>`;
+                return;
+            }
+
+            cont.innerHTML = lista.map((u) => {
+                const nombreEsc = (u.nombre || "").replace(/"/g, "&quot;");
+                const catEsc = (u.categoriaNombre || u.categoriaId || "").replace(/"/g, "&quot;");
+                const slug = u.slug || crearSlug(u.nombre || "");
+                const tieneFicha = fichasAdmin.has(claveFicha(u.categoriaId, slug));
+                const badges = [];
+                if (!u.descripcion || !u.descripcion.trim()) badges.push(`<span class="unidad-badge unidad-badge--falta">Sin descripción</span>`);
+                if (!u.fotoPortadaPublicId) badges.push(`<span class="unidad-badge unidad-badge--falta">Sin portada</span>`);
+                if (!tieneFicha) badges.push(`<span class="unidad-badge unidad-badge--falta">Sin ficha</span>`);
+                return `
+                <div class="admin-doc-row">
+                    <div class="admin-doc-info">
+                        <strong>${u.nombre || ""}</strong>
+                        <span>${u.categoriaNombre || u.categoriaId || ""}</span>
+                        ${badges.length ? `<div class="unidad-badges">${badges.join("")}</div>` : ""}
+                    </div>
+                    <div class="admin-doc-actions">
+                        <button class="admin-doc-edit" type="button" data-id="${u.id}" aria-label="Editar ${nombreEsc}" title="Editar">✎</button>
+                        <button class="admin-doc-delete" type="button" data-id="${u.id}" data-nombre="${nombreEsc}" data-categoria="${catEsc}" aria-label="Eliminar ${nombreEsc}" title="Eliminar">×</button>
+                    </div>
+                </div>`;
+            }).join("");
+            cont.querySelectorAll(".admin-doc-edit").forEach((btn) => {
+                btn.addEventListener("click", () => abrirEditarUnidad(btn.dataset.id));
+            });
+            cont.querySelectorAll(".admin-doc-delete").forEach((btn) => {
+                btn.addEventListener("click", () => borrarUnidad(btn.dataset.id, btn.dataset.nombre, btn.dataset.categoria));
+            });
+        }
+
+        // ----- Modal Crear/Editar Unidad -----
+        function setCrearUnidadStatus(state, message) {
+            const status = document.getElementById("crearUnidadStatus");
+            if (!status) return;
+            if (state === null) { status.hidden = true; status.className = "admin-status"; status.textContent = ""; return; }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        function setUnPortadaStatus(state, message) {
+            const status = document.getElementById("formUnPortadaStatus");
+            if (!status) return;
+            if (state === null) { status.hidden = true; status.className = "admin-status"; status.textContent = ""; return; }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        function setUnFichaStatus(state, message) {
+            const status = document.getElementById("formUnFichaStatus");
+            if (!status) return;
+            if (state === null) { status.hidden = true; status.className = "admin-status"; status.textContent = ""; return; }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        function limpiarPortadaPendiente() {
+            if (portadaPendiente && portadaPendiente.previewUrl) {
+                try { URL.revokeObjectURL(portadaPendiente.previewUrl); } catch {}
+            }
+            portadaPendiente = null;
+        }
+
+        function renderPortadaModal() {
+            const grid = document.getElementById("formUnPortadaGrid");
+            const hint = document.getElementById("formUnPortadaHint");
+            const addLabel = document.getElementById("formUnPortadaAddLabel");
+            if (!grid || !hint) return;
+
+            if (editingUnidadId) {
+                const u = unidadesExtra.find((x) => x.id === editingUnidadId);
+                if (u && u.fotoPortadaPublicId) {
+                    const formato = u.fotoPortadaFormato || "jpg";
+                    const version = u.fotoPortadaVersion || "";
+                    const url = urlThumbFoto(u.fotoPortadaPublicId, formato, version);
+                    grid.innerHTML = `
+                        <div class="modal-foto-card" data-public-id="${u.fotoPortadaPublicId}" data-formato="${formato}" data-version="${version}">
+                            <img src="${url}" alt="Portada de ${u.nombre || ""}" loading="lazy">
+                            <button class="foto-borrar" type="button" data-action="quitar-portada" aria-label="Quitar portada">×</button>
+                        </div>`;
+                    hint.hidden = true;
+                    if (addLabel) addLabel.textContent = "Reemplazar portada";
+                    grid.querySelector('[data-action="quitar-portada"]').addEventListener("click", quitarPortadaUnidad);
+                    grid.querySelector("img").addEventListener("click", () => abrirLightbox({ publicId: u.fotoPortadaPublicId, formato, version, numero: "portada" }));
+                } else {
+                    grid.innerHTML = "";
+                    hint.hidden = false;
+                    hint.textContent = "Esta unidad todavía no tiene foto de portada.";
+                    if (addLabel) addLabel.textContent = "Subir portada";
+                }
+                return;
+            }
+
+            // Modo Crear
+            if (!portadaPendiente) {
+                grid.innerHTML = "";
+                hint.hidden = false;
+                hint.textContent = "Opcional. La portada se sube al guardar la unidad.";
+                if (addLabel) addLabel.textContent = "Subir portada";
+                return;
+            }
+            grid.innerHTML = `
+                <div class="modal-foto-card modal-foto-card--pendiente">
+                    <img src="${portadaPendiente.previewUrl}" alt="${portadaPendiente.file.name}">
+                    <button class="foto-borrar" type="button" data-action="quitar-portada-pendiente" aria-label="Quitar">×</button>
+                </div>`;
+            hint.hidden = true;
+            if (addLabel) addLabel.textContent = "Cambiar portada";
+            grid.querySelector('[data-action="quitar-portada-pendiente"]').addEventListener("click", () => {
+                limpiarPortadaPendiente();
+                renderPortadaModal();
+            });
+        }
+
+        function renderFichaModal() {
+            const cont = document.getElementById("formUnFichaEstado");
+            const addLabel = document.getElementById("formUnFichaAddLabel");
+            if (!cont) return;
+
+            if (editingUnidadId) {
+                const u = unidadesExtra.find((x) => x.id === editingUnidadId);
+                if (!u) { cont.innerHTML = ""; return; }
+                const slug = u.slug || crearSlug(u.nombre || "");
+                const ficha = fichasAdmin.get(claveFicha(u.categoriaId, slug));
+                if (ficha) {
+                    cont.innerHTML = `
+                        <div class="ficha-actual">
+                            <div class="ficha-actual-info">
+                                <strong>Ficha cargada</strong>
+                                <a href="${ficha.url}" target="_blank" rel="noopener">Abrir PDF</a>
+                            </div>
+                            <button class="admin-doc-delete" type="button" data-action="borrar-ficha" data-ficha-id="${ficha.id}" aria-label="Borrar ficha">×</button>
+                        </div>`;
+                    if (addLabel) addLabel.textContent = "Reemplazar";
+                    cont.querySelector('[data-action="borrar-ficha"]').addEventListener("click", () => borrarFichaModal(ficha.id));
+                } else {
+                    cont.innerHTML = `<p class="modal-fotos-hint">Esta unidad todavía no tiene ficha técnica cargada.</p>`;
+                    if (addLabel) addLabel.textContent = "Subir ficha";
+                }
+                return;
+            }
+
+            // Modo Crear
+            if (fichaPendiente) {
+                cont.innerHTML = `
+                    <div class="ficha-actual ficha-actual--pendiente">
+                        <div class="ficha-actual-info">
+                            <strong>Pendiente:</strong> ${fichaPendiente.file.name}
+                        </div>
+                        <button class="admin-doc-delete" type="button" data-action="quitar-ficha-pendiente" aria-label="Quitar">×</button>
+                    </div>`;
+                if (addLabel) addLabel.textContent = "Cambiar";
+                cont.querySelector('[data-action="quitar-ficha-pendiente"]').addEventListener("click", () => {
+                    fichaPendiente = null;
+                    renderFichaModal();
+                });
+            } else {
+                cont.innerHTML = `<p class="modal-fotos-hint">Opcional. El PDF se sube al guardar la unidad.</p>`;
+                if (addLabel) addLabel.textContent = "Subir ficha";
+            }
+        }
+
+        function abrirCrearUnidadModal() {
+            editingUnidadId = null;
+            limpiarPortadaPendiente();
+            fichaPendiente = null;
+
+            document.getElementById("modalCrearUnidadTitle").textContent = "Crear unidad";
+            const submitLabel = document.getElementById("btnCrearUnidadSubmit").querySelector(".admin-submit-label");
+            submitLabel.textContent = "Crear unidad";
+
+            document.getElementById("formCrearUnidad").reset();
+            poblarSelectCategoriaUnidad();
+            const filtroActual = document.getElementById("unidadesFiltroCategoria")?.value;
+            if (filtroActual) document.getElementById("formUnCategoria").value = filtroActual;
+
+            const modal = document.getElementById("modalCrearUnidad");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            setCrearUnidadStatus(null);
+            setUnPortadaStatus(null);
+            setUnFichaStatus(null);
+            renderPortadaModal();
+            renderFichaModal();
+            setTimeout(() => document.getElementById("formUnNombre")?.focus(), 30);
+        }
+
+        function abrirEditarUnidad(id) {
+            const u = unidadesExtra.find((x) => x.id === id);
+            if (!u) return;
+            editingUnidadId = id;
+            limpiarPortadaPendiente();
+            fichaPendiente = null;
+
+            document.getElementById("modalCrearUnidadTitle").textContent = "Editar unidad";
+            document.getElementById("btnCrearUnidadSubmit").querySelector(".admin-submit-label").textContent = "Guardar cambios";
+
+            poblarSelectCategoriaUnidad();
+            document.getElementById("formUnCategoria").value = u.categoriaId || "";
+            document.getElementById("formUnNombre").value = u.nombre || "";
+            document.getElementById("formUnDescripcion").value = u.descripcion || "";
+
+            const modal = document.getElementById("modalCrearUnidad");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            setCrearUnidadStatus(null);
+            setUnPortadaStatus(null);
+            setUnFichaStatus(null);
+            renderPortadaModal();
+            renderFichaModal();
+            setTimeout(() => document.getElementById("formUnNombre")?.focus(), 30);
+        }
+
+        function cerrarCrearUnidadModal() {
+            const modal = document.getElementById("modalCrearUnidad");
+            if (!modal) return;
+            modal.hidden = true;
+            document.body.style.overflow = "";
+            document.getElementById("formCrearUnidad")?.reset();
+            setCrearUnidadStatus(null);
+            setUnPortadaStatus(null);
+            setUnFichaStatus(null);
+            limpiarPortadaPendiente();
+            fichaPendiente = null;
+            const grid = document.getElementById("formUnPortadaGrid");
+            if (grid) grid.innerHTML = "";
+            const ficha = document.getElementById("formUnFichaEstado");
+            if (ficha) ficha.innerHTML = "";
+        }
+
+        function onFormUnPortadaChange(event) {
+            const file = (event.target.files || [])[0];
+            event.target.value = "";
+            if (!file) return;
+            if (!file.type.startsWith("image/")) { setUnPortadaStatus("error", "El archivo debe ser una imagen."); return; }
+            const sizeMB = file.size / (1024 * 1024);
+            if (sizeMB > MAX_FOTO_MB) { setUnPortadaStatus("error", `La imagen pesa ${sizeMB.toFixed(1)} MB (máx ${MAX_FOTO_MB} MB).`); return; }
+            setUnPortadaStatus(null);
+
+            if (editingUnidadId) {
+                subirPortadaModoEditar(file);
+            } else {
+                limpiarPortadaPendiente();
+                portadaPendiente = { file, previewUrl: URL.createObjectURL(file) };
+                renderPortadaModal();
+            }
+        }
+
+        async function subirPortadaACloudinary(file, categoriaId, slug) {
+            const stamp = Date.now();
+            const publicId = `unidades/${categoriaId}/${slug}/portada-${stamp}`;
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", CLOUDINARY_PRESET);
+            formData.append("public_id", publicId);
+            formData.append("tags", "catalogo");
+            const resp = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: "POST", body: formData });
+            const data = await resp.json();
+            if (!resp.ok || !data.secure_url) {
+                throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+            }
+            return {
+                publicId,
+                formato: data.format || "jpg",
+                version: data.version || ""
+            };
+        }
+
+        async function subirPortadaModoEditar(file) {
+            const u = unidadesExtra.find((x) => x.id === editingUnidadId);
+            if (!u) return;
+            const slug = u.slug || crearSlug(u.nombre || "");
+            setUnPortadaStatus("info", "Subiendo portada…");
+            try {
+                const subida = await subirPortadaACloudinary(file, u.categoriaId, slug);
+                await db.collection("unidades").doc(u.id).update({
+                    fotoPortadaPublicId: subida.publicId,
+                    fotoPortadaFormato: subida.formato,
+                    fotoPortadaVersion: subida.version,
+                    actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await cargarUnidades();
+                renderUnidadesAdminList();
+                renderPortadaModal();
+                setUnPortadaStatus("success", "Portada actualizada.");
+            } catch (e) {
+                console.error(e);
+                setUnPortadaStatus("error", "No se pudo subir: " + (e.message || "error"));
+            }
+        }
+
+        async function quitarPortadaUnidad() {
+            if (!editingUnidadId) return;
+            const ok = await mostrarConfirmacion({
+                titulo: "Quitar portada",
+                mensaje: "¿Querés quitar la foto de portada de esta unidad?<br><br>La imagen queda en Cloudinary pero deja de aparecer como portada. Podés subir otra cuando quieras.",
+                etiquetaConfirmar: "Quitar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("unidades").doc(editingUnidadId).update({
+                    fotoPortadaPublicId: firebase.firestore.FieldValue.delete(),
+                    fotoPortadaFormato: firebase.firestore.FieldValue.delete(),
+                    fotoPortadaVersion: firebase.firestore.FieldValue.delete(),
+                    actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await cargarUnidades();
+                renderUnidadesAdminList();
+                renderPortadaModal();
+                setUnPortadaStatus("success", "Portada removida.");
+            } catch (e) {
+                console.error(e);
+                setUnPortadaStatus("error", "No se pudo quitar: " + (e.message || "error"));
+            }
+        }
+
+        async function onFormUnFichaChange(event) {
+            const file = (event.target.files || [])[0];
+            event.target.value = "";
+            if (!file) return;
+            if (file.type !== "application/pdf") { setUnFichaStatus("error", "El archivo debe ser un PDF."); return; }
+            const sizeMB = file.size / (1024 * 1024);
+            if (sizeMB > MAX_PDF_MB) { setUnFichaStatus("error", `El PDF pesa ${sizeMB.toFixed(1)} MB (máx ${MAX_PDF_MB} MB).`); return; }
+            setUnFichaStatus(null);
+
+            if (editingUnidadId) {
+                subirFichaModoEditar(file);
+            } else {
+                fichaPendiente = { file };
+                renderFichaModal();
+            }
+        }
+
+        async function subirFichaACloudinary(file, categoriaId, slug) {
+            const stamp = Date.now();
+            const uniqueName = `${categoriaId}-${slug}-${stamp}.pdf`;
+            const renamedFile = new File([file], uniqueName, { type: file.type });
+            const formData = new FormData();
+            formData.append("file", renamedFile);
+            formData.append("upload_preset", CLOUDINARY_PRESET);
+            formData.append("folder", "fichas");
+            const resp = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
+            const data = await resp.json();
+            if (!resp.ok || !data.secure_url) {
+                throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+            }
+            return data.secure_url;
+        }
+
+        async function subirFichaModoEditar(file) {
+            const u = unidadesExtra.find((x) => x.id === editingUnidadId);
+            if (!u) return;
+            const slug = u.slug || crearSlug(u.nombre || "");
+            setUnFichaStatus("info", "Subiendo ficha…");
+            try {
+                const url = await subirFichaACloudinary(file, u.categoriaId, slug);
+                // Reemplazar ficha anterior (si existe)
+                const fichaExistente = fichasAdmin.get(claveFicha(u.categoriaId, slug));
+                if (fichaExistente) {
+                    await db.collection("fichas").doc(fichaExistente.id).update({
+                        url,
+                        actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } else {
+                    await db.collection("fichas").add({
+                        categoriaId: u.categoriaId,
+                        categoriaNombre: u.categoriaNombre || "",
+                        productoSlug: slug,
+                        productoNombre: u.nombre,
+                        url,
+                        creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+                        actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                await cargarFichas();
+                renderUnidadesAdminList();
+                renderFichaModal();
+                setUnFichaStatus("success", "Ficha actualizada.");
+            } catch (e) {
+                console.error(e);
+                setUnFichaStatus("error", "No se pudo subir: " + (e.message || "error"));
+            }
+        }
+
+        async function borrarFichaModal(fichaId) {
+            const ok = await mostrarConfirmacion({
+                titulo: "Borrar ficha técnica",
+                mensaje: "¿Querés borrar la ficha técnica? El PDF queda en Cloudinary pero la unidad pasa a estar sin ficha.",
+                etiquetaConfirmar: "Borrar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("fichas").doc(fichaId).delete();
+                await cargarFichas();
+                renderUnidadesAdminList();
+                renderFichaModal();
+                setUnFichaStatus("success", "Ficha borrada.");
+            } catch (e) {
+                console.error(e);
+                setUnFichaStatus("error", "No se pudo borrar: " + (e.message || "error"));
+            }
+        }
+
+        async function crearUnidadHandler(event) {
+            event.preventDefault();
+            const categoriaId = document.getElementById("formUnCategoria").value;
+            const nombre = document.getElementById("formUnNombre").value.trim();
+            const descripcion = document.getElementById("formUnDescripcion").value.trim();
+
+            if (!categoriaId) { setCrearUnidadStatus("error", "Seleccioná una categoría."); return; }
+            if (!nombre) { setCrearUnidadStatus("error", "Escribí el nombre de la unidad."); return; }
+
+            const cat = categoriaPorId(categoriaId);
+            if (!cat) { setCrearUnidadStatus("error", "Categoría inválida."); return; }
+            const categoriaNombre = cat.nombre;
+
+            const esEdicion = !!editingUnidadId;
+            const slug = esEdicion
+                ? (unidadesExtra.find((x) => x.id === editingUnidadId)?.slug || crearSlug(nombre))
+                : crearSlug(nombre);
+
+            const yaExiste = unidadesExtra.some((u) =>
+                u.categoriaId === categoriaId
+                && (u.slug || crearSlug(u.nombre || "")) === slug
+                && u.id !== editingUnidadId
+            );
+            if (yaExiste) {
+                setCrearUnidadStatus("error", `Ya existe una unidad "${nombre}" en ${categoriaNombre}.`);
+                return;
+            }
+
+            const nombreEsc = nombre.replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: esEdicion ? "Guardar cambios" : "Crear unidad",
+                mensaje: esEdicion
+                    ? `¿Guardar los cambios de la unidad <strong>"${nombreEsc}"</strong>?`
+                    : `¿Confirmás crear la unidad <strong>"${nombreEsc}"</strong> en <strong>${categoriaNombre}</strong>?`,
+                etiquetaConfirmar: esEdicion ? "Guardar" : "Crear",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            const submitBtn = document.getElementById("btnCrearUnidadSubmit");
+            const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            const labelOriginal = submitLabel.textContent;
+            submitBtn.disabled = true;
+            submitLabel.textContent = "Guardando...";
+            setCrearUnidadStatus("info", "Guardando en base de datos...");
+
+            try {
+                const payload = {
+                    categoriaId,
+                    categoriaNombre,
+                    nombre,
+                    slug,
+                    descripcion,
+                    actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                let unidadId;
+                if (esEdicion) {
+                    await db.collection("unidades").doc(editingUnidadId).update(payload);
+                    unidadId = editingUnidadId;
+                } else {
+                    payload.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
+                    const ref = await db.collection("unidades").add(payload);
+                    unidadId = ref.id;
+                }
+
+                let mensajeOk = esEdicion ? "Cambios guardados." : `"${nombre}" creada correctamente.`;
+
+                if (!esEdicion && portadaPendiente) {
+                    setCrearUnidadStatus("info", "Subiendo portada...");
+                    try {
+                        const subida = await subirPortadaACloudinary(portadaPendiente.file, categoriaId, slug);
+                        await db.collection("unidades").doc(unidadId).update({
+                            fotoPortadaPublicId: subida.publicId,
+                            fotoPortadaFormato: subida.formato,
+                            fotoPortadaVersion: subida.version
+                        });
+                    } catch (err) {
+                        console.error("Portada falló:", err);
+                        mensajeOk += " (la portada no se pudo subir)";
+                    }
+                }
+
+                if (!esEdicion && fichaPendiente) {
+                    setCrearUnidadStatus("info", "Subiendo ficha técnica...");
+                    try {
+                        const url = await subirFichaACloudinary(fichaPendiente.file, categoriaId, slug);
+                        await db.collection("fichas").add({
+                            categoriaId,
+                            categoriaNombre,
+                            productoSlug: slug,
+                            productoNombre: nombre,
+                            url,
+                            creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+                            actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } catch (err) {
+                        console.error("Ficha falló:", err);
+                        mensajeOk += " (la ficha no se pudo subir)";
+                    }
+                }
+
+                await cargarUnidades();
+                await cargarFichas();
+                renderUnidadesAdminList();
+
+                setCrearUnidadStatus("success", mensajeOk);
+                setTimeout(() => cerrarCrearUnidadModal(), 900);
+            } catch (e) {
+                console.error(e);
+                setCrearUnidadStatus("error", "No se pudo guardar: " + (e.message || "error desconocido"));
+            } finally {
+                submitBtn.disabled = false;
+                submitLabel.textContent = labelOriginal;
+            }
+        }
+
+        async function borrarUnidad(id, nombre, categoriaNombre) {
+            const nombreEsc = (nombre || "").replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Eliminar unidad",
+                mensaje: `¿Querés eliminar la unidad <strong>"${nombreEsc}"</strong> de <strong>${categoriaNombre || ""}</strong>?<br><br>La portada queda huérfana en Cloudinary; las fotos por configuración y la ficha técnica no se borran automáticamente (pero la unidad deja de aparecer en el catálogo).`,
+                etiquetaConfirmar: "Eliminar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("unidades").doc(id).delete();
+                await cargarUnidades();
+                renderUnidadesAdminList();
+            } catch (e) {
+                await mostrarConfirmacion({
+                    titulo: "No se pudo eliminar",
+                    mensaje: e.message || "Error desconocido al borrar.",
+                    etiquetaConfirmar: "Cerrar"
+                });
+            }
+        }
+
+        async function migrarUnidadesPrecargadas() {
+            const btn = document.getElementById("btnMigrarUnidades");
+            const estado = document.getElementById("migracionUnidadesEstado");
+            if (!btn || !estado) return;
+
+            const total = FICHAS_CATALOGO.reduce((acc, c) => acc + c.productos.length, 0);
+            const ok = await mostrarConfirmacion({
+                titulo: "Migrar unidades precargadas",
+                mensaje: `Se van a copiar <strong>${total} unidades</strong> precargadas a Firestore para que queden editables desde el panel.<br><br>Es seguro: si alguna ya existe, no se duplica. ¿Continuar?`,
+                etiquetaConfirmar: "Migrar",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            btn.disabled = true;
+            estado.style.display = "block";
+            estado.textContent = "Leyendo unidades existentes…";
+
+            try {
+                await cargarUnidades();
+                const existentes = new Set(
+                    unidadesExtra
+                        .filter((u) => u.categoriaId && u.nombre)
+                        .map((u) => `${u.categoriaId}::${(u.slug || crearSlug(u.nombre || "")).toLowerCase()}`)
+                );
+
+                let migradas = 0, saltadas = 0, errores = 0, i = 0;
+                for (const cat of FICHAS_CATALOGO) {
+                    for (const nombre of cat.productos) {
+                        i++;
+                        const slug = crearSlug(nombre);
+                        const clave = `${cat.id}::${slug.toLowerCase()}`;
+                        if (existentes.has(clave)) {
+                            saltadas++;
+                            estado.textContent = `(${i}/${total}) Ya existe: ${nombre} — salteada`;
+                            continue;
+                        }
+                        try {
+                            await db.collection("unidades").add({
+                                categoriaId: cat.id,
+                                categoriaNombre: cat.nombre,
+                                nombre,
+                                slug,
+                                descripcion: "",
+                                creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+                                migrado: true
+                            });
+                            migradas++;
+                            estado.textContent = `(${i}/${total}) Migrada: ${nombre}`;
+                            existentes.add(clave);
+                        } catch (e) {
+                            console.error("Error migrando", nombre, e);
+                            errores++;
+                        }
+                    }
+                }
+
+                await cargarUnidades();
+                renderUnidadesAdminList();
+
+                estado.innerHTML = `<strong>Listo.</strong> Migradas: ${migradas} · Ya existían: ${saltadas}${errores ? ` · Errores: ${errores}` : ""}.`;
+                await mostrarConfirmacion({
+                    titulo: "Migración terminada",
+                    mensaje: `<strong>${migradas}</strong> unidades nuevas copiadas a Firestore.<br>${saltadas ? `<strong>${saltadas}</strong> ya existían.<br>` : ""}${errores ? `<strong>${errores}</strong> con error (revisá la consola).<br>` : ""}<br>Ya podés editarlas desde la lista de arriba.`,
+                    etiquetaConfirmar: "Entendido",
+                    soloConfirmar: true,
+                    variante: "confirmar"
+                });
+            } catch (e) {
+                console.error("Migración falló:", e);
+                estado.textContent = `Error: ${e.message || e}`;
+                await mostrarConfirmacion({
+                    titulo: "No se pudo migrar",
+                    mensaje: `Algo falló: <code>${e.message || e}</code><br><br>Podés volver a intentarlo (no duplica lo que ya se haya copiado).`,
+                    etiquetaConfirmar: "Cerrar",
+                    soloConfirmar: true
+                });
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
         function poblarFiltroAdicionales() {
             const sel = document.getElementById("adicionalesFiltroCategoria");
             if (!sel) return;
@@ -3706,6 +4547,12 @@
                 if (filtroCat) filtroCat.value = "";
                 if (filtroTxt) filtroTxt.value = "";
                 if (typeof renderAdicionalesAdminList === "function") renderAdicionalesAdminList();
+            } else if (nombre === "unidades") {
+                const filtroCat = document.getElementById("unidadesFiltroCategoria");
+                const filtroTxt = document.getElementById("unidadesFiltroBuscar");
+                if (filtroCat) filtroCat.value = "";
+                if (filtroTxt) filtroTxt.value = "";
+                if (typeof renderUnidadesAdminList === "function") renderUnidadesAdminList();
             } else if (nombre === "fotos") {
                 const selCat = document.getElementById("fotosUnidadCategoria");
                 const selProd = document.getElementById("fotosUnidadProducto");
@@ -3866,7 +4713,29 @@
                 if (e.key !== "Escape") return;
                 const m = document.getElementById("modalCrearAdicional");
                 if (m && !m.hidden) cerrarCrearAdicionalModal();
+                const mu = document.getElementById("modalCrearUnidad");
+                if (mu && !mu.hidden) cerrarCrearUnidadModal();
             });
+
+            // Unidades
+            const btnCrearUn = document.getElementById("btnCrearUnidadDesdeLista");
+            if (btnCrearUn) btnCrearUn.addEventListener("click", abrirCrearUnidadModal);
+            const closeUn = document.getElementById("modalCrearUnidadClose");
+            if (closeUn) closeUn.addEventListener("click", cerrarCrearUnidadModal);
+            const overlayUn = document.getElementById("modalCrearUnidadOverlay");
+            if (overlayUn) overlayUn.addEventListener("click", cerrarCrearUnidadModal);
+            const formUn = document.getElementById("formCrearUnidad");
+            if (formUn) formUn.addEventListener("submit", crearUnidadHandler);
+            const inputPortada = document.getElementById("formUnPortadaInput");
+            if (inputPortada) inputPortada.addEventListener("change", onFormUnPortadaChange);
+            const inputFicha = document.getElementById("formUnFichaInput");
+            if (inputFicha) inputFicha.addEventListener("change", onFormUnFichaChange);
+            const filtroUnCat = document.getElementById("unidadesFiltroCategoria");
+            if (filtroUnCat) filtroUnCat.addEventListener("change", renderUnidadesAdminList);
+            const filtroUnTxt = document.getElementById("unidadesFiltroBuscar");
+            if (filtroUnTxt) filtroUnTxt.addEventListener("input", renderUnidadesAdminList);
+            const btnMigrarUn = document.getElementById("btnMigrarUnidades");
+            if (btnMigrarUn) btnMigrarUn.addEventListener("click", migrarUnidadesPrecargadas);
 
             cargarDocumentos();
             cargarFichas();
@@ -3874,6 +4743,9 @@
                 renderAdicionalesAdminList();
                 poblarSelectsFotos();
                 cargarFotos();
+            });
+            cargarUnidades().then(() => {
+                renderUnidadesAdminList();
             });
 
             const hash = (window.location.hash || "#inicio").substring(1);
