@@ -4526,14 +4526,21 @@
 
             const drawer = document.getElementById("pendienteDrawer");
             const body = document.getElementById("pendienteDrawerBody");
-            if (body) body.scrollTop = 0;
             drawer.hidden = false;
             document.body.style.overflow = "hidden";
+            // Reset tras layout — algunos navegadores reaplican el scroll
+            // anterior al volver a mostrar el contenedor.
+            if (body) {
+                body.scrollTop = 0;
+                requestAnimationFrame(() => { body.scrollTop = 0; });
+            }
         }
 
         function cerrarDrawerPendientes() {
             const drawer = document.getElementById("pendienteDrawer");
             if (!drawer || drawer.hidden) return;
+            const body = document.getElementById("pendienteDrawerBody");
+            if (body) body.scrollTop = 0;
             drawer.hidden = true;
             document.body.style.overflow = "";
         }
