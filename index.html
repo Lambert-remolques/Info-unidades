@@ -6971,17 +6971,26 @@
             if (paso && paso.target) mostrarPasoTour();
         });
 
-        const RECIENTES_KEY = "lambert:recientes2";
+        const RECIENTES_KEY_LEGACY = "lambert:recientes2";
         const RECIENTES_MAX = 6;
+
+        function recientesKey() {
+            const email = (usuarioActual?.email || "").trim().toLowerCase();
+            return email ? `lambert:recientes2:${email}` : "lambert:recientes2:_anon";
+        }
 
         function leerRecientes() {
             try {
-                const data = JSON.parse(localStorage.getItem(RECIENTES_KEY) || "[]");
+                const data = JSON.parse(localStorage.getItem(recientesKey()) || "[]");
                 return Array.isArray(data) ? data : [];
             } catch (e) {
                 return [];
             }
         }
+
+        // Limpieza única de la clave vieja compartida que dejaba ver lo de otros
+        // usuarios del mismo navegador. Se ejecuta al cargar la página.
+        try { localStorage.removeItem(RECIENTES_KEY_LEGACY); } catch (e) {}
 
         // ===== Favoritos (por usuario) =====
         function favoritosKey() {
@@ -7097,7 +7106,7 @@
             lista.unshift(entry);
             lista = lista.slice(0, RECIENTES_MAX);
             try {
-                localStorage.setItem(RECIENTES_KEY, JSON.stringify(lista));
+                localStorage.setItem(recientesKey(), JSON.stringify(lista));
             } catch (e) {}
         }
 
@@ -7343,11 +7352,23 @@
             let fotosUnidades = 0, fotosAdicionales = 0;
             Object.values(catalogoFotos).forEach((lista) => { fotosUnidades += lista.length; });
             Object.values(catalogoFotosAdicionales).forEach((lista) => { fotosAdicionales += lista.length; });
+
+            // Una unidad puede tener su ficha en Firestore (Cloudinary) o todavía
+            // en el repo. Contamos la unión sin duplicar.
+            const productosConFicha = new Set();
+            if (fichasDisponibles) {
+                fichasDisponibles.forEach((path) => {
+                    const m = path.match(/^fichas\/([^/]+)\/([^/]+)\.pdf$/);
+                    if (m) productosConFicha.add(`${m[1]}:${m[2]}`);
+                });
+            }
+            fichasCargadas.forEach((_, key) => productosConFicha.add(key));
+
             return {
                 unidades,
                 adicionales,
                 fotos: fotosUnidades + fotosAdicionales,
-                fichas: fichasDisponibles ? fichasDisponibles.size : 0,
+                fichas: productosConFicha.size,
                 fotosCargado: cloudinaryCargado,
                 fichasCargado: fichasDisponibles !== null
             };
@@ -7722,6 +7743,9 @@
                     fichasCargadas.set(`${data.categoriaId}:${data.productoSlug}`, data.url);
                 });
                 actualizarPdfsDeFichas();
+                if (typeof actualizarMetricas === "function" && document.getElementById("inicioMetricas")) {
+                    actualizarMetricas();
+                }
             } catch (e) {
                 console.warn("No se pudieron cargar fichas de Firestore, usando solo las del repo:", e);
             }
@@ -8772,8 +8796,11 @@
                 abrirPdf(pdfBtn.dataset.pdf, pdfBtn.dataset.pdfTitulo);
                 if (pdfBtn.dataset.pdfCat) {
                     const esDocumento = pdfBtn.dataset.pdfTipo === "documento";
+                    const claveBase = esDocumento
+                        ? `documento:${crearSlug(pdfBtn.dataset.pdfTitulo)}`
+                        : `ficha:${crearSlug(pdfBtn.dataset.pdfCat)}:${crearSlug(pdfBtn.dataset.pdfTitulo)}`;
                     registrarReciente({
-                        clave: (esDocumento ? "documento:" : "ficha:") + pdfBtn.dataset.pdf,
+                        clave: claveBase,
                         tipo: esDocumento ? "documento" : "ficha",
                         titulo: pdfBtn.dataset.pdfTitulo,
                         meta: pdfBtn.dataset.pdfCat + (esDocumento ? " · Documento" : " · Ficha técnica"),
