@@ -3160,6 +3160,25 @@
                 if (selEje) { selEje.innerHTML = ""; selEje.disabled = true; }
                 if (wrapEje) wrapEje.hidden = true;
                 if (typeof renderFotosUnidadGaleria === "function") renderFotosUnidadGaleria();
+            } else if (nombre === "documentos") {
+                const form = document.getElementById("adminUploadForm");
+                if (form) form.reset();
+                const wrapNueva = document.getElementById("adminCategoriaNuevaWrap");
+                if (wrapNueva) wrapNueva.hidden = true;
+                if (typeof setAdminUploadStatus === "function") setAdminUploadStatus(null);
+                const filtroCat = document.getElementById("adminFiltroCategoria");
+                if (filtroCat) filtroCat.value = "";
+                if (typeof renderAdminDocList === "function") renderAdminDocList();
+            } else if (nombre === "fichas") {
+                const selCat = document.getElementById("fichasCategoria");
+                const selProd = document.getElementById("fichasProducto");
+                if (selCat) selCat.value = "";
+                if (selProd) { selProd.innerHTML = `<option value="">Elegí primero una categoría</option>`; selProd.disabled = true; }
+                const cont = document.getElementById("fichasEstado");
+                if (cont) cont.innerHTML = "";
+                const filtroCat = document.getElementById("fichasFiltroCategoria");
+                if (filtroCat) filtroCat.value = "";
+                if (typeof renderFichasGlobales === "function") renderFichasGlobales();
             }
         }
 
