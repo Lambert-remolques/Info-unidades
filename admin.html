@@ -340,12 +340,11 @@
 
         /* ===== Bloque de Pendientes ===== */
         :root {
-            --pend-adicionales: #d97706;
-            --pend-adicionales-bg: #fff8ed;
-            --pend-fichas: #2563eb;
-            --pend-fichas-bg: #eef4ff;
-            --pend-fotos: #159947;
-            --pend-fotos-bg: #ebfaf0;
+            --pend-accent: #159947;
+            --pend-accent-bg: #ebfaf0;
+            --pend-adicionales: var(--pend-accent);
+            --pend-fichas: var(--pend-accent);
+            --pend-fotos: var(--pend-accent);
             --pend-empty: #6b7280;
             --pend-check: #10b981;
         }
@@ -372,8 +371,8 @@
             width: 38px;
             height: 38px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            color: #b45309;
+            background: var(--pend-accent-bg);
+            color: var(--pend-accent);
             flex-shrink: 0;
         }
         .pendientes-titulo-grande {
@@ -1666,11 +1665,11 @@
                         </svg>
                         Inicio
                     </button>
-                    <button class="sidebar-item" type="button" data-section="documentos">
+                    <button class="sidebar-item" type="button" data-section="unidades">
                         <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                            <rect x="2" y="7" width="14" height="10" rx="1"/><path d="M16 11h4l2 3v3h-6"/><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/>
                         </svg>
-                        Documentos
+                        Unidades
                     </button>
                     <button class="sidebar-item" type="button" data-section="fichas">
                         <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1682,19 +1681,19 @@
                         <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
                         </svg>
-                        Fotos
-                    </button>
-                    <button class="sidebar-item" type="button" data-section="unidades">
-                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <rect x="2" y="7" width="14" height="10" rx="1"/><path d="M16 11h4l2 3v3h-6"/><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/>
-                        </svg>
-                        Unidades
+                        Fotos unidades
                     </button>
                     <button class="sidebar-item" type="button" data-section="adicionales">
                         <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/>
                         </svg>
                         Adicionales
+                    </button>
+                    <button class="sidebar-item" type="button" data-section="documentos">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Documentos
                     </button>
                     <button class="sidebar-item" type="button" data-section="usuarios">
                         <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1885,11 +1884,17 @@
                     <div class="admin-card">
                         <div class="admin-card-header">
                             <h2 class="admin-card-title">Documentos existentes</h2>
-                            <label class="admin-filter">
-                                <span>Filtrar por categoría:</span>
-                                <select class="admin-select admin-select--compact" id="adminFiltroCategoria">
+                        </div>
+                        <div class="adicionales-filtros">
+                            <label class="admin-field admin-field--inline">
+                                <span>Filtrar por categoría</span>
+                                <select class="admin-select" id="adminFiltroCategoria">
                                     <option value="">Todas las categorías</option>
                                 </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Buscar</span>
+                                <input type="search" class="admin-select" id="adminFiltroBuscar" placeholder="Título del documento…" autocomplete="off">
                             </label>
                         </div>
                         <div class="admin-doc-list" id="adminDocList"></div>
@@ -1922,9 +1927,17 @@
                     <div class="admin-card">
                         <div class="admin-card-header">
                             <h2 class="admin-card-title">Fichas técnicas cargadas</h2>
-                            <label class="admin-filter">
-                                <span>Filtrar por categoría:</span>
-                                <select class="admin-select admin-select--compact" id="fichasFiltroCategoria"></select>
+                        </div>
+                        <div class="adicionales-filtros">
+                            <label class="admin-field admin-field--inline">
+                                <span>Filtrar por categoría</span>
+                                <select class="admin-select" id="fichasFiltroCategoria">
+                                    <option value="">Todas las categorías</option>
+                                </select>
+                            </label>
+                            <label class="admin-field admin-field--inline">
+                                <span>Buscar</span>
+                                <input type="search" class="admin-select" id="fichasFiltroBuscar" placeholder="Nombre de la unidad…" autocomplete="off">
                             </label>
                         </div>
                         <div class="admin-doc-list" id="fichasGlobalesList"></div>
@@ -2351,24 +2364,27 @@
                 cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar los documentos.</p>`;
                 return;
             }
-            const filtro = document.getElementById("adminFiltroCategoria")?.value || "";
-            const docsAMostrar = filtro
-                ? documentosAdmin.filter((d) => d.categoria === filtro)
-                : documentosAdmin;
+            const filtroCat = document.getElementById("adminFiltroCategoria")?.value || "";
+            const filtroTxt = (document.getElementById("adminFiltroBuscar")?.value || "").trim().toLowerCase();
 
-            if (docsAMostrar.length === 0) {
-                cont.innerHTML = filtro
-                    ? `<p class="admin-doc-empty">No hay documentos en la categoría "${filtro}".</p>`
+            let lista = [...documentosAdmin];
+            if (filtroCat) lista = lista.filter((d) => d.categoria === filtroCat);
+            if (filtroTxt) lista = lista.filter((d) => (d.titulo || "").toLowerCase().includes(filtroTxt));
+            lista.sort((a, b) => (a.titulo || "").localeCompare(b.titulo || "", "es", { sensitivity: "base" }));
+
+            if (lista.length === 0) {
+                cont.innerHTML = (filtroCat || filtroTxt)
+                    ? `<p class="admin-doc-empty">No hay documentos que coincidan con el filtro.</p>`
                     : `<p class="admin-doc-empty">Todavía no hay documentos cargados.</p>`;
                 return;
             }
-            cont.innerHTML = docsAMostrar.map((d) => {
-                const tituloEsc = d.titulo.replace(/"/g, "&quot;");
+            cont.innerHTML = lista.map((d) => {
+                const tituloEsc = (d.titulo || "").replace(/"/g, "&quot;");
                 return `
                 <div class="admin-doc-row">
                     <div class="admin-doc-info">
-                        <strong>${d.titulo}</strong>
-                        <span>${d.categoria}</span>
+                        <strong>${d.titulo || ""}</strong>
+                        <span>${d.categoria || ""}</span>
                     </div>
                     <div class="admin-doc-actions">
                         <a class="admin-doc-link" href="${d.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
@@ -4317,24 +4333,27 @@
                 cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar las fichas.</p>`;
                 return;
             }
-            const filtro = document.getElementById("fichasFiltroCategoria")?.value || "";
-            const fichas = [...fichasAdmin.values()]
-                .filter((f) => !filtro || f.categoriaId === filtro)
-                .sort((a, b) => a.productoNombre.localeCompare(b.productoNombre, "es", { sensitivity: "base" }));
+            const filtroCat = document.getElementById("fichasFiltroCategoria")?.value || "";
+            const filtroTxt = (document.getElementById("fichasFiltroBuscar")?.value || "").trim().toLowerCase();
+
+            let fichas = [...fichasAdmin.values()];
+            if (filtroCat) fichas = fichas.filter((f) => f.categoriaId === filtroCat);
+            if (filtroTxt) fichas = fichas.filter((f) => (f.productoNombre || "").toLowerCase().includes(filtroTxt));
+            fichas.sort((a, b) => (a.productoNombre || "").localeCompare(b.productoNombre || "", "es", { sensitivity: "base" }));
 
             if (fichas.length === 0) {
-                cont.innerHTML = filtro
-                    ? `<p class="admin-doc-empty">No hay fichas cargadas en esta categoría.</p>`
+                cont.innerHTML = (filtroCat || filtroTxt)
+                    ? `<p class="admin-doc-empty">No hay fichas que coincidan con el filtro.</p>`
                     : `<p class="admin-doc-empty">Todavía no hay fichas cargadas.</p>`;
                 return;
             }
             cont.innerHTML = fichas.map((f) => {
-                const productoEsc = f.productoNombre.replace(/"/g, "&quot;");
+                const productoEsc = (f.productoNombre || "").replace(/"/g, "&quot;");
                 return `
                 <div class="admin-doc-row">
                     <div class="admin-doc-info">
-                        <strong>${f.productoNombre}</strong>
-                        <span>${f.categoriaNombre}</span>
+                        <strong>${f.productoNombre || ""}</strong>
+                        <span>${f.categoriaNombre || ""}</span>
                     </div>
                     <div class="admin-doc-actions">
                         <a class="admin-doc-link" href="${f.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
@@ -4673,7 +4692,9 @@
                 if (wrapNueva) wrapNueva.hidden = true;
                 if (typeof setAdminUploadStatus === "function") setAdminUploadStatus(null);
                 const filtroCat = document.getElementById("adminFiltroCategoria");
+                const filtroTxt = document.getElementById("adminFiltroBuscar");
                 if (filtroCat) filtroCat.value = "";
+                if (filtroTxt) filtroTxt.value = "";
                 if (typeof renderAdminDocList === "function") renderAdminDocList();
             } else if (nombre === "fichas") {
                 const selCat = document.getElementById("fichasCategoria");
@@ -4682,6 +4703,8 @@
                 if (selProd) { selProd.innerHTML = `<option value="">Elegí primero una categoría</option>`; selProd.disabled = true; }
                 const cont = document.getElementById("fichasEstado");
                 if (cont) cont.innerHTML = "";
+                const filtroTxt = document.getElementById("fichasFiltroBuscar");
+                if (filtroTxt) filtroTxt.value = "";
                 const filtroCat = document.getElementById("fichasFiltroCategoria");
                 if (filtroCat) filtroCat.value = "";
                 if (typeof renderFichasGlobales === "function") renderFichasGlobales();
@@ -4749,9 +4772,9 @@
             }
 
             const filtroCategoria = document.getElementById("adminFiltroCategoria");
-            if (filtroCategoria) {
-                filtroCategoria.addEventListener("change", renderAdminDocList);
-            }
+            if (filtroCategoria) filtroCategoria.addEventListener("change", renderAdminDocList);
+            const filtroBuscarDoc = document.getElementById("adminFiltroBuscar");
+            if (filtroBuscarDoc) filtroBuscarDoc.addEventListener("input", renderAdminDocList);
 
             // Fichas técnicas
             poblarSelectCategoriaFichas();
@@ -4767,9 +4790,9 @@
                 fichasProd.addEventListener("change", renderEstadoFicha);
             }
             const fichasFiltro = document.getElementById("fichasFiltroCategoria");
-            if (fichasFiltro) {
-                fichasFiltro.addEventListener("change", renderFichasGlobales);
-            }
+            if (fichasFiltro) fichasFiltro.addEventListener("change", renderFichasGlobales);
+            const fichasFiltroBuscar = document.getElementById("fichasFiltroBuscar");
+            if (fichasFiltroBuscar) fichasFiltroBuscar.addEventListener("input", renderFichasGlobales);
             poblarSelectProducto("");
             renderEstadoFicha();
 
