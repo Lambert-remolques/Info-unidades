@@ -338,6 +338,205 @@
             margin-top: 4px;
         }
 
+        /* ===== Bloque de Pendientes ===== */
+        .pendientes-bloque {
+            margin-top: 28px;
+            padding: 24px;
+            background: var(--blanco);
+            border-radius: 10px;
+            border: 1px solid var(--gris);
+        }
+        .pendientes-titulo-grande {
+            margin: 0 0 4px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--negro);
+        }
+        .pendientes-subtitulo {
+            margin: 0 0 20px;
+            font-size: 0.85rem;
+            color: var(--gris-texto);
+        }
+        .pendientes-seccion {
+            margin-top: 18px;
+        }
+        .pendientes-seccion:first-of-type {
+            margin-top: 0;
+        }
+        .pendientes-subtitulo-seccion {
+            margin: 0 0 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--gris-texto);
+        }
+        .pendientes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        @media (max-width: 720px) {
+            .pendientes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .pendiente-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 14px 16px;
+            background: #f7f7f7;
+            border: 1px solid var(--gris);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            transition: background 160ms ease, border-color 160ms ease, transform 120ms ease;
+        }
+        .pendiente-card:hover {
+            background: #efefef;
+            border-color: #c9c9c9;
+        }
+        .pendiente-card:active {
+            transform: scale(0.98);
+        }
+        .pendiente-card[data-pend-empty="true"] {
+            opacity: 0.55;
+            cursor: default;
+        }
+        .pendiente-card[data-pend-empty="true"]:hover {
+            background: #f7f7f7;
+            border-color: var(--gris);
+        }
+        .pendiente-card-numero {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: var(--negro);
+            line-height: 1;
+        }
+        .pendiente-card-label {
+            font-size: 0.78rem;
+            color: var(--gris-texto);
+            font-weight: 500;
+        }
+
+        /* ===== Drawer lateral de pendientes ===== */
+        .pendiente-drawer {
+            position: fixed;
+            inset: 0;
+            z-index: 2700;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .pendiente-drawer-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            animation: pendDrawerFadeIn 200ms ease;
+        }
+        @keyframes pendDrawerFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .pendiente-drawer-box {
+            position: relative;
+            width: min(420px, 100%);
+            height: 100%;
+            background: var(--blanco);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18);
+            animation: pendDrawerSlideIn 240ms ease;
+        }
+        @keyframes pendDrawerSlideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .pendiente-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--gris);
+        }
+        .pendiente-drawer-title {
+            margin: 0;
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--negro);
+        }
+        .pendiente-drawer-close {
+            background: transparent;
+            border: 0;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            color: var(--gris-texto);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .pendiente-drawer-close:hover {
+            background: #f0f0f0;
+            color: var(--negro);
+        }
+        .pendiente-drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 22px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .pendiente-item {
+            padding: 12px 14px;
+            background: #f7f7f7;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .pendiente-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .pendiente-item-titulo {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--negro);
+        }
+        .pendiente-item-sub {
+            font-size: 0.78rem;
+            color: var(--gris-texto);
+        }
+        .pendiente-item-action {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            background: var(--verde);
+            color: var(--blanco);
+            border: 0;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 160ms ease;
+        }
+        .pendiente-item-action:hover {
+            background: #117a37;
+        }
+        .pendiente-drawer-vacio {
+            margin: 0;
+            padding: 28px 14px;
+            text-align: center;
+            color: var(--gris-texto);
+            font-size: 0.88rem;
+        }
+
         /* ===== Placeholder de secciones en construcción ===== */
         .construccion {
             background: var(--blanco);
@@ -1406,7 +1605,89 @@
                         <span class="metric-card-hint">Cargadas</span>
                     </div>
                 </div>
+
+                <section class="pendientes-bloque" id="pendientesBloque" aria-label="Pendientes">
+                    <h2 class="pendientes-titulo-grande">Pendientes</h2>
+                    <p class="pendientes-subtitulo">Acá vas a ver qué información o archivos faltan cargar. Apretá una tarjeta para ver el detalle.</p>
+
+                    <div class="pendientes-seccion">
+                        <h3 class="pendientes-subtitulo-seccion">Adicionales</h3>
+                        <div class="pendientes-grid">
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="adicionales" data-pendiente-sub="sinFoto">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Sin foto</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="adicionales" data-pendiente-sub="sinCodigo">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Sin código</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="adicionales" data-pendiente-sub="sinDescripcion">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Sin descripción</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="adicionales" data-pendiente-sub="sinUbicacion">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Sin ubicación</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pendientes-seccion">
+                        <h3 class="pendientes-subtitulo-seccion">Fichas técnicas sin cargar</h3>
+                        <div class="pendientes-grid">
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fichas" data-pendiente-sub="acoplados">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Acoplados</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fichas" data-pendiente-sub="semirremolques">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Semirremolques</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fichas" data-pendiente-sub="carrocerias">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Carrocerías</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fichas" data-pendiente-sub="bitrenes">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Bitrenes</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pendientes-seccion">
+                        <h3 class="pendientes-subtitulo-seccion">Fotos de unidades sin cargar</h3>
+                        <div class="pendientes-grid">
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fotos" data-pendiente-sub="acoplados">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Acoplados</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fotos" data-pendiente-sub="semirremolques">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Semirremolques</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fotos" data-pendiente-sub="carrocerias">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Carrocerías</span>
+                            </button>
+                            <button class="pendiente-card" type="button" data-pendiente-tipo="fotos" data-pendiente-sub="bitrenes">
+                                <span class="pendiente-card-numero" data-pend-count>—</span>
+                                <span class="pendiente-card-label">Bitrenes</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
             </section>
+
+            <div class="pendiente-drawer" id="pendienteDrawer" hidden>
+                <div class="pendiente-drawer-overlay" id="pendienteDrawerOverlay"></div>
+                <aside class="pendiente-drawer-box" role="dialog" aria-modal="true" aria-labelledby="pendienteDrawerTitle">
+                    <header class="pendiente-drawer-header">
+                        <h3 class="pendiente-drawer-title" id="pendienteDrawerTitle">Pendientes</h3>
+                        <button class="pendiente-drawer-close" type="button" id="pendienteDrawerClose" aria-label="Cerrar">×</button>
+                    </header>
+                    <div class="pendiente-drawer-body" id="pendienteDrawerBody"></div>
+                </aside>
+            </div>
 
             <section class="panel-section" data-section="documentos">
                 <h1 class="page-title">Documentos</h1>
@@ -1726,6 +2007,7 @@
                 console.warn("No se pudieron leer adicionales_extra:", e);
                 adicionalesExtra = [];
             }
+            if (typeof renderBloquePendientes === "function") renderBloquePendientes();
         }
 
         function categoriasAdicionalesCombinadas() {
@@ -2041,6 +2323,7 @@
             }
             renderEstadoFicha();
             renderFichasGlobales();
+            if (typeof renderBloquePendientes === "function") renderBloquePendientes();
         }
 
         function categoriasFichasOrdenadas() {
@@ -2318,6 +2601,7 @@
                 estadoFotosAdmin = "error";
             }
             renderFotosUnidadGaleria();
+            if (typeof renderBloquePendientes === "function") renderBloquePendientes();
         }
 
         function actualizarMetricaFotos() {
@@ -3138,6 +3422,252 @@
             return "vendedor";
         }
 
+        // ===== Dashboard de Pendientes =====
+        function calcularPendientes() {
+            // Adicionales
+            const ads = adicionalesExtra || [];
+            const adicionalesSinFoto = [], adicionalesSinCodigo = [], adicionalesSinDescripcion = [], adicionalesSinUbicacion = [];
+            ads.forEach((a) => {
+                const slug = crearSlug(a.nombre || "");
+                const clave = fotosClaveAdicional(a.categoriaId, slug);
+                const fotos = fotosVisibles(clave);
+                if (fotos.length === 0) adicionalesSinFoto.push(a);
+                if (!a.codigo || a.codigo === "SIN CÓDIGO") adicionalesSinCodigo.push(a);
+                if (!a.descripcion || !a.descripcion.trim()) adicionalesSinDescripcion.push(a);
+                if (!a.ubicacion || !a.ubicacion.trim()) adicionalesSinUbicacion.push(a);
+            });
+
+            // Fichas y Fotos por categoría de unidades
+            const fichas = { acoplados: [], semirremolques: [], carrocerias: [], bitrenes: [] };
+            const fotosU = { acoplados: [], semirremolques: [], carrocerias: [], bitrenes: [] };
+
+            FICHAS_CATALOGO.forEach((cat) => {
+                const bucketKey = cat.id; // mismo id como key
+                const fichasBucket = fichas[bucketKey];
+                const fotosBucket = fotosU[bucketKey];
+                if (!fichasBucket || !fotosBucket) return;
+                const productos = [...cat.productos].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+                productos.forEach((prod) => {
+                    const slug = crearSlug(prod);
+                    // Ficha (por categoria + producto, sin ejes)
+                    const ficha = fichasAdmin.get(claveFicha(cat.id, slug));
+                    if (!ficha) {
+                        fichasBucket.push({ categoriaId: cat.id, categoriaNombre: cat.nombre, productoNombre: prod });
+                    }
+                    // Fotos: si la categoria tiene ejes, una entrada por configuración faltante
+                    if (cat.ejes.length > 0) {
+                        cat.ejes.forEach((ejeSlug) => {
+                            const clave = fotosClaveUnidad(cat.id, slug, ejeSlug);
+                            if (fotosVisibles(clave).length === 0) {
+                                fotosBucket.push({
+                                    categoriaId: cat.id,
+                                    categoriaNombre: cat.nombre,
+                                    productoNombre: prod,
+                                    ejeSlug,
+                                    ejeLabel: ejeSlug.replace(/-/g, " ")
+                                });
+                            }
+                        });
+                    } else {
+                        const clave = fotosClaveUnidad(cat.id, slug, "");
+                        if (fotosVisibles(clave).length === 0) {
+                            fotosBucket.push({
+                                categoriaId: cat.id,
+                                categoriaNombre: cat.nombre,
+                                productoNombre: prod,
+                                ejeSlug: "",
+                                ejeLabel: ""
+                            });
+                        }
+                    }
+                });
+            });
+
+            return {
+                adicionales: {
+                    sinFoto: adicionalesSinFoto.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" })),
+                    sinCodigo: adicionalesSinCodigo.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" })),
+                    sinDescripcion: adicionalesSinDescripcion.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" })),
+                    sinUbicacion: adicionalesSinUbicacion.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" }))
+                },
+                fichas,
+                fotosUnidad: fotosU
+            };
+        }
+
+        function renderBloquePendientes() {
+            const p = calcularPendientes();
+            const cards = document.querySelectorAll(".pendiente-card");
+            cards.forEach((card) => {
+                const tipo = card.dataset.pendienteTipo;
+                const sub = card.dataset.pendienteSub;
+                let n = 0;
+                if (tipo === "adicionales") n = (p.adicionales[sub] || []).length;
+                else if (tipo === "fichas") n = (p.fichas[sub] || []).length;
+                else if (tipo === "fotos") n = (p.fotosUnidad[sub] || []).length;
+                const numEl = card.querySelector("[data-pend-count]");
+                if (numEl) numEl.textContent = n;
+                card.dataset.pendEmpty = n === 0 ? "true" : "false";
+            });
+        }
+
+        function tituloDrawerPendientes(tipo, sub, count) {
+            const labelsAd = { sinFoto: "Adicionales sin foto", sinCodigo: "Adicionales sin código", sinDescripcion: "Adicionales sin descripción", sinUbicacion: "Adicionales sin ubicación" };
+            const labelsCat = { acoplados: "Acoplados", semirremolques: "Semirremolques", carrocerias: "Carrocerías", bitrenes: "Bitrenes" };
+            let txt;
+            if (tipo === "adicionales") txt = labelsAd[sub] || "Adicionales";
+            else if (tipo === "fichas") txt = `${labelsCat[sub] || ""} sin ficha técnica`;
+            else txt = `${labelsCat[sub] || ""} sin fotos`;
+            return `${txt} (${count})`;
+        }
+
+        function renderItemsDrawer(tipo, sub, lista) {
+            const body = document.getElementById("pendienteDrawerBody");
+            if (!body) return;
+            if (lista.length === 0) {
+                body.innerHTML = `<p class="pendiente-drawer-vacio">No hay nada pendiente acá. ¡Todo cargado!</p>`;
+                return;
+            }
+            if (tipo === "adicionales") {
+                body.innerHTML = lista.map((a) => {
+                    const nombreEsc = (a.nombre || "").replace(/"/g, "&quot;");
+                    const labelAccion = sub === "sinFoto" ? "Agregar foto"
+                        : sub === "sinCodigo" ? "Agregar código"
+                        : sub === "sinDescripcion" ? "Agregar descripción"
+                        : "Agregar ubicación";
+                    return `
+                        <div class="pendiente-item">
+                            <div class="pendiente-item-info">
+                                <span class="pendiente-item-titulo">${a.nombre || ""}</span>
+                                <span class="pendiente-item-sub">${a.categoriaNombre || a.categoriaId || ""}</span>
+                            </div>
+                            <button class="pendiente-item-action" type="button" data-action="adicional" data-id="${a.id}" data-sub="${sub}" aria-label="${labelAccion} a ${nombreEsc}">+ ${labelAccion}</button>
+                        </div>`;
+                }).join("");
+                body.querySelectorAll(".pendiente-item-action").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        cerrarDrawerPendientes();
+                        irAEditarAdicional(btn.dataset.id, btn.dataset.sub);
+                    });
+                });
+            } else if (tipo === "fichas") {
+                body.innerHTML = lista.map((u) => `
+                    <div class="pendiente-item">
+                        <div class="pendiente-item-info">
+                            <span class="pendiente-item-titulo">${u.productoNombre}</span>
+                            <span class="pendiente-item-sub">${u.categoriaNombre}</span>
+                        </div>
+                        <button class="pendiente-item-action" type="button" data-action="ficha" data-cat="${u.categoriaId}" data-prod="${u.productoNombre.replace(/"/g, "&quot;")}">+ Subir ficha</button>
+                    </div>`).join("");
+                body.querySelectorAll(".pendiente-item-action").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        cerrarDrawerPendientes();
+                        irAFichasUnidad(btn.dataset.cat, btn.dataset.prod);
+                    });
+                });
+            } else if (tipo === "fotos") {
+                body.innerHTML = lista.map((u) => {
+                    const ejeTxt = u.ejeLabel ? ` · ${u.ejeLabel}` : "";
+                    return `
+                        <div class="pendiente-item">
+                            <div class="pendiente-item-info">
+                                <span class="pendiente-item-titulo">${u.productoNombre}${ejeTxt}</span>
+                                <span class="pendiente-item-sub">${u.categoriaNombre}</span>
+                            </div>
+                            <button class="pendiente-item-action" type="button" data-action="foto" data-cat="${u.categoriaId}" data-prod="${u.productoNombre.replace(/"/g, "&quot;")}" data-eje="${u.ejeSlug}">+ Subir foto</button>
+                        </div>`;
+                }).join("");
+                body.querySelectorAll(".pendiente-item-action").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        cerrarDrawerPendientes();
+                        irAFotosUnidad(btn.dataset.cat, btn.dataset.prod, btn.dataset.eje);
+                    });
+                });
+            }
+        }
+
+        function abrirDrawerPendientes(tipo, sub) {
+            const p = calcularPendientes();
+            let lista = [];
+            if (tipo === "adicionales") lista = p.adicionales[sub] || [];
+            else if (tipo === "fichas") lista = p.fichas[sub] || [];
+            else if (tipo === "fotos") lista = p.fotosUnidad[sub] || [];
+
+            document.getElementById("pendienteDrawerTitle").textContent = tituloDrawerPendientes(tipo, sub, lista.length);
+            renderItemsDrawer(tipo, sub, lista);
+
+            const drawer = document.getElementById("pendienteDrawer");
+            drawer.hidden = false;
+            document.body.style.overflow = "hidden";
+        }
+
+        function cerrarDrawerPendientes() {
+            const drawer = document.getElementById("pendienteDrawer");
+            if (!drawer || drawer.hidden) return;
+            drawer.hidden = true;
+            document.body.style.overflow = "";
+        }
+
+        function irAEditarAdicional(id, campoFoco) {
+            mostrarSeccion("adicionales");
+            // El reset de adicionales borra filtros; abrimos el modal después del tick
+            setTimeout(() => {
+                abrirEditarAdicional(id);
+                setTimeout(() => {
+                    const focoEl = campoFoco === "sinCodigo" ? document.getElementById("formAdCodigo")
+                        : campoFoco === "sinDescripcion" ? document.getElementById("formAdDescripcion")
+                        : campoFoco === "sinUbicacion" ? document.getElementById("formAdUbicacion")
+                        : null;
+                    if (focoEl) focoEl.focus();
+                }, 80);
+            }, 50);
+        }
+
+        function irAFichasUnidad(categoriaId, productoNombre) {
+            mostrarSeccion("fichas");
+            setTimeout(() => {
+                const selCat = document.getElementById("fichasCategoria");
+                if (selCat) {
+                    selCat.value = categoriaId;
+                    selCat.dispatchEvent(new Event("change"));
+                }
+                setTimeout(() => {
+                    const selProd = document.getElementById("fichasProducto");
+                    if (selProd) {
+                        selProd.value = productoNombre;
+                        selProd.dispatchEvent(new Event("change"));
+                    }
+                }, 60);
+            }, 50);
+        }
+
+        function irAFotosUnidad(categoriaId, productoNombre, ejeSlug) {
+            mostrarSeccion("fotos");
+            setTimeout(() => {
+                const selCat = document.getElementById("fotosUnidadCategoria");
+                if (selCat) {
+                    selCat.value = categoriaId;
+                    selCat.dispatchEvent(new Event("change"));
+                }
+                setTimeout(() => {
+                    const selProd = document.getElementById("fotosUnidadProducto");
+                    if (selProd) {
+                        selProd.value = productoNombre;
+                        selProd.dispatchEvent(new Event("change"));
+                    }
+                    setTimeout(() => {
+                        if (ejeSlug) {
+                            const selEje = document.getElementById("fotosUnidadEje");
+                            if (selEje) {
+                                selEje.value = ejeSlug;
+                                selEje.dispatchEvent(new Event("change"));
+                            }
+                        }
+                    }, 40);
+                }, 60);
+            }, 50);
+        }
+
         function mostrarSeccion(nombre) {
             if (!SECCIONES_VALIDAS.includes(nombre)) nombre = "inicio";
             document.querySelectorAll(".panel-section").forEach((s) => {
@@ -3149,6 +3679,9 @@
             history.replaceState(null, "", "#" + nombre);
             cerrarSidebarMobile();
             resetEstadoSeccion(nombre);
+            if (nombre === "inicio" && typeof renderBloquePendientes === "function") {
+                renderBloquePendientes();
+            }
         }
 
         function resetEstadoSeccion(nombre) {
@@ -3219,6 +3752,21 @@
             document.getElementById("mobileMenuToggle").addEventListener("click", abrirSidebarMobile);
             document.getElementById("sidebarBackdrop").addEventListener("click", cerrarSidebarMobile);
             document.getElementById("sidebarLogout").addEventListener("click", () => auth.signOut());
+
+            // Pendientes: listeners de tarjetas + drawer
+            document.querySelectorAll(".pendiente-card").forEach((card) => {
+                card.addEventListener("click", () => {
+                    if (card.dataset.pendEmpty === "true") return;
+                    abrirDrawerPendientes(card.dataset.pendienteTipo, card.dataset.pendienteSub);
+                });
+            });
+            const drawerClose = document.getElementById("pendienteDrawerClose");
+            if (drawerClose) drawerClose.addEventListener("click", cerrarDrawerPendientes);
+            const drawerOverlay = document.getElementById("pendienteDrawerOverlay");
+            if (drawerOverlay) drawerOverlay.addEventListener("click", cerrarDrawerPendientes);
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") cerrarDrawerPendientes();
+            });
 
             const form = document.getElementById("adminUploadForm");
             if (form) form.addEventListener("submit", subirDocumentoHandler);
