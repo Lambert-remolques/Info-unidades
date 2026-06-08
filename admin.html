@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin · Lambert</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --verde: #159947;
+            --verde-oscuro: #078334;
+            --rojo: #da251d;
+            --negro: #262626;
+            --grafito: #333333;
+            --gris: #e6e6e6;
+            --gris-bg: #f4f5f7;
+            --gris-texto: #555555;
+            --blanco: #ffffff;
+            --sombra-card: 0 4px 14px rgba(38, 38, 38, 0.10);
+            --sombra-topbar: 0 2px 8px rgba(0, 0, 0, 0.12);
+            --fuente: "Montserrat", Arial, sans-serif;
+            --radio: 4px;
+            --header-h: 64px;
+            --sidebar-w: 240px;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: var(--gris-bg);
+            color: var(--negro);
+            font-family: var(--fuente);
+            min-height: 100vh;
+        }
+
+        button {
+            font-family: var(--fuente);
+        }
+
+        /* ===== Loader mientras se chequea el rol ===== */
+        .auth-loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gris-bg);
+            z-index: 9999;
+            transition: opacity 220ms ease;
+        }
+
+        .auth-loading.fade {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .auth-loading-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--gris-texto);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .auth-spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(21, 153, 71, 0.22);
+            border-top-color: var(--verde);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== App shell ===== */
+        .app-shell {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .app-shell.ready { display: block; }
+
+        /* ===== Top bar ===== */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+            color: var(--blanco);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 16px;
+            box-shadow: var(--sombra-topbar);
+            z-index: 100;
+        }
+
+        .topbar-logo {
+            height: 32px;
+            width: auto;
+            display: block;
+        }
+
+        .topbar-title {
+            font-size: 0.92rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .topbar-spacer { flex: 1; }
+
+        .topbar-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 999px;
+            color: var(--blanco);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: background 160ms ease;
+        }
+
+        .topbar-link:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 0;
+            background: transparent;
+            color: var(--blanco);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            position: fixed;
+            top: var(--header-h);
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-w);
+            background: var(--blanco);
+            border-right: 1px solid var(--gris);
+            padding: 20px 0 16px;
+            display: flex;
+            flex-direction: column;
+            z-index: 90;
+        }
+
+        .sidebar-section { padding: 0 12px; }
+
+        .sidebar-section-title {
+            display: block;
+            padding: 8px 14px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gris-texto);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border: 0;
+            background: transparent;
+            color: var(--negro);
+            text-align: left;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--radio);
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease;
+            width: 100%;
+        }
+
+        .sidebar-item:hover { background: var(--gris-bg); }
+
+        .sidebar-item.active {
+            background: rgba(21, 153, 71, 0.12);
+            color: var(--verde-oscuro);
+            font-weight: 800;
+        }
+
+        .sidebar-item-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-spacer { flex: 1; }
+
+        .sidebar-user {
+            margin: 12px 10px;
+            padding: 12px;
+            background: var(--gris-bg);
+            border-radius: var(--radio);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .sidebar-user-label {
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gris-texto);
+        }
+
+        .sidebar-user-email {
+            font-size: 0.72rem;
+            color: var(--negro);
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-logout {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid rgba(218, 37, 29, 0.4);
+            border-radius: var(--radio);
+            background: rgba(218, 37, 29, 0.06);
+            color: var(--rojo);
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: background 160ms ease, border-color 160ms ease;
+        }
+
+        .sidebar-logout:hover {
+            background: rgba(218, 37, 29, 0.14);
+            border-color: var(--rojo);
+        }
+
+        /* ===== Main content ===== */
+        .main {
+            margin-top: var(--header-h);
+            margin-left: var(--sidebar-w);
+            padding: 32px 36px;
+            min-height: calc(100vh - var(--header-h));
+        }
+
+        .page-title {
+            margin: 0 0 6px;
+            font-size: 1.6rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            color: var(--negro);
+        }
+
+        .page-title-highlight {
+            color: var(--verde-oscuro);
+            font-style: italic;
+        }
+
+        .page-subtitle {
+            margin: 0 0 28px;
+            font-size: 0.95rem;
+            color: var(--gris-texto);
+            font-weight: 500;
+        }
+
+        /* ===== Métricas (inicio) ===== */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .metric-card {
+            background: var(--blanco);
+            border-radius: 8px;
+            padding: 20px 22px;
+            box-shadow: var(--sombra-card);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-left: 4px solid var(--verde);
+        }
+
+        .metric-card-label {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--gris-texto);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .metric-card-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--negro);
+            line-height: 1;
+        }
+
+        .metric-card-hint {
+            font-size: 0.76rem;
+            color: var(--gris-texto);
+            margin-top: 4px;
+        }
+
+        /* ===== Placeholder de secciones en construcción ===== */
+        .construccion {
+            background: var(--blanco);
+            border-radius: 8px;
+            padding: 52px 32px;
+            text-align: center;
+            box-shadow: var(--sombra-card);
+            color: var(--gris-texto);
+        }
+
+        .construccion-icon {
+            width: 56px;
+            height: 56px;
+            color: var(--gris);
+            margin: 0 auto 14px;
+            display: block;
+        }
+
+        .construccion-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--negro);
+            margin-bottom: 8px;
+        }
+
+        .construccion-desc {
+            font-size: 0.92rem;
+            line-height: 1.5;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ===== Section visibility ===== */
+        .panel-section { display: none; }
+        .panel-section.active { display: block; }
+
+        /* ===== Mobile ===== */
+        @media (max-width: 820px) {
+            .topbar { padding: 0 16px; gap: 12px; }
+            .topbar-title { font-size: 0.78rem; }
+            .topbar-logo { height: 28px; }
+            .topbar-link span { display: none; }
+            .topbar-link {
+                width: 36px;
+                height: 36px;
+                padding: 0;
+                justify-content: center;
+            }
+            .mobile-menu-toggle {
+                display: inline-flex;
+            }
+            .sidebar {
+                width: 260px;
+                transform: translateX(-100%);
+                transition: transform 220ms ease;
+                box-shadow: 4px 0 18px rgba(0, 0, 0, 0);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 4px 0 18px rgba(0, 0, 0, 0.18);
+            }
+            .main {
+                margin-left: 0;
+                padding: 20px 16px;
+            }
+            .sidebar-backdrop {
+                position: fixed;
+                top: var(--header-h);
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.45);
+                z-index: 85;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 220ms ease;
+            }
+            .sidebar-backdrop.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .page-title { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-loading" id="authLoading">
+        <div class="auth-loading-box">
+            <span class="auth-spinner" aria-hidden="true"></span>
+            <span>Verificando acceso...</span>
+        </div>
+    </div>
+
+    <div class="app-shell" id="appShell">
+        <header class="topbar">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/>
+                </svg>
+            </button>
+            <img class="topbar-logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
+            <span class="topbar-title">Panel Admin</span>
+            <span class="topbar-spacer"></span>
+            <a class="topbar-link" href="index.html" aria-label="Volver al catálogo">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                <span>Volver al catálogo</span>
+            </a>
+        </header>
+
+        <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+        <nav class="sidebar" id="sidebar" aria-label="Menú admin">
+            <div class="sidebar-section">
+                <span class="sidebar-section-title">Administración</span>
+                <div class="sidebar-nav">
+                    <button class="sidebar-item active" type="button" data-section="inicio">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>
+                        </svg>
+                        Inicio
+                    </button>
+                    <button class="sidebar-item" type="button" data-section="documentos">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Documentos
+                    </button>
+                    <button class="sidebar-item" type="button" data-section="fichas">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10"/><path d="M7 13h10"/><path d="M7 17h6"/>
+                        </svg>
+                        Fichas técnicas
+                    </button>
+                    <button class="sidebar-item" type="button" data-section="fotos">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+                        </svg>
+                        Fotos
+                    </button>
+                    <button class="sidebar-item" type="button" data-section="usuarios">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Usuarios
+                    </button>
+                    <button class="sidebar-item" type="button" data-section="metricas">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Métricas
+                    </button>
+                </div>
+            </div>
+            <div class="sidebar-spacer"></div>
+            <div class="sidebar-user">
+                <span class="sidebar-user-label">Sesión activa</span>
+                <span class="sidebar-user-email" id="sidebarEmail">—</span>
+                <button class="sidebar-logout" type="button" id="sidebarLogout">Cerrar sesión</button>
+            </div>
+        </nav>
+
+        <main class="main">
+            <section class="panel-section active" data-section="inicio">
+                <h1 class="page-title">Hola, <span class="page-title-highlight" id="welcomeName">Admin</span></h1>
+                <p class="page-subtitle" id="welcomeSubtitle">Bienvenida al panel de administración del catálogo.</p>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-card-label">Documentos</span>
+                        <span class="metric-card-value" id="metricDocs">—</span>
+                        <span class="metric-card-hint">Cargados</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-card-label">Fichas técnicas</span>
+                        <span class="metric-card-value" id="metricFichas">—</span>
+                        <span class="metric-card-hint">Cargadas</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-card-label">Fotos</span>
+                        <span class="metric-card-value" id="metricFotos">—</span>
+                        <span class="metric-card-hint">Cargadas</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel-section" data-section="documentos">
+                <h1 class="page-title">Documentos</h1>
+                <p class="page-subtitle">Gestioná los documentos disponibles en la sección Recursos del catálogo.</p>
+                <div class="construccion">
+                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
+                    </svg>
+                    <div class="construccion-title">Sección en construcción</div>
+                    <div class="construccion-desc">Sub-etapa 4.2 — vamos a mover acá el admin de documentos que hoy está en el modal del catálogo.</div>
+                </div>
+            </section>
+
+            <section class="panel-section" data-section="fichas">
+                <h1 class="page-title">Fichas técnicas</h1>
+                <p class="page-subtitle">Subí, reemplazá o borrá las fichas técnicas de cada unidad del catálogo.</p>
+                <div class="construccion">
+                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
+                    </svg>
+                    <div class="construccion-title">Sección en construcción</div>
+                    <div class="construccion-desc">Sub-etapa 4.3 — gestión de fichas técnicas por unidad y categoría.</div>
+                </div>
+            </section>
+
+            <section class="panel-section" data-section="fotos">
+                <h1 class="page-title">Fotos</h1>
+                <p class="page-subtitle">Subí o reemplazá fotos de cualquier unidad o adicional del catálogo.</p>
+                <div class="construccion">
+                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
+                    </svg>
+                    <div class="construccion-title">Sección en construcción</div>
+                    <div class="construccion-desc">Sub-etapa 4.4 — gestión de fotos por unidad y adicional.</div>
+                </div>
+            </section>
+
+            <section class="panel-section" data-section="usuarios">
+                <h1 class="page-title">Usuarios</h1>
+                <p class="page-subtitle">Asigná roles a los usuarios del equipo y revisá quiénes tienen acceso.</p>
+                <div class="construccion">
+                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
+                    </svg>
+                    <div class="construccion-title">Sección en construcción</div>
+                    <div class="construccion-desc">Sub-etapa 4.5 — administración de usuarios y roles.</div>
+                </div>
+            </section>
+
+            <section class="panel-section" data-section="metricas">
+                <h1 class="page-title">Métricas</h1>
+                <p class="page-subtitle">Vista general de la actividad del catálogo.</p>
+                <div class="construccion">
+                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
+                    </svg>
+                    <div class="construccion-title">Sección en construcción</div>
+                    <div class="construccion-desc">Sub-etapa 4.6 — métricas y estadísticas del catálogo.</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbqb2v1L_o5rLh38eOrBYcHNFrRYIxQLU",
+            authDomain: "banco-de-unidades.firebaseapp.com",
+            projectId: "banco-de-unidades",
+            appId: "1:768534143671:web:723425177c89bd23532332"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "usuarios", "metricas"];
+
+        // Mismo registro que el de index.html. Si agregás un usuario nuevo,
+        // hay que actualizarlo en los dos archivos (TODO: mover a Firestore).
+        const REGISTRO_USUARIOS = {
+            "adm.ventas@lamberthermanos.com.ar": { nombre: "Nicolás", genero: "m" },
+            "claudio.lambert@lamberthermanos.com.ar": { nombre: "Claudio", genero: "m" },
+            "pabloglezer@lamberthermanos.com.ar": { nombre: "Pablo", genero: "m" },
+            "comunicacion@lamberthermanos.com.ar": { nombre: "Oriana", genero: "f" },
+            "juan.proserpi@lamberthermanos.com.ar": { nombre: "Juan", genero: "m" }
+        };
+
+        function obtenerUsuario(email) {
+            if (!email) return { nombre: "", genero: "" };
+            const registro = REGISTRO_USUARIOS[email.trim().toLowerCase()];
+            return registro ? { nombre: registro.nombre, genero: registro.genero } : { nombre: "", genero: "" };
+        }
+
+        function palabraBienvenida(genero) {
+            if (genero === "f") return "Bienvenida";
+            if (genero === "m") return "Bienvenido";
+            return "Bienvenido/a";
+        }
+
+        async function obtenerRolUsuario(email) {
+            if (!email) return "vendedor";
+            try {
+                const doc = await db.collection("usuarios").doc(email).get();
+                if (doc.exists && doc.data().rol === "admin") return "admin";
+            } catch (e) {
+                console.warn("No se pudo leer el rol del usuario:", e);
+            }
+            return "vendedor";
+        }
+
+        function mostrarSeccion(nombre) {
+            if (!SECCIONES_VALIDAS.includes(nombre)) nombre = "inicio";
+            document.querySelectorAll(".panel-section").forEach((s) => {
+                s.classList.toggle("active", s.dataset.section === nombre);
+            });
+            document.querySelectorAll(".sidebar-item").forEach((b) => {
+                b.classList.toggle("active", b.dataset.section === nombre);
+            });
+            history.replaceState(null, "", "#" + nombre);
+            cerrarSidebarMobile();
+        }
+
+        function abrirSidebarMobile() {
+            document.getElementById("sidebar").classList.add("open");
+            document.getElementById("sidebarBackdrop").classList.add("open");
+        }
+
+        function cerrarSidebarMobile() {
+            document.getElementById("sidebar").classList.remove("open");
+            document.getElementById("sidebarBackdrop").classList.remove("open");
+        }
+
+        async function cargarMetricas() {
+            try {
+                const snap = await db.collection("documentos").get();
+                document.getElementById("metricDocs").textContent = snap.size;
+            } catch (e) {
+                document.getElementById("metricDocs").textContent = "?";
+            }
+        }
+
+        function inicializar(email) {
+            const sidebarEmail = document.getElementById("sidebarEmail");
+            sidebarEmail.textContent = email;
+            sidebarEmail.title = email;
+            const usuario = obtenerUsuario(email);
+            const nombreMostrado = usuario.nombre || email.split("@")[0];
+            document.getElementById("welcomeName").textContent = nombreMostrado;
+            const subtitle = document.getElementById("welcomeSubtitle");
+            if (subtitle) {
+                subtitle.textContent = `${palabraBienvenida(usuario.genero)} al panel de administración del catálogo.`;
+            }
+
+            document.querySelectorAll(".sidebar-item").forEach((btn) => {
+                btn.addEventListener("click", () => mostrarSeccion(btn.dataset.section));
+            });
+
+            document.getElementById("mobileMenuToggle").addEventListener("click", abrirSidebarMobile);
+            document.getElementById("sidebarBackdrop").addEventListener("click", cerrarSidebarMobile);
+            document.getElementById("sidebarLogout").addEventListener("click", () => auth.signOut());
+
+            cargarMetricas();
+
+            const hash = (window.location.hash || "#inicio").substring(1);
+            mostrarSeccion(hash);
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.replace("login.html");
+                return;
+            }
+            const email = user.email || "";
+            const rol = await obtenerRolUsuario(email);
+            if (rol !== "admin") {
+                window.location.replace("index.html");
+                return;
+            }
+            inicializar(email);
+            const loader = document.getElementById("authLoading");
+            const shell = document.getElementById("appShell");
+            shell.classList.add("ready");
+            loader.classList.add("fade");
+            setTimeout(() => loader.remove(), 280);
+        });
+    </script>
+</body>
+</html>

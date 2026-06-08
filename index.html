@@ -3262,52 +3262,6 @@
             position: relative;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .rol-chip {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            background: var(--rojo);
-            color: var(--blanco);
-            font-size: 0.68rem;
-            font-weight: 800;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            border-radius: 999px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
-            white-space: nowrap;
-            line-height: 1;
-        }
-
-        .rol-chip[hidden],
-        .user-rol-chip-popover[hidden] {
-            display: none;
-        }
-
-        @media (max-width: 520px) {
-            .rol-chip {
-                font-size: 0.62rem;
-                padding: 3px 8px;
-                letter-spacing: 0.04em;
-            }
-        }
-
-        .user-rol-chip-popover {
-            display: inline-flex;
-            align-items: center;
-            margin-top: 6px;
-            padding: 3px 9px;
-            background: var(--rojo);
-            color: var(--blanco);
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            border-radius: 999px;
-            line-height: 1.2;
-            width: fit-content;
         }
 
         .user-avatar {
@@ -5985,7 +5939,6 @@
                 </button>
                 <img class="logo" src="LAMBERT blanco sin fondo.png" alt="Lambert">
                 <div class="user-avatar-wrap" id="userAvatarWrap">
-                    <span class="rol-chip" id="rolChip" hidden>Admin</span>
                     <button class="user-avatar" type="button" id="userAvatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Mi perfil">
                         <span id="userAvatarInicial">?</span>
                     </button>
@@ -6057,7 +6010,6 @@
             <div class="user-avatar-info">
                 <p class="user-avatar-nombre" id="userAvatarNombre">Usuario</p>
                 <span class="user-email" id="userEmail" aria-live="polite"></span>
-                <span class="user-rol-chip-popover" id="userRolChipPopover" hidden>Modo Admin</span>
             </div>
         </div>
         <button class="admin-button" type="button" id="adminButton" hidden>
@@ -8185,7 +8137,11 @@
 
         function inicializarAdminListeners() {
             const adminBtn = document.getElementById("adminButton");
-            if (adminBtn) adminBtn.addEventListener("click", abrirAdminModal);
+            if (adminBtn) {
+                adminBtn.addEventListener("click", () => {
+                    window.location.href = "admin.html";
+                });
+            }
             const closeBtn = document.getElementById("adminModalClose");
             if (closeBtn) closeBtn.addEventListener("click", cerrarAdminModal);
             const overlay = document.getElementById("adminModalOverlay");
@@ -10692,10 +10648,6 @@
 
   function aplicarRolUsuario(rol) {
     rolUsuario = rol;
-    const chip = document.getElementById("rolChip");
-    if (chip) chip.hidden = rol !== "admin";
-    const chipPopover = document.getElementById("userRolChipPopover");
-    if (chipPopover) chipPopover.hidden = rol !== "admin";
     const adminBtn = document.getElementById("adminButton");
     if (adminBtn) adminBtn.hidden = rol !== "admin";
   }
