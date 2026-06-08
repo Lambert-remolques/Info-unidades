@@ -3382,6 +3382,38 @@
             line-height: 1.3;
         }
 
+        .admin-button {
+            width: 100%;
+            min-height: 38px;
+            margin-bottom: 8px;
+            padding: 8px 14px;
+            border: 0;
+            border-radius: var(--radio);
+            background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+            color: var(--blanco);
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--fuente);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .admin-button[hidden] {
+            display: none;
+        }
+
+        .admin-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(21, 153, 71, 0.35);
+        }
+
         .logout-button {
             width: 100%;
             min-height: 38px;
@@ -3707,6 +3739,43 @@
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 22px;
             margin-top: 28px;
+        }
+
+        .docs-estado {
+            grid-column: 1 / -1;
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--gris-texto, #555);
+            font-size: 0.98rem;
+            background: var(--blanco);
+            border-radius: var(--radio);
+            box-shadow: var(--sombra-card);
+        }
+
+        .docs-estado--error p {
+            margin: 0 0 14px;
+            color: var(--rojo);
+            font-weight: 600;
+        }
+
+        .docs-retry {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 18px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--verde);
+            color: var(--blanco);
+            font-size: 0.92rem;
+            font-weight: 600;
+            font-family: var(--fuente);
+            cursor: pointer;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .docs-retry:hover {
+            background: var(--verde-oscuro);
+            transform: translateY(-1px);
         }
 
         .doc-card {
@@ -5694,6 +5763,13 @@
                 <span class="user-email" id="userEmail" aria-live="polite"></span>
             </div>
         </div>
+        <button class="admin-button" type="button" id="adminButton" hidden>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+            </svg>
+            Administrar
+        </button>
         <button class="logout-button" type="button" id="logoutButton">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -5868,14 +5944,7 @@
 
     <script>
         const PDF_BASE = "fichas";
-        const RECURSOS_BASE = "recursos";
         const PDF_PLACEHOLDER = "https://example.com/ficha.pdf";
-
-        // Construye la URL de un PDF de la sección Recursos > Documentos.
-        // Los archivos se suben al repo en: recursos/{categoria-slug}/{titulo-slug}.pdf
-        function urlDocumentoRecurso(categoria, titulo) {
-            return `${RECURSOS_BASE}/${crearSlug(categoria)}/${crearSlug(titulo)}.pdf`;
-        }
 
         // Fecha de última modificación del archivo HTML: se calcula automáticamente
         // desde document.lastModified (formato DD/MM/AAAA).
@@ -7605,14 +7674,93 @@
         }
 
         // ===== Recursos: Documentos y Preguntas frecuentes =====
-        // Documentos disponibles en Recursos > Documentos.
-        // Para agregar uno nuevo:
-        //   1. Definir { titulo, categoria } acá.
-        //   2. Subir el PDF al repo en: recursos/{slug-de-categoria}/{slug-de-titulo}.pdf
-        //      (los slugs los calcula crearSlug: minúsculas + guiones).
-        const DOCUMENTOS_RECURSOS = [
-            { titulo: "Tren retráctil 1° tramo bitren", categoria: "Tren rodante" }
-        ].map((d) => ({ ...d, url: urlDocumentoRecurso(d.categoria, d.titulo) }));
+        // Los documentos se cargan desde Firestore (colección "documentos").
+        // Estructura esperada del documento: { titulo, categoria, url, creadoEn }.
+        let documentosCargados = [];
+        let estadoDocumentos = "cargando";
+
+        async function cargarDocumentos() {
+            estadoDocumentos = "cargando";
+            if (document.getElementById("docsGrid")) renderDocumentosRecursos();
+            try {
+                const snapshot = await db.collection("documentos").orderBy("creadoEn", "desc").get();
+                documentosCargados = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    titulo: doc.data().titulo || "",
+                    categoria: doc.data().categoria || "",
+                    url: doc.data().url || ""
+                }));
+                estadoDocumentos = documentosCargados.length === 0 ? "vacio" : "ok";
+            } catch (e) {
+                console.error("Error cargando documentos:", e);
+                estadoDocumentos = "error";
+            }
+            sincronizarDocumentosEnBusqueda();
+            if (document.getElementById("docsGrid")) renderDocumentosRecursos();
+        }
+
+        // El botón "Administrar" del popover lleva al panel completo en admin.html.
+        const adminBtn = document.getElementById("adminButton");
+        if (adminBtn) {
+            adminBtn.addEventListener("click", () => {
+                window.location.href = "admin.html";
+            });
+        }
+
+        // ===== Fichas técnicas desde Firestore =====
+        // Mapa clave "categoriaId:productoSlug" → URL de Cloudinary.
+        // Si una unidad no está acá, el catálogo cae al PDF local del repo.
+        const fichasCargadas = new Map();
+
+        async function cargarFichas() {
+            try {
+                const snap = await db.collection("fichas").get();
+                fichasCargadas.clear();
+                snap.docs.forEach((d) => {
+                    const data = d.data();
+                    if (!data.categoriaId || !data.productoSlug || !data.url) return;
+                    fichasCargadas.set(`${data.categoriaId}:${data.productoSlug}`, data.url);
+                });
+                actualizarPdfsDeFichas();
+            } catch (e) {
+                console.warn("No se pudieron cargar fichas de Firestore, usando solo las del repo:", e);
+            }
+        }
+
+        function actualizarPdfsDeFichas() {
+            categorias.forEach((cat) => {
+                cat.productos.forEach((prod) => {
+                    const slug = crearSlug(prod.nombre);
+                    const url = fichasCargadas.get(`${cat.id}:${slug}`);
+                    if (!url) return;
+                    if (prod.fichaDirecta) {
+                        prod.pdf = url;
+                    } else if (Array.isArray(prod.opciones) && prod.opciones[0]) {
+                        prod.opciones[0].pdf = url;
+                    }
+                });
+            });
+        }
+
+        function sincronizarDocumentosEnBusqueda() {
+            for (let i = itemsBusqueda.length - 1; i >= 0; i--) {
+                if (itemsBusqueda[i].tipo === "recurso-documento") itemsBusqueda.splice(i, 1);
+            }
+            documentosCargados.forEach((doc) => {
+                itemsBusqueda.push({
+                    tipo: "recurso-documento",
+                    seccion: "recursos",
+                    seccionLabel: "Documentos",
+                    categoriaId: "documentos",
+                    categoriaNombre: doc.categoria,
+                    productoNombre: doc.titulo,
+                    productoSlug: "",
+                    descripcion: "",
+                    tieneOpciones: false,
+                    searchHaystack: normalizar(`${doc.titulo} ${doc.categoria} documento documentos recursos pdf`)
+                });
+            });
+        }
 
         const FAQ_CATEGORIAS = ["Categoría 1", "Categoría 2", "Categoría 3", "Categoría 4"];
 
@@ -7670,12 +7818,32 @@
         function renderDocumentosRecursos() {
             const grid = document.getElementById("docsGrid");
             if (!grid) return;
-            grid.innerHTML = DOCUMENTOS_RECURSOS.map((d) => {
-                const slug = crearSlug(d.titulo);
+
+            if (estadoDocumentos === "cargando") {
+                grid.innerHTML = `<div class="docs-estado">Cargando documentos...</div>`;
+                return;
+            }
+            if (estadoDocumentos === "error") {
+                grid.innerHTML = `
+                    <div class="docs-estado docs-estado--error">
+                        <p>No se pudieron cargar los documentos.</p>
+                        <button class="docs-retry" type="button" id="docsRetryBtn">Reintentar</button>
+                    </div>
+                `;
+                const retryBtn = document.getElementById("docsRetryBtn");
+                if (retryBtn) retryBtn.addEventListener("click", cargarDocumentos);
+                return;
+            }
+            if (estadoDocumentos === "vacio") {
+                grid.innerHTML = `<div class="docs-estado">Todavía no hay documentos cargados.</div>`;
+                return;
+            }
+
+            grid.innerHTML = documentosCargados.map((d) => {
                 const fav = {
-                    clave: `documento:${slug}`,
+                    clave: `documento:${d.id}`,
                     tipo: "documento",
-                    slug,
+                    slug: d.id,
                     nombre: d.titulo,
                     titulo: d.titulo,
                     categoriaNombre: d.categoria,
@@ -8942,21 +9110,6 @@
             });
         });
 
-        DOCUMENTOS_RECURSOS.forEach((doc) => {
-            itemsBusqueda.push({
-                tipo: "recurso-documento",
-                seccion: "recursos",
-                seccionLabel: "Documentos",
-                categoriaId: "documentos",
-                categoriaNombre: doc.categoria,
-                productoNombre: doc.titulo,
-                productoSlug: "",
-                descripcion: "",
-                tieneOpciones: false,
-                searchHaystack: normalizar(`${doc.titulo} ${doc.categoria} documento documentos recursos pdf`)
-            });
-        });
-
         PREGUNTAS_FRECUENTES.forEach((p) => {
             itemsBusqueda.push({
                 tipo: "recurso-faq",
@@ -10050,6 +10203,7 @@
     </div>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
   const firebaseConfig = {
@@ -10061,6 +10215,28 @@
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let rolUsuario = "vendedor";
+
+  async function obtenerRolUsuario(email) {
+    if (!email) return "vendedor";
+    try {
+      const doc = await db.collection("usuarios").doc(email).get();
+      if (doc.exists && doc.data().rol === "admin") {
+        return "admin";
+      }
+    } catch (e) {
+      console.warn("No se pudo leer el rol del usuario, asumiendo vendedor:", e);
+    }
+    return "vendedor";
+  }
+
+  function aplicarRolUsuario(rol) {
+    rolUsuario = rol;
+    const adminBtn = document.getElementById("adminButton");
+    if (adminBtn) adminBtn.hidden = rol !== "admin";
+  }
 
   const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
   const ACTIVITY_KEY = "lambert:lastActivity";
@@ -10110,6 +10286,9 @@
     document.getElementById("scrollBarUser").textContent = email;
     document.getElementById("drawerUserEmail").textContent = email;
     document.getElementById("contenido").style.display = "block";
+    obtenerRolUsuario(email).then(aplicarRolUsuario);
+    if (typeof cargarDocumentos === "function") cargarDocumentos();
+    if (typeof cargarFichas === "function") cargarFichas();
     if (typeof obtenerUsuario === "function") {
       const datos = obtenerUsuario(email);
       usuarioActual = { email, nombre: datos.nombre, genero: datos.genero };
