@@ -2771,6 +2771,15 @@
                     creadoEn: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
+                loggearActividad({
+                    accion: "Subió documento",
+                    accionTipo: "subir",
+                    entidadTipo: "documento",
+                    entidadNombre: titulo,
+                    contexto: categoria,
+                    detalle: `Subió el documento <strong>"${titulo}"</strong> en la categoría "${categoria}"`
+                });
+
                 setAdminUploadStatus("success", `"${titulo}" subido correctamente.`);
                 document.getElementById("adminUploadForm").reset();
                 document.getElementById("adminCategoriaNuevaWrap").hidden = true;
@@ -2786,6 +2795,8 @@
 
         async function borrarDocumento(id, titulo) {
             const tituloEsc = titulo.replace(/</g, "&lt;");
+            const docPrev = documentosAdmin.find((d) => d.id === id);
+            const categoriaPrev = docPrev ? docPrev.categoria : "";
             const ok = await mostrarConfirmacion({
                 titulo: "Eliminar documento",
                 mensaje: `¿Querés eliminar el documento <strong>"${tituloEsc}"</strong>?<br><br>Esta acción no se puede deshacer.`,
@@ -2794,6 +2805,14 @@
             if (!ok) return;
             try {
                 await db.collection("documentos").doc(id).delete();
+                loggearActividad({
+                    accion: "Eliminó documento",
+                    accionTipo: "eliminar",
+                    entidadTipo: "documento",
+                    entidadNombre: titulo,
+                    contexto: categoriaPrev,
+                    detalle: `Eliminó el documento <strong>"${titulo}"</strong>${categoriaPrev ? ` (categoría "${categoriaPrev}")` : ""}`
+                });
                 await cargarDocumentos();
             } catch (e) {
                 await mostrarConfirmacion({
@@ -3013,6 +3032,15 @@
                     actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
+                loggearActividad({
+                    accion: "Subió ficha técnica",
+                    accionTipo: "subir",
+                    entidadTipo: "ficha",
+                    entidadNombre: productoNombre,
+                    contexto: cat.nombre,
+                    detalle: `Subió la ficha técnica de <strong>"${productoNombre}"</strong> (${cat.nombre})`
+                });
+
                 setFichaStatus("success", `Ficha de "${productoNombre}" subida correctamente.`);
                 await cargarFichas();
             } catch (e) {
@@ -3025,6 +3053,8 @@
 
         async function borrarFicha(id, productoNombre) {
             const productoEsc = (productoNombre || "").replace(/</g, "&lt;");
+            const fichaPrev = [...fichasAdmin.values()].find((f) => f.id === id);
+            const categoriaPrev = fichaPrev ? fichaPrev.categoriaNombre : "";
             const ok = await mostrarConfirmacion({
                 titulo: "Eliminar ficha técnica",
                 mensaje: `¿Querés eliminar la ficha de <strong>"${productoEsc}"</strong>?<br><br>La unidad volverá a usar la ficha del repo si existe. Esta acción no se puede deshacer.`,
@@ -3033,6 +3063,14 @@
             if (!ok) return;
             try {
                 await db.collection("fichas").doc(id).delete();
+                loggearActividad({
+                    accion: "Eliminó ficha técnica",
+                    accionTipo: "eliminar",
+                    entidadTipo: "ficha",
+                    entidadNombre: productoNombre,
+                    contexto: categoriaPrev,
+                    detalle: `Eliminó la ficha técnica de <strong>"${productoNombre}"</strong>${categoriaPrev ? ` (${categoriaPrev})` : ""}`
+                });
                 await cargarFichas();
             } catch (e) {
                 await mostrarConfirmacion({
@@ -3347,6 +3385,14 @@
                 if (!resp.ok || !data.secure_url) {
                     throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
                 }
+                loggearActividad({
+                    accion: "Subió foto",
+                    accionTipo: "subir",
+                    entidadTipo: "foto_unidad",
+                    entidadNombre: productoNombre,
+                    contexto: descripcionDestino,
+                    detalle: `Subió una foto a <strong>"${productoNombre}"</strong> · ${descripcionDestino}`
+                });
                 setFotoUnidadStatus("success", "Foto subida correctamente.");
                 await cargarFotos();
             } catch (e) {
@@ -3516,6 +3562,14 @@
                 await cargarFotos();
                 renderModalAdFotos();
                 setModalAdFotosStatus("success", `${subidas} foto${subidas === 1 ? "" : "s"} subida${subidas === 1 ? "" : "s"}.${errores ? ` ${errores} con error.` : ""}`);
+                loggearActividad({
+                    accion: "Subió foto a adicional",
+                    accionTipo: "subir",
+                    entidadTipo: "foto_adicional",
+                    entidadNombre: adicional.nombre,
+                    contexto: adicional.categoriaNombre || "",
+                    detalle: `Subió ${subidas} foto${subidas === 1 ? "" : "s"} al adicional <strong>"${adicional.nombre}"</strong> (${adicional.categoriaNombre || ""})`
+                });
             }
         }
 
@@ -3551,6 +3605,15 @@
                 actualizarMetricaFotos();
                 renderModalAdFotos();
                 setModalAdFotosStatus("success", "Foto eliminada.");
+                const adicional = adicionalesExtra.find((a) => a.id === editingAdicionalId);
+                loggearActividad({
+                    accion: "Eliminó foto de adicional",
+                    accionTipo: "eliminar",
+                    entidadTipo: "foto_adicional",
+                    entidadNombre: adicional ? adicional.nombre : "",
+                    contexto: adicional ? (adicional.categoriaNombre || "") : "",
+                    detalle: `Eliminó una foto del adicional <strong>"${adicional ? adicional.nombre : ""}"</strong>`
+                });
             } catch (e) {
                 console.error(e);
                 setModalAdFotosStatus("error", "No se pudo eliminar: " + (e.message || "error"));
@@ -3734,11 +3797,43 @@
                     ubicacion,
                     actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
                 };
+                const adicionalPrevio = esEdicion ? adicionalesExtra.find((a) => a.id === editingAdicionalId) : null;
                 if (esEdicion) {
                     await db.collection("adicionales_extra").doc(editingAdicionalId).update(payload);
                 } else {
                     payload.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
                     await db.collection("adicionales_extra").add(payload);
+                }
+
+                if (esEdicion && adicionalPrevio) {
+                    const camposLog = [
+                        ["nombre", adicionalPrevio.nombre, nombre],
+                        ["código", adicionalPrevio.codigo, codigo],
+                        ["descripción", adicionalPrevio.descripcion, descripcion],
+                        ["ubicación", adicionalPrevio.ubicacion, ubicacion],
+                        ["categoría", adicionalPrevio.categoriaNombre, categoriaNombre]
+                    ].filter(([, antes, despues]) => (antes || "") !== (despues || ""))
+                     .map(([campo, antes, despues]) => ({ campo, antes: antes || "", despues: despues || "" }));
+                    if (camposLog.length > 0) {
+                        loggearActividad({
+                            accion: "Editó adicional",
+                            accionTipo: "editar",
+                            entidadTipo: "adicional",
+                            entidadNombre: nombre,
+                            contexto: categoriaNombre,
+                            cambios: camposLog,
+                            detalle: `Editó el adicional <strong>"${nombre}"</strong> (${categoriaNombre}) — cambió: ${camposLog.map((c) => c.campo).join(", ")}`
+                        });
+                    }
+                } else {
+                    loggearActividad({
+                        accion: "Creó adicional",
+                        accionTipo: "crear",
+                        entidadTipo: "adicional",
+                        entidadNombre: nombre,
+                        contexto: categoriaNombre,
+                        detalle: `Creó el adicional <strong>"${nombre}"</strong> en la categoría "${categoriaNombre}"`
+                    });
                 }
                 await cargarAdicionalesExtra();
                 poblarSelectsFotos();
@@ -3783,6 +3878,14 @@
             if (!ok) return;
             try {
                 await db.collection("adicionales_extra").doc(id).delete();
+                loggearActividad({
+                    accion: "Eliminó adicional",
+                    accionTipo: "eliminar",
+                    entidadTipo: "adicional",
+                    entidadNombre: nombre || "",
+                    contexto: categoriaNombre || "",
+                    detalle: `Eliminó el adicional <strong>"${nombre || ""}"</strong>${categoriaNombre ? ` (${categoriaNombre})` : ""}`
+                });
                 await cargarAdicionalesExtra();
                 renderAdicionalesAdminList();
             } catch (e) {
@@ -4158,6 +4261,14 @@
                 renderUnidadesAdminList();
                 renderPortadaModal();
                 setUnPortadaStatus("success", "Portada actualizada.");
+                loggearActividad({
+                    accion: "Cambió foto de portada",
+                    accionTipo: "subir",
+                    entidadTipo: "foto_portada",
+                    entidadNombre: u.nombre,
+                    contexto: u.categoriaNombre || "",
+                    detalle: `Cambió la foto de portada de <strong>"${u.nombre}"</strong> (${u.categoriaNombre || ""})`
+                });
             } catch (e) {
                 console.error(e);
                 setUnPortadaStatus("error", "No se pudo subir: " + (e.message || "error"));
@@ -4172,6 +4283,7 @@
                 etiquetaConfirmar: "Quitar"
             });
             if (!ok) return;
+            const uPrev = unidadesExtra.find((x) => x.id === editingUnidadId);
             try {
                 await db.collection("unidades").doc(editingUnidadId).update({
                     fotoPortadaPublicId: firebase.firestore.FieldValue.delete(),
@@ -4183,6 +4295,16 @@
                 renderUnidadesAdminList();
                 renderPortadaModal();
                 setUnPortadaStatus("success", "Portada removida.");
+                if (uPrev) {
+                    loggearActividad({
+                        accion: "Quitó foto de portada",
+                        accionTipo: "eliminar",
+                        entidadTipo: "foto_portada",
+                        entidadNombre: uPrev.nombre,
+                        contexto: uPrev.categoriaNombre || "",
+                        detalle: `Quitó la foto de portada de <strong>"${uPrev.nombre}"</strong> (${uPrev.categoriaNombre || ""})`
+                    });
+                }
             } catch (e) {
                 console.error(e);
                 setUnPortadaStatus("error", "No se pudo quitar: " + (e.message || "error"));
@@ -4231,6 +4353,7 @@
                 const url = await subirFichaACloudinary(file, u.categoriaId, slug);
                 // Reemplazar ficha anterior (si existe)
                 const fichaExistente = fichasAdmin.get(claveFicha(u.categoriaId, slug));
+                const erReemplazo = !!fichaExistente;
                 if (fichaExistente) {
                     await db.collection("fichas").doc(fichaExistente.id).update({
                         url,
@@ -4251,6 +4374,14 @@
                 renderUnidadesAdminList();
                 renderFichaModal();
                 setUnFichaStatus("success", "Ficha actualizada.");
+                loggearActividad({
+                    accion: erReemplazo ? "Reemplazó ficha técnica" : "Subió ficha técnica",
+                    accionTipo: "subir",
+                    entidadTipo: "ficha",
+                    entidadNombre: u.nombre,
+                    contexto: u.categoriaNombre || "",
+                    detalle: `${erReemplazo ? "Reemplazó" : "Subió"} la ficha técnica de <strong>"${u.nombre}"</strong> (${u.categoriaNombre || ""})`
+                });
             } catch (e) {
                 console.error(e);
                 setUnFichaStatus("error", "No se pudo subir: " + (e.message || "error"));
@@ -4264,12 +4395,23 @@
                 etiquetaConfirmar: "Borrar"
             });
             if (!ok) return;
+            const uPrev = unidadesExtra.find((x) => x.id === editingUnidadId);
             try {
                 await db.collection("fichas").doc(fichaId).delete();
                 await cargarFichas();
                 renderUnidadesAdminList();
                 renderFichaModal();
                 setUnFichaStatus("success", "Ficha borrada.");
+                if (uPrev) {
+                    loggearActividad({
+                        accion: "Eliminó ficha técnica",
+                        accionTipo: "eliminar",
+                        entidadTipo: "ficha",
+                        entidadNombre: uPrev.nombre,
+                        contexto: uPrev.categoriaNombre || "",
+                        detalle: `Eliminó la ficha técnica de <strong>"${uPrev.nombre}"</strong> (${uPrev.categoriaNombre || ""})`
+                    });
+                }
             } catch (e) {
                 console.error(e);
                 setUnFichaStatus("error", "No se pudo borrar: " + (e.message || "error"));
@@ -4331,6 +4473,7 @@
                     descripcion,
                     actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
                 };
+                const unidadPrevia = esEdicion ? unidadesExtra.find((x) => x.id === editingUnidadId) : null;
                 let unidadId;
                 if (esEdicion) {
                     await db.collection("unidades").doc(editingUnidadId).update(payload);
@@ -4339,6 +4482,35 @@
                     payload.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
                     const ref = await db.collection("unidades").add(payload);
                     unidadId = ref.id;
+                }
+
+                if (esEdicion && unidadPrevia) {
+                    const camposLog = [
+                        ["nombre", unidadPrevia.nombre, nombre],
+                        ["descripción", unidadPrevia.descripcion, descripcion],
+                        ["categoría", unidadPrevia.categoriaNombre, categoriaNombre]
+                    ].filter(([, antes, despues]) => (antes || "") !== (despues || ""))
+                     .map(([campo, antes, despues]) => ({ campo, antes: antes || "", despues: despues || "" }));
+                    if (camposLog.length > 0) {
+                        loggearActividad({
+                            accion: "Editó unidad",
+                            accionTipo: "editar",
+                            entidadTipo: "unidad",
+                            entidadNombre: nombre,
+                            contexto: categoriaNombre,
+                            cambios: camposLog,
+                            detalle: `Editó la unidad <strong>"${nombre}"</strong> (${categoriaNombre}) — cambió: ${camposLog.map((c) => c.campo).join(", ")}`
+                        });
+                    }
+                } else {
+                    loggearActividad({
+                        accion: "Creó unidad",
+                        accionTipo: "crear",
+                        entidadTipo: "unidad",
+                        entidadNombre: nombre,
+                        contexto: categoriaNombre,
+                        detalle: `Creó la unidad <strong>"${nombre}"</strong> en la categoría "${categoriaNombre}"`
+                    });
                 }
 
                 let mensajeOk = esEdicion ? "Cambios guardados." : `"${nombre}" creada correctamente.`;
@@ -4402,6 +4574,14 @@
             if (!ok) return;
             try {
                 await db.collection("unidades").doc(id).delete();
+                loggearActividad({
+                    accion: "Eliminó unidad",
+                    accionTipo: "eliminar",
+                    entidadTipo: "unidad",
+                    entidadNombre: nombre || "",
+                    contexto: categoriaNombre || "",
+                    detalle: `Eliminó la unidad <strong>"${nombre || ""}"</strong>${categoriaNombre ? ` (${categoriaNombre})` : ""}`
+                });
                 await cargarUnidades();
                 renderUnidadesAdminList();
             } catch (e) {
@@ -4491,6 +4671,14 @@
                 fotosBorradas.add(publicId);
                 actualizarMetricaFotos();
                 renderFotosUnidadGaleria();
+                loggearActividad({
+                    accion: "Eliminó foto",
+                    accionTipo: "eliminar",
+                    entidadTipo: "foto_unidad",
+                    entidadNombre: publicId.split("/").slice(1, -1).join(" · "),
+                    contexto: publicId,
+                    detalle: `Eliminó una foto de unidad (<code>${publicId}</code>)`
+                });
             } catch (e) {
                 await mostrarConfirmacion({
                     titulo: "No se pudo eliminar",
