@@ -1264,6 +1264,7 @@
 
         const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "usuarios", "metricas"];
         const CLOUDINARY_CLOUD = "lambert-remolques";
+        const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
         const CLOUDINARY_PRESET = "panel_admin_lambert";
         const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
         const MAX_PDF_MB = 10;
@@ -1984,7 +1985,6 @@
             const productoSlug = crearSlug(productoNombre);
             const clave = fotosClaveUnidad(catId, productoSlug, ejeSlug);
             const fotos = fotosVisibles(clave);
-            console.log("[DEBUG fotos unidad]", { catId, productoNombre, productoSlug, ejeSlug, clave, encontradas: fotos.length, todasLasClavesDeEstaCategoria: [...fotosAdmin.keys()].filter(function (k) { return k.startsWith("unidad:" + catId + ":"); }) });
             cont.innerHTML = renderGaleriaFotos(fotos) + renderUploadFotoForm("unidad");
             wireGaleriaFotos(cont, "unidad");
         }
