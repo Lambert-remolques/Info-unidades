@@ -1435,6 +1435,10 @@
                         <span>Categoría</span>
                         <select class="admin-select" id="formAdCategoria" required></select>
                     </label>
+                    <label class="admin-field" id="formAdCategoriaNuevaWrap" hidden>
+                        <span>Nombre de la nueva categoría</span>
+                        <input type="text" id="formAdCategoriaNueva" maxlength="60">
+                    </label>
                     <label class="admin-field">
                         <span>Nombre</span>
                         <input type="text" id="formAdNombre" required maxlength="120">
@@ -1569,11 +1573,27 @@
             }
         }
 
+        function categoriasAdicionalesCombinadas() {
+            const combined = ADICIONALES_CATALOGO.map((c) => ({ id: c.id, nombre: c.nombre, items: c.items, esNueva: false }));
+            const vistasNuevas = new Set(combined.map((c) => c.id));
+            adicionalesExtra.forEach((a) => {
+                if (!a.categoriaId || vistasNuevas.has(a.categoriaId)) return;
+                vistasNuevas.add(a.categoriaId);
+                combined.push({
+                    id: a.categoriaId,
+                    nombre: a.categoriaNombre || a.categoriaId,
+                    items: [],
+                    esNueva: true
+                });
+            });
+            return combined.sort((a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" }));
+        }
+
         function adicionalesDeCategoria(catId) {
-            const cat = ADICIONALES_CATALOGO.find((c) => c.id === catId);
-            if (!cat) return [];
+            const hardcoded = ADICIONALES_CATALOGO.find((c) => c.id === catId);
+            const items = hardcoded ? [...hardcoded.items] : [];
             const extras = adicionalesExtra.filter((a) => a.categoriaId === catId).map((a) => a.nombre);
-            const union = [...new Set([...cat.items, ...extras])];
+            const union = [...new Set([...items, ...extras])];
             return union.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
         }
 
@@ -2169,8 +2189,11 @@
             }
             const selAC = document.getElementById("fotosAdicionalCategoria");
             if (selAC) {
+                const cats = categoriasAdicionalesCombinadas();
+                const valorActual = selAC.value;
                 selAC.innerHTML = `<option value="">Seleccionar categoría...</option>`
-                    + ADICIONALES_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+                    + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+                if (valorActual && cats.some((c) => c.id === valorActual)) selAC.value = valorActual;
             }
         }
 
@@ -2448,16 +2471,30 @@
         function abrirCrearAdicionalModal() {
             const sel = document.getElementById("formAdCategoria");
             if (sel) {
+                const cats = categoriasAdicionalesCombinadas();
                 sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
-                    + ADICIONALES_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+                    + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("")
+                    + `<option value="__nueva__">+ Crear nueva categoría</option>`;
                 const filtroActual = document.getElementById("fotosAdicionalCategoria")?.value;
-                if (filtroActual) sel.value = filtroActual;
+                if (filtroActual && cats.some((c) => c.id === filtroActual)) sel.value = filtroActual;
             }
+            const wrapNueva = document.getElementById("formAdCategoriaNuevaWrap");
+            if (wrapNueva) wrapNueva.hidden = true;
+            const inputNueva = document.getElementById("formAdCategoriaNueva");
+            if (inputNueva) inputNueva.value = "";
             const modal = document.getElementById("modalCrearAdicional");
             modal.hidden = false;
             document.body.style.overflow = "hidden";
             setCrearAdicionalStatus(null);
             setTimeout(() => document.getElementById("formAdNombre")?.focus(), 30);
+        }
+
+        function onFormAdCategoriaChange() {
+            const sel = document.getElementById("formAdCategoria");
+            const wrap = document.getElementById("formAdCategoriaNuevaWrap");
+            const esNueva = sel.value === "__nueva__";
+            wrap.hidden = !esNueva;
+            if (esNueva) setTimeout(() => document.getElementById("formAdCategoriaNueva")?.focus(), 30);
         }
 
         function cerrarCrearAdicionalModal() {
@@ -2485,28 +2522,56 @@
 
         async function crearAdicionalHandler(event) {
             event.preventDefault();
-            const categoriaId = document.getElementById("formAdCategoria").value;
+            const seleccionCat = document.getElementById("formAdCategoria").value;
+            const nombreCatNueva = document.getElementById("formAdCategoriaNueva").value.trim();
             const nombre = document.getElementById("formAdNombre").value.trim();
             const codigo = document.getElementById("formAdCodigo").value.trim() || "SIN CÓDIGO";
             const descripcion = document.getElementById("formAdDescripcion").value.trim();
             const ubicacion = document.getElementById("formAdUbicacion").value.trim();
 
-            if (!categoriaId || !nombre || !descripcion || !ubicacion) {
-                setCrearAdicionalStatus("error", "Completá categoría, nombre, descripción y ubicación.");
+            let categoriaId, categoriaNombre;
+            if (seleccionCat === "__nueva__") {
+                if (!nombreCatNueva) {
+                    setCrearAdicionalStatus("error", "Escribí el nombre de la nueva categoría.");
+                    return;
+                }
+                const slugCat = crearSlug(nombreCatNueva);
+                const cats = categoriasAdicionalesCombinadas();
+                if (cats.some((c) => c.id === slugCat)) {
+                    setCrearAdicionalStatus("error", `Ya existe una categoría llamada "${nombreCatNueva}".`);
+                    return;
+                }
+                categoriaId = slugCat;
+                categoriaNombre = nombreCatNueva;
+            } else if (seleccionCat) {
+                const cat = categoriasAdicionalesCombinadas().find((c) => c.id === seleccionCat);
+                if (!cat) {
+                    setCrearAdicionalStatus("error", "Categoría inválida.");
+                    return;
+                }
+                categoriaId = cat.id;
+                categoriaNombre = cat.nombre;
+            } else {
+                setCrearAdicionalStatus("error", "Seleccioná una categoría.");
                 return;
             }
-            const cat = ADICIONALES_CATALOGO.find((c) => c.id === categoriaId);
-            const yaExisteHardcoded = cat.items.some((it) => it.toLowerCase() === nombre.toLowerCase());
+
+            if (!nombre || !descripcion || !ubicacion) {
+                setCrearAdicionalStatus("error", "Completá nombre, descripción y ubicación.");
+                return;
+            }
+
+            const yaExisteHardcoded = (ADICIONALES_CATALOGO.find((c) => c.id === categoriaId)?.items || []).some((it) => it.toLowerCase() === nombre.toLowerCase());
             const yaExisteExtra = adicionalesExtra.some((a) => a.categoriaId === categoriaId && a.nombre.toLowerCase() === nombre.toLowerCase());
             if (yaExisteHardcoded || yaExisteExtra) {
-                setCrearAdicionalStatus("error", `Ya existe un adicional "${nombre}" en ${cat.nombre}.`);
+                setCrearAdicionalStatus("error", `Ya existe un adicional "${nombre}" en ${categoriaNombre}.`);
                 return;
             }
 
             const nombreEsc = nombre.replace(/</g, "&lt;");
             const ok = await mostrarConfirmacion({
                 titulo: "Crear adicional",
-                mensaje: `¿Confirmás crear el adicional <strong>"${nombreEsc}"</strong> en la categoría <strong>${cat.nombre}</strong>?`,
+                mensaje: `¿Confirmás crear el adicional <strong>"${nombreEsc}"</strong> en la categoría <strong>${categoriaNombre}</strong>${seleccionCat === "__nueva__" ? " <em>(categoría nueva)</em>" : ""}?`,
                 etiquetaConfirmar: "Crear",
                 variante: "confirmar"
             });
@@ -2521,6 +2586,7 @@
             try {
                 await db.collection("adicionales_extra").add({
                     categoriaId,
+                    categoriaNombre,
                     nombre,
                     codigo,
                     descripcion,
@@ -2528,10 +2594,12 @@
                     creadoEn: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 await cargarAdicionalesExtra();
+                poblarSelectsFotos();
                 setCrearAdicionalStatus("success", `"${nombre}" creado correctamente.`);
                 setTimeout(() => {
                     cerrarCrearAdicionalModal();
-                    if (document.getElementById("fotosAdicionalCategoria").value === categoriaId) {
+                    const filtroActual = document.getElementById("fotosAdicionalCategoria").value;
+                    if (filtroActual === categoriaId || filtroActual === seleccionCat) {
                         onFotosAdicionalCategoriaChange();
                     }
                 }, 800);
@@ -2762,6 +2830,8 @@
             if (overlayAd) overlayAd.addEventListener("click", cerrarCrearAdicionalModal);
             const formAd = document.getElementById("formCrearAdicional");
             if (formAd) formAd.addEventListener("submit", crearAdicionalHandler);
+            const selAdCat = document.getElementById("formAdCategoria");
+            if (selAdCat) selAdCat.addEventListener("change", onFormAdCategoriaChange);
             document.addEventListener("keydown", (e) => {
                 if (e.key !== "Escape") return;
                 const m = document.getElementById("modalCrearAdicional");
