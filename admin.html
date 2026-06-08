@@ -339,37 +339,82 @@
         }
 
         /* ===== Bloque de Pendientes ===== */
+        :root {
+            --pend-adicionales: #d97706;
+            --pend-adicionales-bg: #fff8ed;
+            --pend-fichas: #2563eb;
+            --pend-fichas-bg: #eef4ff;
+            --pend-fotos: #159947;
+            --pend-fotos-bg: #ebfaf0;
+            --pend-empty: #6b7280;
+            --pend-check: #10b981;
+        }
         .pendientes-bloque {
             margin-top: 28px;
-            padding: 24px;
-            background: var(--blanco);
+            padding: 22px 24px 26px;
+            background: linear-gradient(135deg, #fefefe 0%, #f5f7fa 100%);
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.045);
+        }
+        .pendientes-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        .pendientes-header-icono {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
-            border: 1px solid var(--gris);
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #b45309;
+            flex-shrink: 0;
         }
         .pendientes-titulo-grande {
-            margin: 0 0 4px;
-            font-size: 1.05rem;
+            margin: 0 0 2px;
+            font-size: 1.12rem;
             font-weight: 700;
             color: var(--negro);
+            letter-spacing: -0.2px;
         }
         .pendientes-subtitulo {
-            margin: 0 0 20px;
+            margin: 0;
             font-size: 0.85rem;
             color: var(--gris-texto);
         }
         .pendientes-seccion {
-            margin-top: 18px;
+            margin-top: 22px;
         }
         .pendientes-seccion:first-of-type {
             margin-top: 0;
         }
         .pendientes-subtitulo-seccion {
-            margin: 0 0 10px;
-            font-size: 0.82rem;
-            font-weight: 600;
+            margin: 0 0 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: var(--gris-texto);
+            letter-spacing: 0.8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pendientes-icono-grupo {
+            stroke-width: 2.4;
+        }
+        .pendientes-seccion[data-pend-grupo="adicionales"] .pendientes-subtitulo-seccion {
+            color: var(--pend-adicionales);
+        }
+        .pendientes-seccion[data-pend-grupo="fichas"] .pendientes-subtitulo-seccion {
+            color: var(--pend-fichas);
+        }
+        .pendientes-seccion[data-pend-grupo="fotos"] .pendientes-subtitulo-seccion {
+            color: var(--pend-fotos);
         }
         .pendientes-grid {
             display: grid;
@@ -382,44 +427,78 @@
             }
         }
         .pendiente-card {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 4px;
-            padding: 14px 16px;
-            background: #f7f7f7;
-            border: 1px solid var(--gris);
-            border-radius: 8px;
+            gap: 6px;
+            padding: 16px 16px 14px 18px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #d1d5db;
+            border-radius: 10px;
             cursor: pointer;
             font-family: inherit;
             text-align: left;
-            transition: background 160ms ease, border-color 160ms ease, transform 120ms ease;
+            transition: transform 140ms ease, box-shadow 160ms ease, border-color 160ms ease;
+            overflow: hidden;
         }
         .pendiente-card:hover {
-            background: #efefef;
-            border-color: #c9c9c9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
         }
         .pendiente-card:active {
-            transform: scale(0.98);
+            transform: translateY(0);
         }
-        .pendiente-card[data-pend-empty="true"] {
-            opacity: 0.55;
-            cursor: default;
-        }
-        .pendiente-card[data-pend-empty="true"]:hover {
-            background: #f7f7f7;
-            border-color: var(--gris);
-        }
+        .pendiente-card[data-pendiente-tipo="adicionales"] { border-left-color: var(--pend-adicionales); }
+        .pendiente-card[data-pendiente-tipo="fichas"]      { border-left-color: var(--pend-fichas); }
+        .pendiente-card[data-pendiente-tipo="fotos"]       { border-left-color: var(--pend-fotos); }
+
         .pendiente-card-numero {
-            font-size: 1.55rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: var(--negro);
             line-height: 1;
+            color: var(--negro);
+            transition: color 160ms ease;
+        }
+        .pendiente-card[data-pendiente-tipo="adicionales"][data-pend-empty="false"] .pendiente-card-numero {
+            color: var(--pend-adicionales);
+        }
+        .pendiente-card[data-pendiente-tipo="fichas"][data-pend-empty="false"] .pendiente-card-numero {
+            color: var(--pend-fichas);
+        }
+        .pendiente-card[data-pendiente-tipo="fotos"][data-pend-empty="false"] .pendiente-card-numero {
+            color: var(--pend-fotos);
         }
         .pendiente-card-label {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: var(--gris-texto);
             font-weight: 500;
+        }
+        .pendiente-card[data-pend-empty="true"] {
+            cursor: default;
+            background: #fafafa;
+        }
+        .pendiente-card[data-pend-empty="true"]:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        .pendiente-card[data-pend-empty="true"] .pendiente-card-numero {
+            color: var(--pend-empty);
+        }
+        .pendiente-card[data-pend-empty="true"]::after {
+            content: "";
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--pend-check);
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+            background-size: 12px;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         /* ===== Drawer lateral de pendientes ===== */
@@ -1663,11 +1742,25 @@
                 </div>
 
                 <section class="pendientes-bloque" id="pendientesBloque" aria-label="Pendientes">
-                    <h2 class="pendientes-titulo-grande">Pendientes</h2>
-                    <p class="pendientes-subtitulo">Acá vas a ver qué información o archivos faltan cargar. Apretá una tarjeta para ver el detalle.</p>
+                    <div class="pendientes-header">
+                        <span class="pendientes-header-icono" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <h2 class="pendientes-titulo-grande">Pendientes</h2>
+                            <p class="pendientes-subtitulo">Acá ves qué información o archivos faltan cargar. Apretá una tarjeta para ver el detalle.</p>
+                        </div>
+                    </div>
 
-                    <div class="pendientes-seccion">
-                        <h3 class="pendientes-subtitulo-seccion">Adicionales</h3>
+                    <div class="pendientes-seccion" data-pend-grupo="adicionales">
+                        <h3 class="pendientes-subtitulo-seccion">
+                            <svg class="pendientes-icono-grupo" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg>
+                            Adicionales
+                        </h3>
                         <div class="pendientes-grid">
                             <button class="pendiente-card" type="button" data-pendiente-tipo="adicionales" data-pendiente-sub="sinFoto">
                                 <span class="pendiente-card-numero" data-pend-count>—</span>
@@ -1688,8 +1781,13 @@
                         </div>
                     </div>
 
-                    <div class="pendientes-seccion">
-                        <h3 class="pendientes-subtitulo-seccion">Fichas técnicas sin cargar</h3>
+                    <div class="pendientes-seccion" data-pend-grupo="fichas">
+                        <h3 class="pendientes-subtitulo-seccion">
+                            <svg class="pendientes-icono-grupo" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>
+                            </svg>
+                            Fichas técnicas sin cargar
+                        </h3>
                         <div class="pendientes-grid">
                             <button class="pendiente-card" type="button" data-pendiente-tipo="fichas" data-pendiente-sub="acoplados">
                                 <span class="pendiente-card-numero" data-pend-count>—</span>
@@ -1710,8 +1808,13 @@
                         </div>
                     </div>
 
-                    <div class="pendientes-seccion">
-                        <h3 class="pendientes-subtitulo-seccion">Fotos de unidades sin cargar</h3>
+                    <div class="pendientes-seccion" data-pend-grupo="fotos">
+                        <h3 class="pendientes-subtitulo-seccion">
+                            <svg class="pendientes-icono-grupo" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="1.5"/><path d="M21 17l-5-5L5 19"/>
+                            </svg>
+                            Fotos de unidades sin cargar
+                        </h3>
                         <div class="pendientes-grid">
                             <button class="pendiente-card" type="button" data-pendiente-tipo="fotos" data-pendiente-sub="acoplados">
                                 <span class="pendiente-card-numero" data-pend-count>—</span>
@@ -1859,7 +1962,7 @@
 
             <section class="panel-section" data-section="unidades">
                 <h1 class="page-title">Unidades</h1>
-                <p class="page-subtitle">Creá, editá o eliminá unidades del catálogo (acoplados, semis, carrocerías y bitrenes).</p>
+                <p class="page-subtitle">Creá, editá o eliminá unidades del catálogo.</p>
 
                 <div class="admin-cards">
                     <div class="admin-card">
