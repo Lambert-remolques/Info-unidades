@@ -7707,6 +7707,41 @@
             });
         }
 
+        // ===== Fichas técnicas desde Firestore =====
+        // Mapa clave "categoriaId:productoSlug" → URL de Cloudinary.
+        // Si una unidad no está acá, el catálogo cae al PDF local del repo.
+        const fichasCargadas = new Map();
+
+        async function cargarFichas() {
+            try {
+                const snap = await db.collection("fichas").get();
+                fichasCargadas.clear();
+                snap.docs.forEach((d) => {
+                    const data = d.data();
+                    if (!data.categoriaId || !data.productoSlug || !data.url) return;
+                    fichasCargadas.set(`${data.categoriaId}:${data.productoSlug}`, data.url);
+                });
+                actualizarPdfsDeFichas();
+            } catch (e) {
+                console.warn("No se pudieron cargar fichas de Firestore, usando solo las del repo:", e);
+            }
+        }
+
+        function actualizarPdfsDeFichas() {
+            categorias.forEach((cat) => {
+                cat.productos.forEach((prod) => {
+                    const slug = crearSlug(prod.nombre);
+                    const url = fichasCargadas.get(`${cat.id}:${slug}`);
+                    if (!url) return;
+                    if (prod.fichaDirecta) {
+                        prod.pdf = url;
+                    } else if (Array.isArray(prod.opciones) && prod.opciones[0]) {
+                        prod.opciones[0].pdf = url;
+                    }
+                });
+            });
+        }
+
         function sincronizarDocumentosEnBusqueda() {
             for (let i = itemsBusqueda.length - 1; i >= 0; i--) {
                 if (itemsBusqueda[i].tipo === "recurso-documento") itemsBusqueda.splice(i, 1);
@@ -10253,6 +10288,7 @@
     document.getElementById("contenido").style.display = "block";
     obtenerRolUsuario(email).then(aplicarRolUsuario);
     if (typeof cargarDocumentos === "function") cargarDocumentos();
+    if (typeof cargarFichas === "function") cargarFichas();
     if (typeof obtenerUsuario === "function") {
       const datos = obtenerUsuario(email);
       usuarioActual = { email, nombre: datos.nombre, genero: datos.genero };

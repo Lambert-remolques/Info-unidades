@@ -635,6 +635,86 @@
             background: rgba(218, 37, 29, 0.14);
         }
 
+        /* ===== Fichas técnicas ===== */
+        .admin-field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .admin-field-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .admin-form--inline {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--gris);
+        }
+
+        .ficha-estado-card {
+            margin-top: 18px;
+            padding: 18px 20px;
+            border-radius: var(--radio);
+            background: var(--gris-bg);
+            border-left: 4px solid var(--gris);
+        }
+
+        .ficha-estado-card--ok {
+            border-left-color: var(--verde);
+            background: rgba(21, 153, 71, 0.06);
+        }
+
+        .ficha-estado-card--vacio {
+            border-left-color: var(--gris-texto);
+        }
+
+        .ficha-estado-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ficha-estado-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ficha-estado-badge--ok {
+            background: var(--verde);
+            color: var(--blanco);
+        }
+
+        .ficha-estado-badge--vacio {
+            background: var(--gris);
+            color: var(--negro);
+        }
+
+        .ficha-estado-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ficha-estado-hint {
+            margin: 14px 0 0;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            font-size: 0.82rem;
+            color: var(--gris-texto);
+            font-style: italic;
+        }
+
         /* ===== Modal de confirmación ===== */
         .modal-confirm {
             position: fixed;
@@ -751,6 +831,23 @@
         .modal-confirm-btn--ok:hover {
             background: #b41e16;
             transform: translateY(-1px);
+        }
+
+        .modal-confirm--confirmar .modal-confirm-box {
+            border-top-color: var(--verde);
+        }
+
+        .modal-confirm--confirmar .modal-confirm-icon {
+            background: rgba(21, 153, 71, 0.12);
+            color: var(--verde);
+        }
+
+        .modal-confirm--confirmar .modal-confirm-btn--ok {
+            background: var(--verde);
+        }
+
+        .modal-confirm--confirmar .modal-confirm-btn--ok:hover {
+            background: var(--verde-oscuro);
         }
 
         @media (max-width: 480px) {
@@ -966,12 +1063,35 @@
             <section class="panel-section" data-section="fichas">
                 <h1 class="page-title">Fichas técnicas</h1>
                 <p class="page-subtitle">Subí, reemplazá o borrá las fichas técnicas de cada unidad del catálogo.</p>
-                <div class="construccion">
-                    <svg class="construccion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
-                    </svg>
-                    <div class="construccion-title">Sección en construcción</div>
-                    <div class="construccion-desc">Sub-etapa 4.3 — gestión de fichas técnicas por unidad y categoría.</div>
+
+                <div class="admin-cards">
+                    <div class="admin-card">
+                        <h2 class="admin-card-title">Gestionar ficha de una unidad</h2>
+                        <div class="admin-form">
+                            <div class="admin-field-row">
+                                <label class="admin-field">
+                                    <span>Categoría</span>
+                                    <select class="admin-select" id="fichasCategoria"></select>
+                                </label>
+                                <label class="admin-field">
+                                    <span>Unidad</span>
+                                    <select class="admin-select" id="fichasProducto" disabled></select>
+                                </label>
+                            </div>
+                            <div id="fichasEstado"></div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h2 class="admin-card-title">Fichas técnicas cargadas</h2>
+                            <label class="admin-filter">
+                                <span>Filtrar por categoría:</span>
+                                <select class="admin-select admin-select--compact" id="fichasFiltroCategoria"></select>
+                            </label>
+                        </div>
+                        <div class="admin-doc-list" id="fichasGlobalesList"></div>
+                    </div>
                 </div>
             </section>
 
@@ -1062,8 +1182,20 @@
                 .replace(/^-+|-+$/g, "");
         }
 
+        // Estructura del catálogo (espejo de index.html, solo lo necesario para
+        // armar los dropdowns de fichas técnicas). TODO: mover a Firestore para
+        // tener un solo source.
+        const FICHAS_CATALOGO = [
+            { id: "acoplados", nombre: "Acoplados", productos: ["Baranda volcable", "Curtain sider", "Playo", "Paquetero", "Forestal", "Volcador bilateral", "Todo puertas", "Isotérmico", "Tolva descarga ventral", "Jaula simple", "Jaula doble piso", "Pollero"] },
+            { id: "semirremolques", nombre: "Semirremolques", productos: ["Playo con frente", "Curtain sider", "Baranda volcable", "Forestal", "Isotérmico", "Tolva descarga ventral", "Portacontenedor", "Jaula simple", "Jaula doble piso", "Batea", "Bivuelco bicaja"] },
+            { id: "carrocerias", nombre: "Carrocerías", productos: ["Curtain sider", "Todo puertas", "Volcadora", "Isotérmica", "Bivuelco", "Paquetera", "Curtain sider barandas volcables", "Pollera"] },
+            { id: "bitrenes", nombre: "Bitrenes", productos: ["Baranda volcable", "Isotérmico", "Portacontenedor", "Curtain sider", "Forestal"] }
+        ];
+
         let documentosAdmin = [];
         let estadoDocumentosAdmin = "cargando";
+        let fichasAdmin = new Map();
+        let estadoFichasAdmin = "cargando";
 
         function categoriasUnicas() {
             return [...new Set(documentosAdmin.map((d) => d.categoria).filter(Boolean))]
@@ -1158,15 +1290,22 @@
             });
         }
 
-        function mostrarConfirmacion({ titulo, mensaje, etiquetaConfirmar = "Confirmar" }) {
+        const ICONO_MODAL_PELIGRO = `<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+        const ICONO_MODAL_SUBIDA = `<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`;
+
+        function mostrarConfirmacion({ titulo, mensaje, etiquetaConfirmar = "Confirmar", variante = "peligro" }) {
             return new Promise((resolve) => {
                 const modal = document.getElementById("modalConfirm");
                 const okBtn = document.getElementById("modalConfirmOk");
                 const cancelBtn = document.getElementById("modalConfirmCancel");
                 const overlay = document.getElementById("modalConfirmOverlay");
+                const iconWrap = document.getElementById("modalConfirmIcon");
                 document.getElementById("modalConfirmTitle").textContent = titulo;
                 document.getElementById("modalConfirmMessage").innerHTML = mensaje;
                 okBtn.textContent = etiquetaConfirmar;
+                modal.classList.remove("modal-confirm--peligro", "modal-confirm--confirmar");
+                modal.classList.add(`modal-confirm--${variante}`);
+                iconWrap.innerHTML = variante === "confirmar" ? ICONO_MODAL_SUBIDA : ICONO_MODAL_PELIGRO;
 
                 modal.hidden = false;
                 document.body.style.overflow = "hidden";
@@ -1243,11 +1382,21 @@
                 return;
             }
 
+            const tituloEsc = titulo.replace(/</g, "&lt;");
+            const categoriaEsc = categoria.replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Subir documento",
+                mensaje: `¿Confirmás la subida del documento <strong>"${tituloEsc}"</strong> en la categoría <strong>"${categoriaEsc}"</strong>?`,
+                etiquetaConfirmar: "Subir",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
             const submitBtn = document.getElementById("adminSubmit");
             const submitLabel = submitBtn.querySelector(".admin-submit-label");
             submitBtn.disabled = true;
             submitLabel.textContent = "Subiendo...";
-            setAdminUploadStatus("info", "Subiendo archivo a Cloudinary...");
+            setAdminUploadStatus("info", "Subiendo archivo...");
 
             try {
                 const baseName = crearSlug(titulo);
@@ -1305,6 +1454,279 @@
                     etiquetaConfirmar: "Cerrar"
                 });
             }
+        }
+
+        // ===== Fichas técnicas =====
+        function claveFicha(categoriaId, productoSlug) {
+            return `${categoriaId}:${productoSlug}`;
+        }
+
+        function categoriaPorId(id) {
+            return FICHAS_CATALOGO.find((c) => c.id === id);
+        }
+
+        async function cargarFichas() {
+            estadoFichasAdmin = "cargando";
+            renderEstadoFicha();
+            renderFichasGlobales();
+            try {
+                const snap = await db.collection("fichas").get();
+                fichasAdmin = new Map();
+                snap.docs.forEach((d) => {
+                    const data = d.data();
+                    if (!data.categoriaId || !data.productoSlug) return;
+                    fichasAdmin.set(claveFicha(data.categoriaId, data.productoSlug), {
+                        id: d.id,
+                        categoriaId: data.categoriaId,
+                        categoriaNombre: data.categoriaNombre || "",
+                        productoSlug: data.productoSlug,
+                        productoNombre: data.productoNombre || "",
+                        url: data.url || ""
+                    });
+                });
+                estadoFichasAdmin = "ok";
+                document.getElementById("metricFichas").textContent = fichasAdmin.size;
+            } catch (e) {
+                console.error("Error cargando fichas:", e);
+                estadoFichasAdmin = "error";
+                document.getElementById("metricFichas").textContent = "?";
+            }
+            renderEstadoFicha();
+            renderFichasGlobales();
+        }
+
+        function poblarSelectCategoriaFichas() {
+            const sel = document.getElementById("fichasCategoria");
+            if (!sel) return;
+            sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                + FICHAS_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            const selFiltro = document.getElementById("fichasFiltroCategoria");
+            if (selFiltro) {
+                selFiltro.innerHTML = `<option value="">Todas las categorías</option>`
+                    + FICHAS_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+            }
+        }
+
+        function poblarSelectProducto(categoriaId) {
+            const sel = document.getElementById("fichasProducto");
+            if (!sel) return;
+            const cat = categoriaPorId(categoriaId);
+            if (!cat) {
+                sel.innerHTML = `<option value="">Elegí primero una categoría</option>`;
+                sel.disabled = true;
+                return;
+            }
+            sel.innerHTML = `<option value="">Seleccionar unidad...</option>`
+                + cat.productos.map((p) => `<option value="${p}">${p}</option>`).join("");
+            sel.disabled = false;
+        }
+
+        function renderEstadoFicha() {
+            const cont = document.getElementById("fichasEstado");
+            if (!cont) return;
+            const categoriaId = document.getElementById("fichasCategoria")?.value;
+            const productoNombre = document.getElementById("fichasProducto")?.value;
+
+            if (!categoriaId || !productoNombre) {
+                cont.innerHTML = `<p class="admin-doc-empty">Elegí una categoría y una unidad para gestionar su ficha.</p>`;
+                return;
+            }
+            if (estadoFichasAdmin === "cargando") {
+                cont.innerHTML = `<p class="admin-doc-empty">Cargando fichas...</p>`;
+                return;
+            }
+
+            const productoSlug = crearSlug(productoNombre);
+            const ficha = fichasAdmin.get(claveFicha(categoriaId, productoSlug));
+            const productoEsc = productoNombre.replace(/"/g, "&quot;");
+
+            if (ficha) {
+                cont.innerHTML = `
+                    <div class="ficha-estado-card ficha-estado-card--ok">
+                        <div class="ficha-estado-header">
+                            <span class="ficha-estado-badge ficha-estado-badge--ok">Ficha cargada</span>
+                            <div class="ficha-estado-actions">
+                                <a class="admin-doc-link" href="${ficha.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
+                                <button class="admin-doc-delete" type="button" id="fichasBorrarBtn" data-id="${ficha.id}" data-producto="${productoEsc}" aria-label="Eliminar ficha">×</button>
+                            </div>
+                        </div>
+                        <p class="ficha-estado-hint">Para cambiar el archivo, eliminá la ficha actual y subí una nueva.</p>
+                    </div>
+                `;
+                const borrarBtn = document.getElementById("fichasBorrarBtn");
+                if (borrarBtn) borrarBtn.addEventListener("click", () => borrarFicha(ficha.id, productoNombre));
+            } else {
+                cont.innerHTML = `
+                    <div class="ficha-estado-card ficha-estado-card--vacio">
+                        <span class="ficha-estado-badge ficha-estado-badge--vacio">Sin ficha</span>
+                        <form class="admin-form admin-form--inline" id="fichasSubirForm" autocomplete="off">
+                            <label class="admin-field">
+                                <span>Archivo PDF (máx 10 MB)</span>
+                                <input type="file" id="fichasArchivoNuevo" accept="application/pdf" required>
+                            </label>
+                            <button class="admin-submit" type="submit">
+                                <span class="admin-submit-label">Subir ficha</span>
+                            </button>
+                            <div class="admin-status" id="fichasStatus" hidden></div>
+                        </form>
+                    </div>
+                `;
+                const subirForm = document.getElementById("fichasSubirForm");
+                if (subirForm) subirForm.addEventListener("submit", subirFichaHandler);
+            }
+        }
+
+        function setFichaStatus(state, message) {
+            const status = document.getElementById("fichasStatus");
+            if (!status) return;
+            if (state === null) {
+                status.hidden = true;
+                status.className = "admin-status";
+                status.textContent = "";
+                return;
+            }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        async function subirFichaHandler(event) {
+            event.preventDefault();
+            const categoriaId = document.getElementById("fichasCategoria").value;
+            const productoNombre = document.getElementById("fichasProducto").value;
+            if (!categoriaId || !productoNombre) {
+                setFichaStatus("error", "Seleccioná categoría y unidad.");
+                return;
+            }
+            const archivo = document.getElementById("fichasArchivoNuevo")?.files[0];
+            if (!archivo) {
+                setFichaStatus("error", "Elegí un PDF.");
+                return;
+            }
+            if (archivo.type !== "application/pdf") {
+                setFichaStatus("error", "El archivo debe ser un PDF.");
+                return;
+            }
+            const sizeMB = archivo.size / (1024 * 1024);
+            if (sizeMB > MAX_PDF_MB) {
+                setFichaStatus("error", `El PDF pesa ${sizeMB.toFixed(1)} MB. Máximo permitido: ${MAX_PDF_MB} MB. Comprimilo en ilovepdf.com/comprimir_pdf y volvé a probar.`);
+                return;
+            }
+
+            const cat = categoriaPorId(categoriaId);
+            const productoEsc = productoNombre.replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Subir ficha técnica",
+                mensaje: `¿Confirmás la subida de la ficha técnica para la unidad <strong>"${productoEsc}"</strong> (${cat.nombre})?`,
+                etiquetaConfirmar: "Subir",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            const submitBtn = event.target.querySelector(".admin-submit");
+            const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            const labelOriginal = submitLabel.textContent;
+            submitBtn.disabled = true;
+            submitLabel.textContent = "Subiendo...";
+            setFichaStatus("info", "Subiendo archivo...");
+
+            try {
+                const productoSlug = crearSlug(productoNombre);
+                const stamp = Date.now();
+                const uniqueName = `${cat.id}-${productoSlug}-${stamp}.pdf`;
+                const renamedFile = new File([archivo], uniqueName, { type: archivo.type });
+
+                const formData = new FormData();
+                formData.append("file", renamedFile);
+                formData.append("upload_preset", CLOUDINARY_PRESET);
+                formData.append("folder", "fichas");
+
+                const resp = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
+                const data = await resp.json();
+                if (!resp.ok || !data.secure_url) {
+                    throw new Error((data.error && data.error.message) || "Falló la subida a Cloudinary");
+                }
+
+                setFichaStatus("info", "Guardando en base de datos...");
+                await db.collection("fichas").add({
+                    categoriaId: cat.id,
+                    categoriaNombre: cat.nombre,
+                    productoSlug,
+                    productoNombre,
+                    url: data.secure_url,
+                    creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+                    actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                setFichaStatus("success", `Ficha de "${productoNombre}" subida correctamente.`);
+                await cargarFichas();
+            } catch (e) {
+                console.error(e);
+                setFichaStatus("error", "No se pudo subir: " + (e.message || "error desconocido"));
+                submitBtn.disabled = false;
+                submitLabel.textContent = labelOriginal;
+            }
+        }
+
+        async function borrarFicha(id, productoNombre) {
+            const productoEsc = (productoNombre || "").replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Eliminar ficha técnica",
+                mensaje: `¿Querés eliminar la ficha de <strong>"${productoEsc}"</strong>?<br><br>La unidad volverá a usar la ficha del repo si existe. Esta acción no se puede deshacer.`,
+                etiquetaConfirmar: "Eliminar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("fichas").doc(id).delete();
+                await cargarFichas();
+            } catch (e) {
+                await mostrarConfirmacion({
+                    titulo: "No se pudo eliminar",
+                    mensaje: e.message || "Error desconocido al borrar.",
+                    etiquetaConfirmar: "Cerrar"
+                });
+            }
+        }
+
+        function renderFichasGlobales() {
+            const cont = document.getElementById("fichasGlobalesList");
+            if (!cont) return;
+            if (estadoFichasAdmin === "cargando") {
+                cont.innerHTML = `<p class="admin-doc-empty">Cargando fichas...</p>`;
+                return;
+            }
+            if (estadoFichasAdmin === "error") {
+                cont.innerHTML = `<p class="admin-doc-empty">No se pudieron cargar las fichas.</p>`;
+                return;
+            }
+            const filtro = document.getElementById("fichasFiltroCategoria")?.value || "";
+            const fichas = [...fichasAdmin.values()]
+                .filter((f) => !filtro || f.categoriaId === filtro)
+                .sort((a, b) => a.productoNombre.localeCompare(b.productoNombre, "es", { sensitivity: "base" }));
+
+            if (fichas.length === 0) {
+                cont.innerHTML = filtro
+                    ? `<p class="admin-doc-empty">No hay fichas cargadas en esta categoría.</p>`
+                    : `<p class="admin-doc-empty">Todavía no hay fichas cargadas.</p>`;
+                return;
+            }
+            cont.innerHTML = fichas.map((f) => {
+                const productoEsc = f.productoNombre.replace(/"/g, "&quot;");
+                return `
+                <div class="admin-doc-row">
+                    <div class="admin-doc-info">
+                        <strong>${f.productoNombre}</strong>
+                        <span>${f.categoriaNombre}</span>
+                    </div>
+                    <div class="admin-doc-actions">
+                        <a class="admin-doc-link" href="${f.url}" target="_blank" rel="noopener" title="Ver PDF">Ver ↗</a>
+                        <button class="admin-doc-delete" type="button" data-id="${f.id}" data-producto="${productoEsc}" aria-label="Eliminar ficha de ${productoEsc}">×</button>
+                    </div>
+                </div>`;
+            }).join("");
+            cont.querySelectorAll(".admin-doc-delete").forEach((btn) => {
+                btn.addEventListener("click", () => borrarFicha(btn.dataset.id, btn.dataset.producto));
+            });
         }
 
 
@@ -1403,7 +1825,28 @@
                 filtroCategoria.addEventListener("change", renderAdminDocList);
             }
 
+            // Fichas técnicas
+            poblarSelectCategoriaFichas();
+            const fichasCat = document.getElementById("fichasCategoria");
+            const fichasProd = document.getElementById("fichasProducto");
+            if (fichasCat) {
+                fichasCat.addEventListener("change", () => {
+                    poblarSelectProducto(fichasCat.value);
+                    renderEstadoFicha();
+                });
+            }
+            if (fichasProd) {
+                fichasProd.addEventListener("change", renderEstadoFicha);
+            }
+            const fichasFiltro = document.getElementById("fichasFiltroCategoria");
+            if (fichasFiltro) {
+                fichasFiltro.addEventListener("change", renderFichasGlobales);
+            }
+            poblarSelectProducto("");
+            renderEstadoFicha();
+
             cargarDocumentos();
+            cargarFichas();
 
             const hash = (window.location.hash || "#inicio").substring(1);
             mostrarSeccion(hash);
