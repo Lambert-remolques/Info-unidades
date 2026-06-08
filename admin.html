@@ -3351,6 +3351,8 @@
             const inputNueva = document.getElementById("formAdCategoriaNueva");
             if (inputNueva) inputNueva.value = "";
             const modal = document.getElementById("modalCrearAdicional");
+            const cuerpoModalAd = modal.querySelector(".modal-form-body");
+            if (cuerpoModalAd) cuerpoModalAd.scrollTop = 0;
             modal.hidden = false;
             document.body.style.overflow = "hidden";
             setCrearAdicionalStatus(null);
@@ -3382,6 +3384,8 @@
             document.getElementById("formAdCategoriaNueva").value = "";
 
             const modal = document.getElementById("modalCrearAdicional");
+            const cuerpoModalAd = modal.querySelector(".modal-form-body");
+            if (cuerpoModalAd) cuerpoModalAd.scrollTop = 0;
             modal.hidden = false;
             document.body.style.overflow = "hidden";
             setCrearAdicionalStatus(null);
@@ -3814,6 +3818,8 @@
             if (filtroActual) document.getElementById("formUnCategoria").value = filtroActual;
 
             const modal = document.getElementById("modalCrearUnidad");
+            const cuerpoModalUn = modal.querySelector(".modal-form-body");
+            if (cuerpoModalUn) cuerpoModalUn.scrollTop = 0;
             modal.hidden = false;
             document.body.style.overflow = "hidden";
             setCrearUnidadStatus(null);
@@ -3840,6 +3846,8 @@
             document.getElementById("formUnDescripcion").value = u.descripcion || "";
 
             const modal = document.getElementById("modalCrearUnidad");
+            const cuerpoModalUn = modal.querySelector(".modal-form-body");
+            if (cuerpoModalUn) cuerpoModalUn.scrollTop = 0;
             modal.hidden = false;
             document.body.style.overflow = "hidden";
             setCrearUnidadStatus(null);
@@ -4517,6 +4525,8 @@
             renderItemsDrawer(tipo, sub, lista);
 
             const drawer = document.getElementById("pendienteDrawer");
+            const body = document.getElementById("pendienteDrawerBody");
+            if (body) body.scrollTop = 0;
             drawer.hidden = false;
             document.body.style.overflow = "hidden";
         }
@@ -4602,6 +4612,14 @@
             if (nombre === "inicio" && typeof renderBloquePendientes === "function") {
                 renderBloquePendientes();
             }
+            // Reset de scrolls al cambiar de sección
+            window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+            const main = document.querySelector(".main") || document.querySelector("main") || document.querySelector(".panel-main");
+            if (main) main.scrollTop = 0;
+            const sidebarNav = document.querySelector(".sidebar-nav");
+            if (sidebarNav) sidebarNav.scrollTop = 0;
+            const sidebar = document.getElementById("sidebar");
+            if (sidebar) sidebar.scrollTop = 0;
         }
 
         function resetEstadoSeccion(nombre) {
