@@ -778,6 +778,78 @@
             border-top: 1px solid var(--gris);
         }
 
+        .foto-card img {
+            cursor: zoom-in;
+        }
+
+        .foto-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .foto-lightbox[hidden] { display: none; }
+
+        .foto-lightbox-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(4px);
+        }
+
+        .foto-lightbox-box {
+            position: relative;
+            max-width: min(100%, 1200px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .foto-lightbox-img {
+            max-width: 100%;
+            max-height: 82vh;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+            display: block;
+        }
+
+        .foto-lightbox-close {
+            position: absolute;
+            top: -44px;
+            right: 0;
+            width: 38px;
+            height: 38px;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--negro);
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .foto-lightbox-close:hover {
+            background: var(--blanco);
+            transform: scale(1.06);
+        }
+
+        .foto-lightbox-caption {
+            color: var(--blanco);
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
         /* ===== Modal de confirmación ===== */
         .modal-confirm {
             position: fixed;
@@ -1227,6 +1299,15 @@
                 </div>
             </section>
         </main>
+
+        <div class="foto-lightbox" id="fotoLightbox" hidden>
+            <div class="foto-lightbox-overlay" id="fotoLightboxOverlay"></div>
+            <div class="foto-lightbox-box">
+                <button class="foto-lightbox-close" type="button" id="fotoLightboxClose" aria-label="Cerrar previsualización">×</button>
+                <img class="foto-lightbox-img" id="fotoLightboxImg" alt="Previsualización">
+                <span class="foto-lightbox-caption" id="fotoLightboxCaption"></span>
+            </div>
+        </div>
 
         <div class="modal-confirm" id="modalConfirm" hidden>
             <div class="modal-confirm-overlay" id="modalConfirmOverlay"></div>
@@ -2020,7 +2101,7 @@
                 return `<div class="fotos-grid fotos-grid--vacia"><p class="admin-doc-empty">Sin fotos cargadas todavía.</p></div>`;
             }
             return `<div class="fotos-grid">` + fotos.map((f) => `
-                <div class="foto-card">
+                <div class="foto-card" data-public-id="${f.publicId}" data-formato="${f.formato || "jpg"}" data-version="${f.version || ""}" data-numero="${f.numero}">
                     <img src="${urlThumbFoto(f.publicId, f.formato, f.version)}" alt="Foto ${f.numero}" loading="lazy">
                     <button class="foto-borrar" type="button" data-public-id="${f.publicId}" aria-label="Eliminar foto">×</button>
                 </div>`).join("") + `</div>`;
@@ -2047,8 +2128,41 @@
             const form = document.getElementById(`${idPrefix}SubirForm`);
             if (form) form.addEventListener("submit", (e) => subirFotoHandler(e, tipo));
             cont.querySelectorAll(".foto-borrar").forEach((btn) => {
-                btn.addEventListener("click", () => borrarFoto(btn.dataset.publicId, tipo));
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    borrarFoto(btn.dataset.publicId, tipo);
+                });
             });
+            cont.querySelectorAll(".foto-card").forEach((card) => {
+                const img = card.querySelector("img");
+                if (!img) return;
+                img.addEventListener("click", () => {
+                    abrirLightbox({
+                        publicId: card.dataset.publicId,
+                        formato: card.dataset.formato,
+                        version: card.dataset.version,
+                        numero: card.dataset.numero
+                    });
+                });
+            });
+        }
+
+        function abrirLightbox({ publicId, formato, version, numero }) {
+            const ver = version ? `v${version}/` : "";
+            const url = `${CLOUDINARY_BASE}/q_auto,f_auto,w_1600/${ver}${publicId}.${formato || "jpg"}`;
+            document.getElementById("fotoLightboxImg").src = url;
+            document.getElementById("fotoLightboxCaption").textContent = numero ? `Foto ${numero}` : "";
+            const modal = document.getElementById("fotoLightbox");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+        }
+
+        function cerrarLightbox() {
+            const modal = document.getElementById("fotoLightbox");
+            if (!modal) return;
+            modal.hidden = true;
+            document.body.style.overflow = "";
+            document.getElementById("fotoLightboxImg").src = "";
         }
 
         function setFotoStatus(tipo, state, message) {
@@ -2332,6 +2446,18 @@
             }
             poblarSelectProducto("");
             renderEstadoFicha();
+
+            // Lightbox
+            const lbClose = document.getElementById("fotoLightboxClose");
+            const lbOverlay = document.getElementById("fotoLightboxOverlay");
+            if (lbClose) lbClose.addEventListener("click", cerrarLightbox);
+            if (lbOverlay) lbOverlay.addEventListener("click", cerrarLightbox);
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                    const m = document.getElementById("fotoLightbox");
+                    if (m && !m.hidden) cerrarLightbox();
+                }
+            });
 
             // Fotos
             poblarSelectsFotos();
