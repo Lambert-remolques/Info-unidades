@@ -2043,15 +2043,20 @@
             renderFichasGlobales();
         }
 
+        function categoriasFichasOrdenadas() {
+            return [...FICHAS_CATALOGO].sort((a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" }));
+        }
+
         function poblarSelectCategoriaFichas() {
             const sel = document.getElementById("fichasCategoria");
+            const cats = categoriasFichasOrdenadas();
             if (!sel) return;
             sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
-                + FICHAS_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+                + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
             const selFiltro = document.getElementById("fichasFiltroCategoria");
             if (selFiltro) {
                 selFiltro.innerHTML = `<option value="">Todas las categorías</option>`
-                    + FICHAS_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+                    + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
             }
         }
 
@@ -2064,8 +2069,9 @@
                 sel.disabled = true;
                 return;
             }
+            const productos = [...cat.productos].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
             sel.innerHTML = `<option value="">Seleccionar unidad...</option>`
-                + cat.productos.map((p) => `<option value="${p}">${p}</option>`).join("");
+                + productos.map((p) => `<option value="${p}">${p}</option>`).join("");
             sel.disabled = false;
         }
 
@@ -2331,8 +2337,9 @@
         function poblarSelectsFotos() {
             const selUC = document.getElementById("fotosUnidadCategoria");
             if (selUC) {
+                const cats = categoriasFichasOrdenadas();
                 selUC.innerHTML = `<option value="">Seleccionar categoría...</option>`
-                    + FICHAS_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+                    + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
             }
         }
 
@@ -2351,8 +2358,9 @@
                 renderFotosUnidadGaleria();
                 return;
             }
+            const productos = [...cat.productos].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
             selProd.innerHTML = `<option value="">Seleccionar unidad...</option>`
-                + cat.productos.map((p) => `<option value="${p}">${p}</option>`).join("");
+                + productos.map((p) => `<option value="${p}">${p}</option>`).join("");
             selProd.disabled = false;
             if (cat.ejes.length > 0) {
                 selEje.innerHTML = `<option value="">Seleccionar configuración...</option>`
