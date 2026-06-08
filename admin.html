@@ -2531,6 +2531,18 @@
         // ===== Fotos (unidades + adicionales) =====
         function normEje(eje) { return (eje || "").replace(/-ejes$/, "-eje"); }
 
+        // Convierte slugs como "1-eje", "2-ejes", "1-1-eje", "1-1-1-eje"
+        // en labels legibles "1 eje", "2 ejes", "1+1 ejes", "1+1+1 ejes".
+        // Cuando son configuraciones compuestas (con sumando), siempre plural.
+        function formatearEje(slug) {
+            if (!slug) return "";
+            const m = slug.match(/^(.+?)-(ejes?)$/);
+            if (!m) return slug.replace(/-/g, " ");
+            const numeros = m[1];
+            const sufijo = numeros.includes("-") ? "ejes" : m[2];
+            return `${numeros.replace(/-/g, "+")} ${sufijo}`;
+        }
+
         function fotosClaveUnidad(catId, productoSlug, ejeSlug) {
             return `unidad:${catId}:${productoSlug}:${normEje(ejeSlug || "")}`;
         }
@@ -2651,7 +2663,7 @@
             selProd.disabled = false;
             if (cat.ejes.length > 0) {
                 selEje.innerHTML = `<option value="">Seleccionar configuración...</option>`
-                    + cat.ejes.map((e) => `<option value="${e}">${e.replace(/-/g, " ")}</option>`).join("");
+                    + cat.ejes.map((e) => `<option value="${e}">${formatearEje(e)}</option>`).join("");
                 selEje.disabled = false;
                 wrapEje.hidden = false;
             } else {
@@ -2785,7 +2797,7 @@
             const publicIdPrefix = ejeSlug
                 ? `unidades/${catId}/${productoSlug}/${ejeSlug}`
                 : `unidades/${catId}/${productoSlug}`;
-            const descripcionDestino = `${cat.nombre} · ${productoNombre}${ejeSlug ? " · " + ejeSlug.replace(/-/g, " ") : ""}`;
+            const descripcionDestino = `${cat.nombre} · ${productoNombre}${ejeSlug ? " · " + formatearEje(ejeSlug) : ""}`;
 
             const archivo = document.getElementById("fotosUnidadArchivo")?.files[0];
             if (!archivo) { setFotoUnidadStatus("error", "Elegí una foto."); return; }
@@ -3467,7 +3479,7 @@
                                     categoriaNombre: cat.nombre,
                                     productoNombre: prod,
                                     ejeSlug,
-                                    ejeLabel: ejeSlug.replace(/-/g, " ")
+                                    ejeLabel: formatearEje(ejeSlug)
                                 });
                             }
                         });
