@@ -631,6 +631,36 @@
             transition: background 160ms ease;
         }
 
+        .admin-doc-edit {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--verde-oscuro);
+            font-size: 1rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 160ms ease;
+        }
+
+        .admin-doc-edit:hover {
+            background: rgba(21, 153, 71, 0.14);
+        }
+
+        .adicionales-nota {
+            margin: 16px 0 0;
+            padding: 12px 14px;
+            background: var(--gris-bg);
+            border-left: 3px solid var(--gris);
+            border-radius: var(--radio);
+            font-size: 0.78rem;
+            color: var(--gris-texto);
+            line-height: 1.4;
+            font-style: italic;
+        }
+
         .admin-doc-delete:hover {
             background: rgba(218, 37, 29, 0.14);
         }
@@ -1215,6 +1245,12 @@
                         </svg>
                         Fotos
                     </button>
+                    <button class="sidebar-item" type="button" data-section="adicionales">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/>
+                        </svg>
+                        Adicionales
+                    </button>
                     <button class="sidebar-item" type="button" data-section="usuarios">
                         <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
@@ -1398,6 +1434,27 @@
                 </div>
             </section>
 
+            <section class="panel-section" data-section="adicionales">
+                <h1 class="page-title">Adicionales</h1>
+                <p class="page-subtitle">Creá, editá o eliminá los adicionales que vos diste de alta desde el panel.</p>
+
+                <div class="admin-cards">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h2 class="admin-card-title">Adicionales creados</h2>
+                            <button class="btn-crear" type="button" id="btnCrearAdicionalDesdeLista">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Crear adicional
+                            </button>
+                        </div>
+                        <div class="admin-doc-list" id="adicionalesLista"></div>
+                        <p class="adicionales-nota">Solo se listan los adicionales creados desde este panel. Los adicionales precargados originalmente en el catálogo no se editan ni se borran desde acá (requiere tocar el código).</p>
+                    </div>
+                </div>
+            </section>
+
             <section class="panel-section" data-section="usuarios">
                 <h1 class="page-title">Usuarios</h1>
                 <p class="page-subtitle">Asigná roles a los usuarios del equipo y revisá quiénes tienen acceso.</p>
@@ -1506,7 +1563,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "usuarios", "metricas"];
+        const SECCIONES_VALIDAS = ["inicio", "documentos", "fichas", "fotos", "adicionales", "usuarios", "metricas"];
         const CLOUDINARY_CLOUD = "lambert-remolques";
         const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
         const CLOUDINARY_PRESET = "panel_admin_lambert";
@@ -1562,6 +1619,7 @@
         let estadoFotosAdmin = "cargando";
         // Adicionales creados desde el panel admin (Firestore: adicionales_extra).
         let adicionalesExtra = [];
+        let editingAdicionalId = null;
 
         async function cargarAdicionalesExtra() {
             try {
@@ -2469,6 +2527,12 @@
         }
 
         function abrirCrearAdicionalModal() {
+            editingAdicionalId = null;
+            document.getElementById("modalCrearAdicionalTitle").textContent = "Crear adicional nuevo";
+            const submitLabelEl = document.getElementById("btnCrearAdicionalSubmit").querySelector(".admin-submit-label");
+            submitLabelEl.textContent = "Crear adicional";
+            document.getElementById("formCrearAdicional").reset();
+
             const sel = document.getElementById("formAdCategoria");
             if (sel) {
                 const cats = categoriasAdicionalesCombinadas();
@@ -2482,6 +2546,35 @@
             if (wrapNueva) wrapNueva.hidden = true;
             const inputNueva = document.getElementById("formAdCategoriaNueva");
             if (inputNueva) inputNueva.value = "";
+            const modal = document.getElementById("modalCrearAdicional");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            setCrearAdicionalStatus(null);
+            setTimeout(() => document.getElementById("formAdNombre")?.focus(), 30);
+        }
+
+        function abrirEditarAdicional(id) {
+            const adicional = adicionalesExtra.find((a) => a.id === id);
+            if (!adicional) return;
+            editingAdicionalId = id;
+            document.getElementById("modalCrearAdicionalTitle").textContent = "Editar adicional";
+            document.getElementById("btnCrearAdicionalSubmit").querySelector(".admin-submit-label").textContent = "Guardar cambios";
+
+            const sel = document.getElementById("formAdCategoria");
+            const cats = categoriasAdicionalesCombinadas();
+            sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                + cats.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("")
+                + `<option value="__nueva__">+ Crear nueva categoría</option>`;
+            sel.value = adicional.categoriaId;
+
+            document.getElementById("formAdNombre").value = adicional.nombre || "";
+            document.getElementById("formAdCodigo").value = (adicional.codigo && adicional.codigo !== "SIN CÓDIGO") ? adicional.codigo : "";
+            document.getElementById("formAdDescripcion").value = adicional.descripcion || "";
+            document.getElementById("formAdUbicacion").value = adicional.ubicacion || "";
+
+            document.getElementById("formAdCategoriaNuevaWrap").hidden = true;
+            document.getElementById("formAdCategoriaNueva").value = "";
+
             const modal = document.getElementById("modalCrearAdicional");
             modal.hidden = false;
             document.body.style.overflow = "hidden";
@@ -2562,40 +2655,51 @@
             }
 
             const yaExisteHardcoded = (ADICIONALES_CATALOGO.find((c) => c.id === categoriaId)?.items || []).some((it) => it.toLowerCase() === nombre.toLowerCase());
-            const yaExisteExtra = adicionalesExtra.some((a) => a.categoriaId === categoriaId && a.nombre.toLowerCase() === nombre.toLowerCase());
+            const yaExisteExtra = adicionalesExtra.some((a) => a.categoriaId === categoriaId && a.nombre.toLowerCase() === nombre.toLowerCase() && a.id !== editingAdicionalId);
             if (yaExisteHardcoded || yaExisteExtra) {
                 setCrearAdicionalStatus("error", `Ya existe un adicional "${nombre}" en ${categoriaNombre}.`);
                 return;
             }
 
+            const esEdicion = !!editingAdicionalId;
             const nombreEsc = nombre.replace(/</g, "&lt;");
             const ok = await mostrarConfirmacion({
-                titulo: "Crear adicional",
-                mensaje: `¿Confirmás crear el adicional <strong>"${nombreEsc}"</strong> en la categoría <strong>${categoriaNombre}</strong>${seleccionCat === "__nueva__" ? " <em>(categoría nueva)</em>" : ""}?`,
-                etiquetaConfirmar: "Crear",
+                titulo: esEdicion ? "Guardar cambios" : "Crear adicional",
+                mensaje: esEdicion
+                    ? `¿Guardar los cambios del adicional <strong>"${nombreEsc}"</strong>?`
+                    : `¿Confirmás crear el adicional <strong>"${nombreEsc}"</strong> en la categoría <strong>${categoriaNombre}</strong>${seleccionCat === "__nueva__" ? " <em>(categoría nueva)</em>" : ""}?`,
+                etiquetaConfirmar: esEdicion ? "Guardar" : "Crear",
                 variante: "confirmar"
             });
             if (!ok) return;
 
             const submitBtn = document.getElementById("btnCrearAdicionalSubmit");
             const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            const labelOriginal = submitLabel.textContent;
             submitBtn.disabled = true;
             submitLabel.textContent = "Guardando...";
             setCrearAdicionalStatus("info", "Guardando en base de datos...");
 
             try {
-                await db.collection("adicionales_extra").add({
+                const payload = {
                     categoriaId,
                     categoriaNombre,
                     nombre,
                     codigo,
                     descripcion,
                     ubicacion,
-                    creadoEn: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                if (esEdicion) {
+                    await db.collection("adicionales_extra").doc(editingAdicionalId).update(payload);
+                } else {
+                    payload.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection("adicionales_extra").add(payload);
+                }
                 await cargarAdicionalesExtra();
                 poblarSelectsFotos();
-                setCrearAdicionalStatus("success", `"${nombre}" creado correctamente.`);
+                renderAdicionalesAdminList();
+                setCrearAdicionalStatus("success", esEdicion ? `Cambios guardados.` : `"${nombre}" creado correctamente.`);
                 setTimeout(() => {
                     cerrarCrearAdicionalModal();
                     const filtroActual = document.getElementById("fotosAdicionalCategoria").value;
@@ -2605,11 +2709,72 @@
                 }, 800);
             } catch (e) {
                 console.error(e);
-                setCrearAdicionalStatus("error", "No se pudo crear: " + (e.message || "error desconocido"));
+                setCrearAdicionalStatus("error", "No se pudo guardar: " + (e.message || "error desconocido"));
             } finally {
                 submitBtn.disabled = false;
-                submitLabel.textContent = "Crear adicional";
+                submitLabel.textContent = labelOriginal;
             }
+        }
+
+        async function borrarAdicional(id, nombre, categoriaNombre) {
+            const nombreEsc = (nombre || "").replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Eliminar adicional",
+                mensaje: `¿Querés eliminar el adicional <strong>"${nombreEsc}"</strong> de la categoría <strong>${categoriaNombre || ""}</strong>?<br><br>Esta acción no se puede deshacer. Si tenía fotos cargadas, esas fotos van a quedar huérfanas en Cloudinary (no se borran automáticamente).`,
+                etiquetaConfirmar: "Eliminar"
+            });
+            if (!ok) return;
+            try {
+                await db.collection("adicionales_extra").doc(id).delete();
+                await cargarAdicionalesExtra();
+                poblarSelectsFotos();
+                renderAdicionalesAdminList();
+                const filtroActual = document.getElementById("fotosAdicionalCategoria")?.value;
+                if (filtroActual) onFotosAdicionalCategoriaChange();
+            } catch (e) {
+                await mostrarConfirmacion({
+                    titulo: "No se pudo eliminar",
+                    mensaje: e.message || "Error desconocido al borrar.",
+                    etiquetaConfirmar: "Cerrar"
+                });
+            }
+        }
+
+        function renderAdicionalesAdminList() {
+            const cont = document.getElementById("adicionalesLista");
+            if (!cont) return;
+            if (adicionalesExtra.length === 0) {
+                cont.innerHTML = `<p class="admin-doc-empty">Todavía no creaste ningún adicional desde el panel.</p>`;
+                return;
+            }
+            const ordenados = [...adicionalesExtra].sort((a, b) => {
+                const catA = a.categoriaNombre || a.categoriaId || "";
+                const catB = b.categoriaNombre || b.categoriaId || "";
+                const ord = catA.localeCompare(catB, "es", { sensitivity: "base" });
+                return ord !== 0 ? ord : (a.nombre || "").localeCompare(b.nombre || "", "es", { sensitivity: "base" });
+            });
+            cont.innerHTML = ordenados.map((a) => {
+                const codigoExtra = (a.codigo && a.codigo !== "SIN CÓDIGO") ? ` · ${a.codigo}` : "";
+                const nombreEsc = (a.nombre || "").replace(/"/g, "&quot;");
+                const catEsc = (a.categoriaNombre || a.categoriaId || "").replace(/"/g, "&quot;");
+                return `
+                <div class="admin-doc-row">
+                    <div class="admin-doc-info">
+                        <strong>${a.nombre || ""}</strong>
+                        <span>${a.categoriaNombre || a.categoriaId || ""}${codigoExtra}</span>
+                    </div>
+                    <div class="admin-doc-actions">
+                        <button class="admin-doc-edit" type="button" data-id="${a.id}" aria-label="Editar ${nombreEsc}" title="Editar">✎</button>
+                        <button class="admin-doc-delete" type="button" data-id="${a.id}" data-nombre="${nombreEsc}" data-categoria="${catEsc}" aria-label="Eliminar ${nombreEsc}" title="Eliminar">×</button>
+                    </div>
+                </div>`;
+            }).join("");
+            cont.querySelectorAll(".admin-doc-edit").forEach((btn) => {
+                btn.addEventListener("click", () => abrirEditarAdicional(btn.dataset.id));
+            });
+            cont.querySelectorAll(".admin-doc-delete").forEach((btn) => {
+                btn.addEventListener("click", () => borrarAdicional(btn.dataset.id, btn.dataset.nombre, btn.dataset.categoria));
+            });
         }
 
         async function borrarFoto(publicId, tipo) {
@@ -2821,9 +2986,11 @@
             renderFotosUnidadGaleria();
             renderFotosAdicionalGaleria();
 
-            // Crear adicional
+            // Crear adicional (botones en dos lados)
             const btnCrearAd = document.getElementById("btnCrearAdicional");
             if (btnCrearAd) btnCrearAd.addEventListener("click", abrirCrearAdicionalModal);
+            const btnCrearAd2 = document.getElementById("btnCrearAdicionalDesdeLista");
+            if (btnCrearAd2) btnCrearAd2.addEventListener("click", abrirCrearAdicionalModal);
             const closeAd = document.getElementById("modalCrearAdicionalClose");
             if (closeAd) closeAd.addEventListener("click", cerrarCrearAdicionalModal);
             const overlayAd = document.getElementById("modalCrearAdicionalOverlay");
@@ -2840,7 +3007,11 @@
 
             cargarDocumentos();
             cargarFichas();
-            cargarAdicionalesExtra().then(() => cargarFotos());
+            cargarAdicionalesExtra().then(() => {
+                renderAdicionalesAdminList();
+                poblarSelectsFotos();
+                cargarFotos();
+            });
 
             const hash = (window.location.hash || "#inicio").substring(1);
             mostrarSeccion(hash);
