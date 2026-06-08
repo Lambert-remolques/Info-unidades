@@ -3140,6 +3140,27 @@
             });
             history.replaceState(null, "", "#" + nombre);
             cerrarSidebarMobile();
+            resetEstadoSeccion(nombre);
+        }
+
+        function resetEstadoSeccion(nombre) {
+            if (nombre === "adicionales") {
+                const filtroCat = document.getElementById("adicionalesFiltroCategoria");
+                const filtroTxt = document.getElementById("adicionalesFiltroBuscar");
+                if (filtroCat) filtroCat.value = "";
+                if (filtroTxt) filtroTxt.value = "";
+                if (typeof renderAdicionalesAdminList === "function") renderAdicionalesAdminList();
+            } else if (nombre === "fotos") {
+                const selCat = document.getElementById("fotosUnidadCategoria");
+                const selProd = document.getElementById("fotosUnidadProducto");
+                const selEje = document.getElementById("fotosUnidadEje");
+                const wrapEje = document.getElementById("fotosUnidadEjeWrap");
+                if (selCat) selCat.value = "";
+                if (selProd) { selProd.innerHTML = `<option value="">Elegí primero una categoría</option>`; selProd.disabled = true; }
+                if (selEje) { selEje.innerHTML = ""; selEje.disabled = true; }
+                if (wrapEje) wrapEje.hidden = true;
+                if (typeof renderFotosUnidadGaleria === "function") renderFotosUnidadGaleria();
+            }
         }
 
         function abrirSidebarMobile() {
