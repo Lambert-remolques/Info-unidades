@@ -7738,6 +7738,55 @@
             });
         }
 
+        // ===== Adicionales extra desde Firestore =====
+        // Los adicionales creados desde el panel admin se mergean con los
+        // hardcodeados. Se carga después del login.
+        async function cargarAdicionalesExtra() {
+            try {
+                const snap = await db.collection("adicionales_extra").get();
+                let cambios = 0;
+                snap.docs.forEach((d) => {
+                    const data = d.data();
+                    if (!data.categoriaId || !data.nombre) return;
+                    const cat = adicionalesCategorias.find((c) => c.id === data.categoriaId);
+                    if (!cat) return;
+                    const yaEsta = cat.items.some((it) => it.nombre.toLowerCase() === data.nombre.toLowerCase());
+                    if (yaEsta) return;
+                    const item = {
+                        codigo: data.codigo || "SIN CÓDIGO",
+                        nombre: data.nombre,
+                        descripcion: data.descripcion || "",
+                        ubicacion: data.ubicacion || ""
+                    };
+                    cat.items.push(item);
+                    adicionalesPlanos.push({
+                        ...item,
+                        categoriaId: cat.id,
+                        categoriaNombre: cat.nombre,
+                        slug: crearSlug(item.nombre)
+                    });
+                    itemsBusqueda.push({
+                        tipo: "adicional",
+                        seccion: "adicionales",
+                        seccionLabel: HERO_CONTENT.adicionales.titulo,
+                        categoriaId: cat.id,
+                        categoriaNombre: cat.nombre,
+                        productoNombre: item.nombre,
+                        productoSlug: crearSlug(item.nombre),
+                        descripcion: item.descripcion,
+                        tieneOpciones: false,
+                        searchHaystack: normalizar(`${item.nombre} ${item.descripcion} ${item.ubicacion} ${cat.nombre} ${item.codigo} adicionales`)
+                    });
+                    cambios++;
+                });
+                if (cambios > 0 && document.getElementById("adicionalGrid")) {
+                    renderAdicionalesGrid();
+                }
+            } catch (e) {
+                console.warn("No se pudieron leer adicionales_extra:", e);
+            }
+        }
+
         // ===== Fichas técnicas desde Firestore =====
         // Mapa clave "categoriaId:productoSlug" → URL de Cloudinary.
         // Si una unidad no está acá, el catálogo cae al PDF local del repo.
@@ -10326,6 +10375,7 @@
     obtenerRolUsuario(email).then(aplicarRolUsuario);
     if (typeof cargarDocumentos === "function") cargarDocumentos();
     if (typeof cargarFichas === "function") cargarFichas();
+    if (typeof cargarAdicionalesExtra === "function") cargarAdicionalesExtra();
 
     // Soft delete de fotos: cargar la lista y desbloquear cargaFotosPromise.
     db.collection("fotos_borradas").get()

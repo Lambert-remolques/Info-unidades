@@ -850,6 +850,121 @@
             letter-spacing: 0.06em;
         }
 
+        /* ===== Botón "Crear adicional" + modal con formulario ===== */
+        .btn-crear {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: 1px solid var(--verde);
+            border-radius: 999px;
+            background: rgba(21, 153, 71, 0.08);
+            color: var(--verde-oscuro);
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-family: var(--fuente);
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease;
+        }
+
+        .btn-crear:hover {
+            background: var(--verde);
+            color: var(--blanco);
+        }
+
+        .modal-form {
+            position: fixed;
+            inset: 0;
+            z-index: 2400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-form[hidden] { display: none; }
+
+        .modal-form-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(38, 38, 38, 0.55);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-form-box {
+            position: relative;
+            width: min(100%, 520px);
+            max-height: 92vh;
+            background: var(--blanco);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+            animation: popIn 220ms ease;
+        }
+
+        .modal-form-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 22px;
+            background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+            color: var(--blanco);
+        }
+
+        .modal-form-title {
+            margin: 0;
+            font-size: 0.98rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .modal-form-close {
+            width: 32px;
+            height: 32px;
+            border: 0;
+            background: transparent;
+            color: var(--blanco);
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 160ms ease;
+        }
+
+        .modal-form-close:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .modal-form-body {
+            padding: 22px;
+            overflow-y: auto;
+        }
+
+        .admin-field textarea {
+            padding: 10px 12px;
+            border: 1px solid var(--gris);
+            border-radius: var(--radio);
+            font-size: 0.94rem;
+            font-family: var(--fuente);
+            background: var(--blanco);
+            color: var(--negro);
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        .admin-field textarea:focus {
+            outline: none;
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(21, 153, 71, 0.18);
+        }
+
         /* ===== Modal de confirmación ===== */
         .modal-confirm {
             position: fixed;
@@ -1257,7 +1372,15 @@
                     </div>
 
                     <div class="admin-card">
-                        <h2 class="admin-card-title">Fotos de adicionales</h2>
+                        <div class="admin-card-header">
+                            <h2 class="admin-card-title">Fotos de adicionales</h2>
+                            <button class="btn-crear" type="button" id="btnCrearAdicional">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Crear adicional
+                            </button>
+                        </div>
                         <div class="admin-form">
                             <div class="admin-field-row">
                                 <label class="admin-field">
@@ -1299,6 +1422,42 @@
                 </div>
             </section>
         </main>
+
+        <div class="modal-form" id="modalCrearAdicional" hidden>
+            <div class="modal-form-overlay" id="modalCrearAdicionalOverlay"></div>
+            <div class="modal-form-box" role="dialog" aria-modal="true" aria-labelledby="modalCrearAdicionalTitle">
+                <div class="modal-form-header">
+                    <h3 class="modal-form-title" id="modalCrearAdicionalTitle">Crear adicional nuevo</h3>
+                    <button class="modal-form-close" type="button" id="modalCrearAdicionalClose" aria-label="Cerrar">×</button>
+                </div>
+                <form class="admin-form modal-form-body" id="formCrearAdicional" autocomplete="off">
+                    <label class="admin-field">
+                        <span>Categoría</span>
+                        <select class="admin-select" id="formAdCategoria" required></select>
+                    </label>
+                    <label class="admin-field">
+                        <span>Nombre</span>
+                        <input type="text" id="formAdNombre" required maxlength="120">
+                    </label>
+                    <label class="admin-field">
+                        <span>Código (opcional)</span>
+                        <input type="text" id="formAdCodigo" maxlength="40" placeholder="Ej: AD999 — dejar vacío si no tiene">
+                    </label>
+                    <label class="admin-field">
+                        <span>Descripción</span>
+                        <textarea id="formAdDescripcion" required rows="3" maxlength="500"></textarea>
+                    </label>
+                    <label class="admin-field">
+                        <span>Ubicación</span>
+                        <textarea id="formAdUbicacion" required rows="2" maxlength="250"></textarea>
+                    </label>
+                    <button class="admin-submit" type="submit" id="btnCrearAdicionalSubmit">
+                        <span class="admin-submit-label">Crear adicional</span>
+                    </button>
+                    <div class="admin-status" id="crearAdicionalStatus" hidden></div>
+                </form>
+            </div>
+        </div>
 
         <div class="foto-lightbox" id="fotoLightbox" hidden>
             <div class="foto-lightbox-overlay" id="fotoLightboxOverlay"></div>
@@ -1397,6 +1556,26 @@
         // Set de publicIds borrados (soft delete via Firestore).
         let fotosBorradas = new Set();
         let estadoFotosAdmin = "cargando";
+        // Adicionales creados desde el panel admin (Firestore: adicionales_extra).
+        let adicionalesExtra = [];
+
+        async function cargarAdicionalesExtra() {
+            try {
+                const snap = await db.collection("adicionales_extra").get();
+                adicionalesExtra = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            } catch (e) {
+                console.warn("No se pudieron leer adicionales_extra:", e);
+                adicionalesExtra = [];
+            }
+        }
+
+        function adicionalesDeCategoria(catId) {
+            const cat = ADICIONALES_CATALOGO.find((c) => c.id === catId);
+            if (!cat) return [];
+            const extras = adicionalesExtra.filter((a) => a.categoriaId === catId).map((a) => a.nombre);
+            const union = [...new Set([...cat.items, ...extras])];
+            return union.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+        }
 
         function categoriasUnicas() {
             return [...new Set(documentosAdmin.map((d) => d.categoria).filter(Boolean))]
@@ -2036,8 +2215,9 @@
                 renderFotosAdicionalGaleria();
                 return;
             }
+            const items = adicionalesDeCategoria(catId);
             selItem.innerHTML = `<option value="">Seleccionar adicional...</option>`
-                + cat.items.map((it) => `<option value="${it}">${it}</option>`).join("");
+                + items.map((it) => `<option value="${it}">${it}</option>`).join("");
             selItem.disabled = false;
             renderFotosAdicionalGaleria();
         }
@@ -2265,6 +2445,105 @@
             }
         }
 
+        function abrirCrearAdicionalModal() {
+            const sel = document.getElementById("formAdCategoria");
+            if (sel) {
+                sel.innerHTML = `<option value="">Seleccionar categoría...</option>`
+                    + ADICIONALES_CATALOGO.map((c) => `<option value="${c.id}">${c.nombre}</option>`).join("");
+                const filtroActual = document.getElementById("fotosAdicionalCategoria")?.value;
+                if (filtroActual) sel.value = filtroActual;
+            }
+            const modal = document.getElementById("modalCrearAdicional");
+            modal.hidden = false;
+            document.body.style.overflow = "hidden";
+            setCrearAdicionalStatus(null);
+            setTimeout(() => document.getElementById("formAdNombre")?.focus(), 30);
+        }
+
+        function cerrarCrearAdicionalModal() {
+            const modal = document.getElementById("modalCrearAdicional");
+            if (!modal) return;
+            modal.hidden = true;
+            document.body.style.overflow = "";
+            document.getElementById("formCrearAdicional")?.reset();
+            setCrearAdicionalStatus(null);
+        }
+
+        function setCrearAdicionalStatus(state, message) {
+            const status = document.getElementById("crearAdicionalStatus");
+            if (!status) return;
+            if (state === null) {
+                status.hidden = true;
+                status.className = "admin-status";
+                status.textContent = "";
+                return;
+            }
+            status.hidden = false;
+            status.className = `admin-status admin-status--${state}`;
+            status.textContent = message;
+        }
+
+        async function crearAdicionalHandler(event) {
+            event.preventDefault();
+            const categoriaId = document.getElementById("formAdCategoria").value;
+            const nombre = document.getElementById("formAdNombre").value.trim();
+            const codigo = document.getElementById("formAdCodigo").value.trim() || "SIN CÓDIGO";
+            const descripcion = document.getElementById("formAdDescripcion").value.trim();
+            const ubicacion = document.getElementById("formAdUbicacion").value.trim();
+
+            if (!categoriaId || !nombre || !descripcion || !ubicacion) {
+                setCrearAdicionalStatus("error", "Completá categoría, nombre, descripción y ubicación.");
+                return;
+            }
+            const cat = ADICIONALES_CATALOGO.find((c) => c.id === categoriaId);
+            const yaExisteHardcoded = cat.items.some((it) => it.toLowerCase() === nombre.toLowerCase());
+            const yaExisteExtra = adicionalesExtra.some((a) => a.categoriaId === categoriaId && a.nombre.toLowerCase() === nombre.toLowerCase());
+            if (yaExisteHardcoded || yaExisteExtra) {
+                setCrearAdicionalStatus("error", `Ya existe un adicional "${nombre}" en ${cat.nombre}.`);
+                return;
+            }
+
+            const nombreEsc = nombre.replace(/</g, "&lt;");
+            const ok = await mostrarConfirmacion({
+                titulo: "Crear adicional",
+                mensaje: `¿Confirmás crear el adicional <strong>"${nombreEsc}"</strong> en la categoría <strong>${cat.nombre}</strong>?`,
+                etiquetaConfirmar: "Crear",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            const submitBtn = document.getElementById("btnCrearAdicionalSubmit");
+            const submitLabel = submitBtn.querySelector(".admin-submit-label");
+            submitBtn.disabled = true;
+            submitLabel.textContent = "Guardando...";
+            setCrearAdicionalStatus("info", "Guardando en base de datos...");
+
+            try {
+                await db.collection("adicionales_extra").add({
+                    categoriaId,
+                    nombre,
+                    codigo,
+                    descripcion,
+                    ubicacion,
+                    creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await cargarAdicionalesExtra();
+                setCrearAdicionalStatus("success", `"${nombre}" creado correctamente.`);
+                setTimeout(() => {
+                    cerrarCrearAdicionalModal();
+                    if (document.getElementById("fotosAdicionalCategoria").value === categoriaId) {
+                        onFotosAdicionalCategoriaChange();
+                    }
+                }, 800);
+            } catch (e) {
+                console.error(e);
+                setCrearAdicionalStatus("error", "No se pudo crear: " + (e.message || "error desconocido"));
+            } finally {
+                submitBtn.disabled = false;
+                submitLabel.textContent = "Crear adicional";
+            }
+        }
+
         async function borrarFoto(publicId, tipo) {
             const ok = await mostrarConfirmacion({
                 titulo: "Eliminar foto",
@@ -2474,9 +2753,24 @@
             renderFotosUnidadGaleria();
             renderFotosAdicionalGaleria();
 
+            // Crear adicional
+            const btnCrearAd = document.getElementById("btnCrearAdicional");
+            if (btnCrearAd) btnCrearAd.addEventListener("click", abrirCrearAdicionalModal);
+            const closeAd = document.getElementById("modalCrearAdicionalClose");
+            if (closeAd) closeAd.addEventListener("click", cerrarCrearAdicionalModal);
+            const overlayAd = document.getElementById("modalCrearAdicionalOverlay");
+            if (overlayAd) overlayAd.addEventListener("click", cerrarCrearAdicionalModal);
+            const formAd = document.getElementById("formCrearAdicional");
+            if (formAd) formAd.addEventListener("submit", crearAdicionalHandler);
+            document.addEventListener("keydown", (e) => {
+                if (e.key !== "Escape") return;
+                const m = document.getElementById("modalCrearAdicional");
+                if (m && !m.hidden) cerrarCrearAdicionalModal();
+            });
+
             cargarDocumentos();
             cargarFichas();
-            cargarFotos();
+            cargarAdicionalesExtra().then(() => cargarFotos());
 
             const hash = (window.location.hash || "#inicio").substring(1);
             mostrarSeccion(hash);
