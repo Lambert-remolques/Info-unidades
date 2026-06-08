@@ -926,6 +926,35 @@
             gap: 14px;
             margin-bottom: 14px;
         }
+        .unidad-row {
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .unidad-portada-thumb {
+            width: 90px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--gris-bg, #f1f1f1);
+            flex-shrink: 0;
+            border: 1px solid var(--gris);
+        }
+        .unidad-portada-thumb--vacia {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b8b8b8;
+        }
+        .unidad-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .unidad-descripcion {
+            margin: 6px 0 0;
+            font-size: 0.83rem;
+            line-height: 1.45;
+            color: var(--gris-texto, #555);
+        }
         .unidad-badges {
             display: flex;
             gap: 6px;
@@ -2000,6 +2029,13 @@
                         <p class="modal-fotos-hint" style="margin-top:0;">Apretá este botón <strong>una sola vez</strong> para copiar todas las unidades precargadas del catálogo a Firestore, así quedan editables desde acá. Es seguro apretarlo varias veces: no duplica las que ya existen.</p>
                         <button class="btn-crear" type="button" id="btnMigrarUnidades" style="margin-top:12px;">Migrar unidades precargadas</button>
                         <p id="migracionUnidadesEstado" class="modal-fotos-hint" style="margin-top:10px; display:none;"></p>
+
+                        <hr style="margin:18px 0; border:0; border-top:1px solid var(--gris);">
+
+                        <h3 class="admin-card-title" style="font-size:0.95rem; margin-bottom:6px;">Enriquecer desde el catálogo</h3>
+                        <p class="modal-fotos-hint" style="margin-top:0;">Toma las descripciones y elige la foto de portada del catálogo público para cada unidad migrada. Lo podés volver a apretar después de subir nuevas fotos: refresca las portadas faltantes.</p>
+                        <button class="btn-crear" type="button" id="btnEnriquecerUnidades" style="margin-top:12px;">Enriquecer descripciones y portadas</button>
+                        <p id="enriquecerUnidadesEstado" class="modal-fotos-hint" style="margin-top:10px; display:none;"></p>
                     </div>
                 </div>
             </section>
@@ -3608,14 +3644,26 @@
                 const slug = u.slug || crearSlug(u.nombre || "");
                 const tieneFicha = fichasAdmin.has(claveFicha(u.categoriaId, slug));
                 const badges = [];
-                if (!u.descripcion || !u.descripcion.trim()) badges.push(`<span class="unidad-badge unidad-badge--falta">Sin descripción</span>`);
                 if (!u.fotoPortadaPublicId) badges.push(`<span class="unidad-badge unidad-badge--falta">Sin portada</span>`);
                 if (!tieneFicha) badges.push(`<span class="unidad-badge unidad-badge--falta">Sin ficha</span>`);
+
+                const portadaHtml = u.fotoPortadaPublicId
+                    ? `<img class="unidad-portada-thumb" src="${urlThumbFoto(u.fotoPortadaPublicId, u.fotoPortadaFormato || "jpg", u.fotoPortadaVersion || "")}" alt="" loading="lazy">`
+                    : `<div class="unidad-portada-thumb unidad-portada-thumb--vacia" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>
+                       </div>`;
+
+                const descripcionHtml = u.descripcion && u.descripcion.trim()
+                    ? `<p class="unidad-descripcion">${u.descripcion.replace(/</g, "&lt;")}</p>`
+                    : "";
+
                 return `
-                <div class="admin-doc-row">
-                    <div class="admin-doc-info">
+                <div class="admin-doc-row unidad-row">
+                    ${portadaHtml}
+                    <div class="admin-doc-info unidad-info">
                         <strong>${u.nombre || ""}</strong>
                         <span>${u.categoriaNombre || u.categoriaId || ""}</span>
+                        ${descripcionHtml}
                         ${badges.length ? `<div class="unidad-badges">${badges.join("")}</div>` : ""}
                     </div>
                     <div class="admin-doc-actions">
@@ -4218,6 +4266,164 @@
                 await mostrarConfirmacion({
                     titulo: "No se pudo migrar",
                     mensaje: `Algo falló: <code>${e.message || e}</code><br><br>Podés volver a intentarlo (no duplica lo que ya se haya copiado).`,
+                    etiquetaConfirmar: "Cerrar",
+                    soloConfirmar: true
+                });
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // ===== Enriquecimiento: descripciones + portadas precargadas =====
+        // Descripciones tomadas del catálogo público (index.html → categorias).
+        const UNIDADES_DESCRIPCIONES = {
+            "acoplados/baranda-volcable": "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.",
+            "acoplados/curtain-sider": "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.",
+            "acoplados/playo": "Unidad de piso plano sin estructura lateral cerrada, ideal para cargas voluminosas o piezas pesadas.",
+            "acoplados/paquetero": "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.",
+            "acoplados/forestal": "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.",
+            "acoplados/volcador-bilateral": "Unidad que puede volcar carga hacia ambos lados del equipo.",
+            "acoplados/todo-puertas": "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.",
+            "acoplados/isotermico": "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.",
+            "acoplados/tolva-descarga-ventral": "Unidad equipada con sistema de descarga por tolva en la parte inferior.",
+            "acoplados/jaula-simple": "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.",
+            "acoplados/jaula-doble-piso": "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.",
+            "acoplados/pollero": "Unidad diseñada para el transporte de aves vivas, principalmente pollos, con ventilación, contención y bienestar animal durante el traslado.",
+
+            "semirremolques/playo-con-frente": "El playo con frente es una plataforma abierta que incorpora un frente estructural fijo, que actúa como elemento de contención y protección.",
+            "semirremolques/curtain-sider": "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.",
+            "semirremolques/baranda-volcable": "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.",
+            "semirremolques/forestal": "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales.",
+            "semirremolques/isotermico": "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.",
+            "semirremolques/tolva-descarga-ventral": "Unidad equipada con sistema de descarga por tolva en la parte inferior.",
+            "semirremolques/portacontenedor": "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.",
+            "semirremolques/jaula-simple": "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.",
+            "semirremolques/jaula-doble-piso": "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.",
+            "semirremolques/batea": "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.",
+            "semirremolques/bivuelco-bicaja": "Unidad diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados, compuesta por dos cajas independientes montadas sobre una misma estructura.",
+
+            "carrocerias/curtain-sider": "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.",
+            "carrocerias/todo-puertas": "Unidad con puertas en todos los laterales, facilitando la carga y descarga desde cualquier punto.",
+            "carrocerias/volcadora": "Unidad diseñada para la descarga de materiales sueltos mediante un sistema de vuelco, generalmente hacia atrás.",
+            "carrocerias/isotermica": "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.",
+            "carrocerias/bivuelco": "Diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados del vehículo. Este tipo de carrocería permite descargar la carga a izquierda o derecha.",
+            "carrocerias/paquetera": "Unidad con piso y laterales preparados para cargas agrupadas con cajas o paquetes.",
+            "carrocerias/curtain-sider-barandas-volcables": "Unidad que combina barandas metálicas volcables en la parte inferior con laterales superiores de lona corrediza tipo curtain sider.",
+            "carrocerias/pollera": "Diseñada específicamente para el transporte de aves vivas, principalmente pollos, en condiciones que aseguren ventilación, contención y bienestar animal durante el traslado.",
+
+            "bitrenes/baranda-volcable": "Unidad con laterales abatibles que facilitan la carga y descarga, especialmente de material suelto o paletizado.",
+            "bitrenes/isotermico": "Unidad cerrada con aislamiento térmico para mantener temperaturas controladas.",
+            "bitrenes/portacontenedor": "Unidad preparada para el transporte seguro de contenedores mediante puntos de fijación sobre el chasis.",
+            "bitrenes/curtain-sider": "Unidad con laterales de lona corrediza y techo fijo, que permite el acceso lateral total.",
+            "bitrenes/forestal": "Unidad con estructura reforzada y anclajes para transporte de madera y productos forestales."
+        };
+
+        // Portadas preferidas, copiadas de index.html → const PORTADA.
+        // { eje } usa la primera foto de esa configuración; { eje, numero } usa una puntual.
+        const UNIDADES_PORTADA_PREFERIDA = {
+            "acoplados/baranda-volcable": { eje: "4-ejes", numero: 6 },
+            "acoplados/pollero": { eje: "3-ejes" },
+            "semirremolques/baranda-volcable": { eje: "1-3-eje", numero: 2 }
+        };
+
+        function ejesDeCategoriaParaPortada(categoriaId) {
+            const cat = FICHAS_CATALOGO.find((c) => c.id === categoriaId);
+            if (!cat) return [""];
+            return cat.ejes.length > 0 ? cat.ejes : [""];
+        }
+
+        function elegirPortadaParaUnidad(categoriaId, slug) {
+            const pref = UNIDADES_PORTADA_PREFERIDA[`${categoriaId}/${slug}`];
+            if (pref) {
+                const clave = fotosClaveUnidad(categoriaId, slug, pref.eje);
+                const visibles = fotosVisibles(clave);
+                if (visibles.length) {
+                    const foto = pref.numero ? (visibles.find((f) => f.numero === pref.numero) || visibles[0]) : visibles[0];
+                    return foto;
+                }
+            }
+            // Sin preferencia (o preferencia sin fotos): recorro las configs disponibles
+            // y devuelvo la primera foto que aparezca.
+            const ejes = ejesDeCategoriaParaPortada(categoriaId);
+            for (const eje of ejes) {
+                const clave = fotosClaveUnidad(categoriaId, slug, eje);
+                const visibles = fotosVisibles(clave);
+                if (visibles.length) return visibles[0];
+            }
+            return null;
+        }
+
+        async function enriquecerUnidadesPrecargadas() {
+            const btn = document.getElementById("btnEnriquecerUnidades");
+            const estado = document.getElementById("enriquecerUnidadesEstado");
+            if (!btn || !estado) return;
+
+            const ok = await mostrarConfirmacion({
+                titulo: "Enriquecer unidades",
+                mensaje: `Se van a actualizar las <strong>descripciones</strong> y la <strong>foto de portada</strong> de las unidades migradas, usando los datos del catálogo público.<br><br>Es seguro: si ya tenés una descripción o portada cargada manualmente, se respeta. Solo rellena lo que esté vacío.`,
+                etiquetaConfirmar: "Enriquecer",
+                variante: "confirmar"
+            });
+            if (!ok) return;
+
+            btn.disabled = true;
+            estado.style.display = "block";
+            estado.textContent = "Procesando…";
+
+            try {
+                await cargarUnidades();
+                await cargarFotos();
+
+                let descActualizadas = 0, portadasActualizadas = 0, sinPortada = 0, i = 0;
+                const total = unidadesExtra.length;
+
+                for (const u of unidadesExtra) {
+                    i++;
+                    const slug = u.slug || crearSlug(u.nombre || "");
+                    const clave = `${u.categoriaId}/${slug}`;
+                    const updates = {};
+
+                    if ((!u.descripcion || !u.descripcion.trim()) && UNIDADES_DESCRIPCIONES[clave]) {
+                        updates.descripcion = UNIDADES_DESCRIPCIONES[clave];
+                    }
+                    if (!u.fotoPortadaPublicId) {
+                        const foto = elegirPortadaParaUnidad(u.categoriaId, slug);
+                        if (foto) {
+                            updates.fotoPortadaPublicId = foto.publicId;
+                            updates.fotoPortadaFormato = foto.formato || "jpg";
+                            updates.fotoPortadaVersion = foto.version || "";
+                            portadasActualizadas++;
+                        } else {
+                            sinPortada++;
+                        }
+                    }
+                    if (Object.keys(updates).length > 0) {
+                        updates.actualizadoEn = firebase.firestore.FieldValue.serverTimestamp();
+                        await db.collection("unidades").doc(u.id).update(updates);
+                        if (updates.descripcion) descActualizadas++;
+                        estado.textContent = `(${i}/${total}) Actualizada: ${u.nombre}`;
+                    } else {
+                        estado.textContent = `(${i}/${total}) Sin cambios: ${u.nombre}`;
+                    }
+                }
+
+                await cargarUnidades();
+                renderUnidadesAdminList();
+
+                estado.innerHTML = `<strong>Listo.</strong> Descripciones: ${descActualizadas} · Portadas: ${portadasActualizadas} · Sin foto disponible: ${sinPortada}.`;
+                await mostrarConfirmacion({
+                    titulo: "Enriquecimiento terminado",
+                    mensaje: `<strong>${descActualizadas}</strong> descripciones rellenadas.<br><strong>${portadasActualizadas}</strong> portadas asignadas.<br>${sinPortada ? `<strong>${sinPortada}</strong> unidades quedan sin portada porque todavía no tienen fotos subidas.` : ""}`,
+                    etiquetaConfirmar: "Entendido",
+                    soloConfirmar: true,
+                    variante: "confirmar"
+                });
+            } catch (e) {
+                console.error("Enriquecimiento falló:", e);
+                estado.textContent = `Error: ${e.message || e}`;
+                await mostrarConfirmacion({
+                    titulo: "No se pudo enriquecer",
+                    mensaje: `Algo falló: <code>${e.message || e}</code>`,
                     etiquetaConfirmar: "Cerrar",
                     soloConfirmar: true
                 });
@@ -4853,6 +5059,8 @@
             if (filtroUnTxt) filtroUnTxt.addEventListener("input", renderUnidadesAdminList);
             const btnMigrarUn = document.getElementById("btnMigrarUnidades");
             if (btnMigrarUn) btnMigrarUn.addEventListener("click", migrarUnidadesPrecargadas);
+            const btnEnriquecerUn = document.getElementById("btnEnriquecerUnidades");
+            if (btnEnriquecerUn) btnEnriquecerUn.addEventListener("click", enriquecerUnidadesPrecargadas);
 
             cargarDocumentos();
             cargarFichas();
