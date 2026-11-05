@@ -6664,8 +6664,11 @@
             const lower = email.trim().toLowerCase();
             if (usuarioActualData && (usuarioActualData.email || "").toLowerCase() === lower) {
                 const fb = REGISTRO_USUARIOS[lower] || {};
+                const nombre = lower === "comunicacion@lamberthermanos.com.ar"
+                    ? fb.nombre
+                    : (usuarioActualData.nombre || fb.nombre || "");
                 return {
-                    nombre: usuarioActualData.nombre || fb.nombre || "",
+                    nombre,
                     genero: usuarioActualData.genero || fb.genero || ""
                 };
             }
