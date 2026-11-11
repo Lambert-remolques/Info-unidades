@@ -3538,6 +3538,38 @@
             return `${numeros.replace(/-/g, "+")} ${sufijo}`;
         }
 
+        function opcionesEjeFotos(cat, productoNombre) {
+            const opciones = (cat?.ejes || []).map((slug) => ({ slug, nombre: formatearEje(slug) }));
+            if (cat?.id === "semirremolques" && crearSlug(productoNombre || "") === "batea") {
+                const tresEjes = opciones.find((opcion) => opcion.slug === "3-ejes");
+                if (tresEjes) tresEjes.nombre = "3 ejes cerealera";
+                opciones.push({ slug: "3-ejes-batea", nombre: "3 ejes" });
+            }
+            return opciones;
+        }
+
+        function actualizarSelectEjesFotos() {
+            const catId = document.getElementById("fotosUnidadCategoria")?.value;
+            const productoNombre = document.getElementById("fotosUnidadProducto")?.value;
+            const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
+            const selEje = document.getElementById("fotosUnidadEje");
+            const wrapEje = document.getElementById("fotosUnidadEjeWrap");
+            if (!cat || !selEje) return;
+            const opciones = opcionesEjeFotos(cat, productoNombre);
+            const valorPrevio = selEje.value;
+            if (opciones.length) {
+                selEje.innerHTML = `<option value="">Seleccionar configuración...</option>`
+                    + opciones.map((e) => `<option value="${e.slug}">${e.nombre}</option>`).join("");
+                if (opciones.some((e) => e.slug === valorPrevio)) selEje.value = valorPrevio;
+                selEje.disabled = false;
+                wrapEje.hidden = false;
+            } else {
+                selEje.innerHTML = "";
+                selEje.disabled = true;
+                wrapEje.hidden = true;
+            }
+        }
+
         function fotosClaveUnidad(catId, productoSlug, ejeSlug) {
             return `unidad:${catId}:${productoSlug}:${normEje(ejeSlug || "")}`;
         }
@@ -3656,16 +3688,7 @@
             selProd.innerHTML = `<option value="">Seleccionar unidad...</option>`
                 + productos.map((p) => `<option value="${p}">${p}</option>`).join("");
             selProd.disabled = false;
-            if (cat.ejes.length > 0) {
-                selEje.innerHTML = `<option value="">Seleccionar configuración...</option>`
-                    + cat.ejes.map((e) => `<option value="${e}">${formatearEje(e)}</option>`).join("");
-                selEje.disabled = false;
-                wrapEje.hidden = false;
-            } else {
-                selEje.innerHTML = "";
-                selEje.disabled = true;
-                wrapEje.hidden = true;
-            }
+            actualizarSelectEjesFotos();
             renderFotosUnidadGaleria();
         }
 
@@ -3676,9 +3699,10 @@
             const productoNombre = document.getElementById("fotosUnidadProducto")?.value;
             const ejeSlug = document.getElementById("fotosUnidadEje")?.value;
             const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
+            const opcionesEjes = opcionesEjeFotos(cat, productoNombre);
 
-            if (!catId || !productoNombre || (cat && cat.ejes.length > 0 && !ejeSlug)) {
-                cont.innerHTML = `<p class="admin-doc-empty">Elegí una categoría${cat && cat.ejes.length > 0 ? ", una unidad y una configuración" : " y una unidad"} para ver y gestionar sus fotos.</p>`;
+            if (!catId || !productoNombre || (opcionesEjes.length > 0 && !ejeSlug)) {
+                cont.innerHTML = `<p class="admin-doc-empty">Elegí una categoría${opcionesEjes.length > 0 ? ", una unidad y una configuración" : " y una unidad"} para ver y gestionar sus fotos.</p>`;
                 return;
             }
             if (estadoFotosAdmin === "cargando") {
@@ -3784,8 +3808,9 @@
             const productoNombre = document.getElementById("fotosUnidadProducto").value;
             const ejeSlug = document.getElementById("fotosUnidadEje").value || "";
             const cat = FICHAS_CATALOGO.find((c) => c.id === catId);
-            if (!catId || !productoNombre || (cat && cat.ejes.length > 0 && !ejeSlug)) {
-                setFotoUnidadStatus("error", "Seleccioná categoría, unidad" + (cat && cat.ejes.length > 0 ? " y configuración." : "."));
+            const opcionesEjes = opcionesEjeFotos(cat, productoNombre);
+            if (!catId || !productoNombre || (opcionesEjes.length > 0 && !ejeSlug)) {
+                setFotoUnidadStatus("error", "Seleccioná categoría, unidad" + (opcionesEjes.length > 0 ? " y configuración." : "."));
                 return;
             }
             const productoSlug = crearSlug(productoNombre);
@@ -5697,16 +5722,17 @@
                         fichasBucket.push({ categoriaId: cat.id, categoriaNombre: cat.nombre, productoNombre: prod });
                     }
                     // Fotos: si la categoria tiene ejes, una entrada por configuración faltante
-                    if (cat.ejes.length > 0) {
-                        cat.ejes.forEach((ejeSlug) => {
-                            const clave = fotosClaveUnidad(cat.id, slug, ejeSlug);
+                    const opcionesEjes = opcionesEjeFotos(cat, prod);
+                    if (opcionesEjes.length > 0) {
+                        opcionesEjes.forEach((eje) => {
+                            const clave = fotosClaveUnidad(cat.id, slug, eje.slug);
                             if (fotosVisibles(clave).length === 0) {
                                 fotosBucket.push({
                                     categoriaId: cat.id,
                                     categoriaNombre: cat.nombre,
                                     productoNombre: prod,
-                                    ejeSlug,
-                                    ejeLabel: formatearEje(ejeSlug)
+                                    ejeSlug: eje.slug,
+                                    ejeLabel: eje.nombre
                                 });
                             }
                         });
@@ -6422,7 +6448,10 @@
             const fotosUP = document.getElementById("fotosUnidadProducto");
             const fotosUE = document.getElementById("fotosUnidadEje");
             if (fotosUC) fotosUC.addEventListener("change", onFotosUnidadCategoriaChange);
-            if (fotosUP) fotosUP.addEventListener("change", renderFotosUnidadGaleria);
+            if (fotosUP) fotosUP.addEventListener("change", () => {
+                actualizarSelectEjesFotos();
+                renderFotosUnidadGaleria();
+            });
             if (fotosUE) fotosUE.addEventListener("change", renderFotosUnidadGaleria);
             renderFotosUnidadGaleria();
 

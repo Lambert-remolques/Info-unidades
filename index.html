@@ -6261,6 +6261,14 @@
             ];
         }
 
+        function opcionesFotosBatea() {
+            const opciones = opcionesSemirremolque("Batea");
+            const tresEjes = opciones.find((opcion) => opcion.ejeSlug === "3-ejes");
+            if (tresEjes) tresEjes.nombre = "3 ejes cerealera";
+            opciones.push({ nombre: "3 ejes", ejeSlug: "3-ejes-batea", descripcion: "Ficha técnica para otra configuración de tres ejes." });
+            return opciones;
+        }
+
         function fichaTecnicaUnificada(categoria, productoNombre) {
             return [
                 {
@@ -6329,7 +6337,7 @@
                     productoConFicha("semirremolques", "Portacontenedor", "Unidad cuya estructura de chasis puede alargarse o acortarse para adaptarse a diferentes longitudes de contenedores o combinaciones de los mismos.", opcionesSemirremolque("Portacontenedor")),
                     productoConFicha("semirremolques", "Jaula simple", "Unidad diseñada para el transporte de ganado, cuya estructura permite una correcta ventilación, contención y bienestar animal durante el traslado.", opcionesSemirremolque("Jaula simple")),
                     productoConFicha("semirremolques", "Jaula doble piso", "Unidad con estructura de jaula metálica de doble piso para carga ordenada y estable.", opcionesSemirremolque("Jaula doble piso")),
-                    productoConFicha("semirremolques", "Batea", "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.", opcionesSemirremolque("Batea")),
+                    productoConFicha("semirremolques", "Batea", "Unidad de transporte de plataforma abierta, sin laterales ni cerramientos.", opcionesFotosBatea()),
                     productoConFicha("semirremolques", "Bivuelco bicaja", "Unidad diseñada para descarga de materiales sueltos mediante vuelco lateral hacia ambos lados, compuesta por dos cajas independientes montadas sobre una misma estructura.", opcionesSemirremolque("Bivuelco bicaja"))
                 ]
             },
